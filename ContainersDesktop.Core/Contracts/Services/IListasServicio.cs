@@ -1,0 +1,9 @@
+﻿using ContainersDesktop.Core.Models;
+
+namespace ContainersDesktop.Core.Contracts.Services;
+public interface IListasServicio
+{
+    Task<List<Listas>> ObtenerListas();
+    Task<bool> CrearLista(Listas lista);
+    Task<bool> ActualizarLista(Listas lista);
+}
