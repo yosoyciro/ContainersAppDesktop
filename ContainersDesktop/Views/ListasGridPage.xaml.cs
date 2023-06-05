@@ -5,6 +5,7 @@ using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using System.IO;
 
 namespace ContainersDesktop.Views;
 
@@ -109,38 +110,41 @@ public sealed partial class ListasGridPage : Page
 
     private void ListaGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
     {
-        //ICollectionViewGroup group = e.RowGroupHeader.CollectionViewGroup;
-        //Listas item = group.GroupItems[0] as Listas;
-        //e.RowGroupHeader.PropertyValue = item.LISTAS_ID_LISTA;
-
-        //if (e.Column.Tag.ToString() == "ClaseLista")
+        // Clear previous sorted column if we start sorting a different column
+        //string previousSortedColumn = ViewModel.CachedSortedColumn;
+        //if (previousSortedColumn != string.Empty)
         //{
-        //    //Implement sort on the column "Range" using LINQ
-        //    if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+        //    foreach (DataGridColumn dataGridColumn in ListaGrid.Columns)
         //    {
-        //        ListaGrid.ItemsSource = new ObservableCollection<ClaList>(from item in ListaGrid.ItemsSource
-        //                                                            orderby item.Range ascending
-        //                                                            select item);
-        //        e.Column.SortDirection = DataGridSortDirection.Ascending;
-        //    }
-        //    else
-        //    {
-        //        ListaGrid.ItemsSource = new ObservableCollection<ClaList>(from item in _items
-        //                                                            orderby item.Range descending
-        //                                                            select item);
-        //        e.Column.SortDirection = DataGridSortDirection.Descending;
+        //        if (dataGridColumn.Tag != null && dataGridColumn.Tag.ToString() == previousSortedColumn &&
+        //            (e.Column.Tag == null || previousSortedColumn != e.Column.Tag.ToString()))
+        //        {
+        //            dataGridColumn.SortDirection = null;
+        //        }
         //    }
         //}
-        //// add code to handle sorting by other columns as required
 
-        //// Remove sorting indicators from other columns
-        //foreach (var dgColumn in dg.Columns)
-        //{
-        //    if (dgColumn.Tag.ToString() != e.Column.Tag.ToString())
-        //    {
-        //        dgColumn.SortDirection = null;
-        //    }
-        //}
+        // Toggle clicked column's sorting method
+        if (e.Column.Tag != null)
+        {
+            if (e.Column.SortDirection == null)
+            {
+                ListaGrid.ItemsSource = ViewModel.SortData(e.Column.Tag.ToString(), true);
+                e.Column.SortDirection = DataGridSortDirection.Ascending;
+            }
+            else if (e.Column.SortDirection == DataGridSortDirection.Ascending)
+            {
+                ListaGrid.ItemsSource = ViewModel.SortData(e.Column.Tag.ToString(), false);
+                e.Column.SortDirection = DataGridSortDirection.Descending;
+            }
+            else
+            {
+                ListaGrid.ItemsSource = ViewModel.FilterData(ListasGridViewModel.FilterOptions.Todos, "1900");
+                e.Column.SortDirection = null;
+            }
+        }
+
+        
     }
 
     private async void chkVerTodos_Click(object sender, RoutedEventArgs e)

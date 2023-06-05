@@ -18,6 +18,8 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
     public ObservableCollection<Listas> Source { get; } = new();
     public List<ClaList> LstClaList { get; } = new();
     public ObservableCollection<ClaListDTO> LstClaListDTO { get; } = new();
+    // Sorting implementation using LINQ
+    private string _cachedSortedColumn = string.Empty;
 
     public ListasGridViewModel(IListasServicio listasServicio, IClaListServicio claListServicio)
     {
@@ -81,5 +83,79 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
         {
             Source.Add(item);
         }
+    }
+
+    //Ordenamiento
+    // Sorting implementation using LINQ
+    public string CachedSortedColumn
+    {
+        get
+        {
+            return _cachedSortedColumn;
+        }
+
+        set
+        {
+            _cachedSortedColumn = value;
+        }
+    }
+
+    public ObservableCollection<Listas> SortData(string sortBy, bool ascending)
+    {
+        _cachedSortedColumn = sortBy;
+        switch (sortBy)
+        {
+            case "ClaseLista":
+                if (ascending)
+                {
+                    return new ObservableCollection<Listas>(from item in Source
+                                                                      orderby item.LISTAS_ID_LISTA ascending
+                                                                      select item);
+                }
+                else
+                {
+                    return new ObservableCollection<Listas>(from item in Source
+                                                            orderby item.LISTAS_ID_LISTA descending
+                                                                      select item);
+                }
+
+            //case "Parent_mountain":
+            //    if (ascending)
+            //    {
+            //        return new ObservableCollection<DataGridDataItem>(from item in _items
+            //                                                          orderby item.Parent_mountain ascending
+            //                                                          select item);
+            //    }
+            //    else
+            //    {
+            //        return new ObservableCollection<DataGridDataItem>(from item in _items
+            //                                                          orderby item.Parent_mountain descending
+            //                                                          select item);
+            //    }            
+        }
+
+        return Source;
+    }
+
+    public enum FilterOptions
+    {
+        Todos = -1,
+        Clase_Lista = 0,
+    }
+
+    public ObservableCollection<Listas> FilterData(FilterOptions filterBy, string filterValue)
+    {
+        switch (filterBy)
+        {
+            case FilterOptions.Todos:
+                return new ObservableCollection<Listas>(Source);
+
+            case FilterOptions.Clase_Lista:
+                return new ObservableCollection<Listas>(from item in Source
+                                                        where item.LISTAS_ID_LISTA == int.Parse(filterValue)
+                                                        select item) ;            
+        }
+
+        return Source;
     }
 }
