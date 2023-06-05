@@ -17,9 +17,17 @@
             <Button
                 Name="btnAgregar"
                 Grid.Row="0"
-                Margin="10"
+                Margin="0, 0, 0, 20"
                 Content="Agregar Container" 
                 Click="btnAgregar_Click"
+            />
+
+            <Button
+                Name="btnBorrar"
+                Grid.Row="0"
+                Margin="170, 0, 0, 20"
+                Content="Borrar Container" 
+                Click="btnBorrar_Click"
             />
 
             <controls:DataGrid 
@@ -30,7 +38,7 @@
                 BeginningEdit="DataGrid_BeginningEdit" CellEditEnding="DataGrid_CellEditEnding" RowEditEnding="DataGrid_RowEditEnding" PreparingCellForEdit="DataGrid_PreparingCellForEdit"
                 SelectionMode="Single"
                 SelectionChanged="DataGrid_SelectionChanged"
-                AlternatingRowBackground="DarkGray">
+                AlternatingRowBackground="DarkSlateGray">
                 <controls:DataGrid.Columns>
                     <controls:DataGridTextColumn Header="ID" Binding="{Binding OBJ_ID_REG}" IsReadOnly="True" Visibility="Collapsed"/>
                     <controls:DataGridTextColumn Header="Matrícula"
@@ -44,7 +52,7 @@
                                                  ItemsSource="{x:Bind ViewModel.LstModelos, Mode=OneWay}"
                                                  DisplayMemberPath="DESCRIPCION"/>
                     <controls:DataGridTextColumn Header="ID Modelo"
-                                             Binding="{Binding OBJ_ID_MODELO}"/>
+                                             Binding="{Binding OBJ_ID_OBJETO}"/>
                     <controls:DataGridComboBoxColumn Header="Variante"
                                                  Binding="{Binding OBJ_VARIANTE}"      
                                                  ItemsSource="{x:Bind ViewModel.LstVariantes, Mode=OneWay}"
@@ -53,7 +61,7 @@
                                                  Binding="{Binding OBJ_TIPO}"      
                                                  ItemsSource="{x:Bind ViewModel.LstTipos, Mode=OneWay}"
                                                  DisplayMemberPath="DESCRIPCION"/>
-                    <controls:DataGridTemplateColumn Header="Action">
+                    <controls:DataGridTemplateColumn Header="Fecha Inspec">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding OBJ_INSPEC_CSC, Mode=TwoWay}" VerticalAlignment="Center"/>
@@ -61,7 +69,7 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                         <controls:DataGridTemplateColumn.CellEditingTemplate>
                             <DataTemplate>
-                                <CalendarDatePicker x:Name="FechaInspecDatePicker" DateChanged="dpDate_DateChanged" />
+                                <CalendarDatePicker x:Name="FechaInspecDatePicker" DateChanged="dpDate_DateChanged" PlaceholderText="Elija una fecha" />
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellEditingTemplate>
                     </controls:DataGridTemplateColumn>

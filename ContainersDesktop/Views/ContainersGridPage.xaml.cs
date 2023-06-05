@@ -2,17 +2,14 @@
 using CommunityToolkit.WinUI.UI.Controls;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.ViewModels;
-
 using Microsoft.UI.Xaml.Controls;
 
 namespace ContainersDesktop.Views;
 
-// TODO: Change the grid as appropriate for your app. Adjust the column definitions on DataGridPage.xaml.
-// For more details, see the documentation at https://docs.microsoft.com/windows/communitytoolkit/controls/datagrid.
 public sealed partial class ContainersGridPage : Page
 {
     private Objetos objetoAgregar = new();
-    private DateTime FechaInicial;
+    //private DateTime FechaInicial;
     private CalendarDatePicker FechaInspecDatePicker = new();
     public ContainersGridViewModel ViewModel
     {
@@ -36,7 +33,41 @@ public sealed partial class ContainersGridPage : Page
 
     private void btnAgregar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        ViewModel.CrearNuevoObjeto();
+        //ViewModel.CrearNuevoObjeto();
+        var nuevoRegistro = new Objetos()
+        {
+            OBJ_MATRICULA = "NUEVO CONTAINER",
+            OBJ_ID_ESTADO_REG = "A",
+            OBJ_SIGLAS_LISTA = 1000,
+            OBJ_SIGLAS = 1,
+            OBJ_MODELO_LISTA = 1100,
+            OBJ_MODELO = 1,
+            OBJ_ID_OBJETO = 1198,
+            OBJ_VARIANTE_LISTA = 1200,
+            OBJ_VARIANTE = 1,
+            OBJ_TIPO_LISTA = 1300,
+            OBJ_TIPO = 1,
+            OBJ_INSPEC_CSC = "",
+            OBJ_PROPIETARIO_LISTA = 1400,
+            OBJ_PROPIETARIO = 1,
+            OBJ_TARA_LISTA = 1500,
+            OBJ_TARA = 1,
+            OBJ_PMP_LISTA = 1600,
+            OBJ_PMP = 1,
+            OBJ_CARGA_UTIL = 0,
+            OBJ_ALTURA_EXTERIOR_LISTA = 1700,
+            OBJ_ALTURA_EXTERIOR = 1,
+            OBJ_CUELLO_CISNE_LISTA = 1800,
+            OBJ_CUELLO_CISNE = 1,
+            OBJ_BARRAS_LISTA = 1900,
+            OBJ_BARRAS = 1,
+            OBJ_CABLES_LISTA = 2000,
+            OBJ_CABLES = 1,
+            OBJ_LINEA_VIDA_LISTA = 2100,
+            OBJ_LINEA_VIDA = 1,
+            OBJ_OBSERVACIONES = ""
+        };
+        ViewModel.Source.Add(nuevoRegistro);
     }       
 
     private void DataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -55,7 +86,7 @@ public sealed partial class ContainersGridPage : Page
         try
         {
             //objetoAgregar.OBJ_INSPEC_CSC = Convert.ToDateTime(FechaInspecDatePicker.Date).ToShortDateString();
-            ViewModel.ActualizarObjeto(objetoAgregar);
+            ViewModel.GuardarObjeto(objetoAgregar);
         }
         catch (Exception ex)
         {
@@ -79,5 +110,17 @@ public sealed partial class ContainersGridPage : Page
             objetoAgregar.OBJ_INSPEC_CSC = Convert.ToDateTime(args.NewDate!.Value.Date).ToShortDateString();
         }
         
+    }
+
+    private void btnBorrar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        try
+        {
+            ViewModel.BorrarObjeto(objetoAgregar);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
     }
 }

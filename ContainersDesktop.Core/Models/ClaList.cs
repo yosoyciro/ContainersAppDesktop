@@ -18,4 +18,10 @@ public class ClaList
         get;
         set;
     }
+
+    public string CLALIST_FECHA_ACTUALIZACION
+    {
+        get;
+        set;
+    }
 }

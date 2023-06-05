@@ -135,4 +135,9 @@ public class Objetos : ObservableObject
     {
         get; set;
     }
+    public string OBJ_FECHA_ACTUALIZACION
+    {
+        get;
+        set;
+    }
 }

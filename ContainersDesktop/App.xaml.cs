@@ -74,6 +74,7 @@ public partial class App : Application
             services.AddSingleton<IFileService, FileService>();
             services.AddTransient<IObjetosServicio, ObjetosServicio>();
             services.AddTransient<IListasServicio, ListasServicio>();
+            services.AddTransient<IClaListServicio, ClaListServicio>();
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();

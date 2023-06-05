@@ -30,4 +30,10 @@ public class Listas
         get;
         set;
     }
+
+    public string LISTAS_FECHA_ACTUALIZACION
+    {
+        get;
+        set;
+    }
 }

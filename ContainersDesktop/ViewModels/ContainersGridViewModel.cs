@@ -7,6 +7,7 @@ using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.DTO;
 using Microsoft.UI.Xaml;
+using Windows.Media.Playlists;
 
 namespace ContainersDesktop.ViewModels;
 
@@ -56,7 +57,7 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
         LstListas.Clear();
 
         //Cargo Listas
-        var listas = await _listasServicio.ObtenerListas();
+        var listas = await _listasServicio.ObtenerListas(false);
         if (listas.Any())
         {
             foreach (var item in listas)
@@ -109,42 +110,42 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
 
         //PMP
         var lstPmp = LstListas.Where(x => x.LISTAS_ID_LISTA == 1600 || x.LISTAS_ID_REG == 1).ToList();
-        foreach (var item in lstSiglas)
+        foreach (var item in lstPmp)
         {
             LstPmp.Add(new PmpDTO() { OBJ_PMP = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP });
         }
 
         //Altura Exterior
         var lstAlturasExterior = LstListas.Where(x => x.LISTAS_ID_LISTA == 1700 || x.LISTAS_ID_REG == 1).ToList();
-        foreach (var item in lstSiglas)
+        foreach (var item in lstAlturasExterior)
         {
             LstAlturasExterior.Add(new AlturasExteriorDTO() { OBJ_ALTURA_EXTERIOR = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP });
         }
 
         //Cuello Cisne
         var lstCuellosCisne = LstListas.Where(x => x.LISTAS_ID_LISTA == 1800 || x.LISTAS_ID_REG == 1).ToList();
-        foreach (var item in lstSiglas)
+        foreach (var item in lstCuellosCisne)
         {
             LstCuellosCisne.Add(new CuellosCisneDTO() { OBJ_CUELLO_CISNE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP });
         }
 
         //Barras
-        var lstBarras = LstListas.Where(x => x.LISTAS_ID_LISTA == 1900 || x.LISTAS_ID_REG == 1).ToList();
-        foreach (var item in lstSiglas)
+        var lstBarras = LstListas.Where(x => x.LISTAS_ID_LISTA == 1900 || x.LISTAS_ID_REG == 1).OrderBy(x => x.LISTAS_ID_LISTA_ORDEN).ToList();
+        foreach (var item in lstBarras)
         {
             LstBarras.Add(new BarrasDTO() { OBJ_BARRAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP });
         }
 
         //Cables
         var lstCables = LstListas.Where(x => x.LISTAS_ID_LISTA == 2000 || x.LISTAS_ID_REG == 1).ToList();
-        foreach (var item in lstSiglas)
+        foreach (var item in lstCables)
         {
             LstCables.Add(new CablesDTO() { OBJ_CABLES = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP });
         }
 
         //Lineas vida
         var lstLineasVida = LstListas.Where(x => x.LISTAS_ID_LISTA == 2100 || x.LISTAS_ID_REG == 1).ToList();
-        foreach (var item in lstSiglas)
+        foreach (var item in lstLineasVida)
         {
             LstLineasVida.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP });
         }
@@ -157,54 +158,69 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
                 Source.Add(item);
             }
         }        
-    }
+    }    
 
-    public async void CrearNuevoObjeto()
+    //public async void CrearNuevoObjeto()
+    //{
+    //    var nuevoObjeto = new Objetos()
+    //    {
+    //        OBJ_MATRICULA = "NUEVO CONTAINER",
+    //        OBJ_ID_ESTADO_REG = "A",
+    //        OBJ_SIGLAS_LISTA = 1000,
+    //        OBJ_SIGLAS = 1,
+    //        OBJ_MODELO_LISTA = 1100,
+    //        OBJ_MODELO = 1,
+    //        OBJ_ID_OBJETO = 1198,
+    //        OBJ_VARIANTE_LISTA = 1200,
+    //        OBJ_VARIANTE = 1,
+    //        OBJ_TIPO_LISTA = 1300,
+    //        OBJ_TIPO = 1,
+    //        OBJ_INSPEC_CSC = "",
+    //        OBJ_PROPIETARIO_LISTA = 1400,
+    //        OBJ_PROPIETARIO = 1,
+    //        OBJ_TARA_LISTA = 1500,
+    //        OBJ_TARA = 1,
+    //        OBJ_PMP_LISTA = 1600,
+    //        OBJ_PMP = 1,
+    //        OBJ_CARGA_UTIL = 0,
+    //        OBJ_ALTURA_EXTERIOR_LISTA = 1700,
+    //        OBJ_ALTURA_EXTERIOR = 1,
+    //        OBJ_CUELLO_CISNE_LISTA = 1800,
+    //        OBJ_CUELLO_CISNE = 1,
+    //        OBJ_BARRAS_LISTA = 1900,
+    //        OBJ_BARRAS = 1,
+    //        OBJ_CABLES_LISTA = 2000,
+    //        OBJ_CABLES = 1,
+    //        OBJ_LINEA_VIDA_LISTA = 2100,
+    //        OBJ_LINEA_VIDA = 1,
+    //        OBJ_OBSERVACIONES = ""
+    //    };
+
+    //    var result = await _objetosServicio.CrearObjeto(nuevoObjeto);
+    //    //if (result)
+    //    //{
+    //    //    Source.Add(nuevoObjeto);
+    //    //};
+    //}
+
+    public async void GuardarObjeto(Objetos objeto)
     {
-        var nuevoObjeto = new Objetos()
+        if (objeto != null && objeto.OBJ_ID_REG == 0)
+        //var result = await _objetosServicio.ObtenerObjetoPorId(objeto.OBJ_ID_REG);
         {
-            OBJ_MATRICULA = "JAJKA",
-            OBJ_ID_ESTADO_REG = "A",
-            OBJ_SIGLAS_LISTA = 1000,
-            OBJ_SIGLAS = 1,
-            OBJ_MODELO_LISTA = 1100,
-            OBJ_MODELO = 1,
-            OBJ_ID_OBJETO = 1198,
-            OBJ_VARIANTE_LISTA = 1200,
-            OBJ_VARIANTE = 1,
-            OBJ_TIPO_LISTA = 1300,
-            OBJ_TIPO = 1,
-            OBJ_INSPEC_CSC = "",
-            OBJ_PROPIETARIO_LISTA = 1400,
-            OBJ_PROPIETARIO = 1,
-            OBJ_TARA_LISTA = 1500,
-            OBJ_TARA = 1,
-            OBJ_PMP_LISTA = 1600,
-            OBJ_PMP = 1,
-            OBJ_CARGA_UTIL = 0,
-            OBJ_ALTURA_EXTERIOR_LISTA = 1700,
-            OBJ_ALTURA_EXTERIOR = 1,
-            OBJ_CUELLO_CISNE_LISTA = 1800,
-            OBJ_CUELLO_CISNE = 1,
-            OBJ_BARRAS_LISTA = 1900,
-            OBJ_BARRAS = 1,
-            OBJ_CABLES_LISTA = 2000,
-            OBJ_CABLES = 1,
-            OBJ_LINEA_VIDA_LISTA = 2100,
-            OBJ_LINEA_VIDA = 1,
-            OBJ_OBSERVACIONES = ""
-        };
-
-        var result = await _objetosServicio.CrearObjeto(nuevoObjeto);
-        //if (result)
-        //{
-        //    Source.Add(nuevoObjeto);
-        //};
+            await _objetosServicio.CrearObjeto(objeto);
+        }
+        else
+        {
+            await _objetosServicio.ActualizarObjeto(objeto);
+        }
+        
     }
 
-    public async void ActualizarObjeto(Objetos objeto)
-    {        
-        await _objetosServicio.ActualizarObjeto(objeto);
+    public async void BorrarObjeto(Objetos objeto)
+    {
+        await _objetosServicio.BorrarObjeto(objeto.OBJ_ID_REG);
+        Source.Remove(objeto);
     }
 
     public void OnNavigatedFrom()
