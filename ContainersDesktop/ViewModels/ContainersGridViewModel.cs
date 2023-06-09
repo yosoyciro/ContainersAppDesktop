@@ -15,6 +15,7 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
 {
     private readonly IObjetosServicio _objetosServicio;
     private readonly IListasServicio _listasServicio;
+    private readonly IMovimientosServicio _movimientosServicio;
 
     [ObservableProperty]
     public DateTime fechaInspec;
@@ -32,6 +33,8 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
     {
         get;
     } = new();
+    public ObservableCollection<Movim> Movims { get; } = new();
+    public ObservableCollection<MovimDTO> MovimsDTO { get; } = new();
     public ObservableCollection<Listas> LstListas { get; } = new ObservableCollection<Listas>();
     public ObservableCollection<SiglasDTO> LstSiglas { get; } = new ObservableCollection<SiglasDTO>();
     public ObservableCollection<ModelosDTO> LstModelos { get; } = new ObservableCollection<ModelosDTO>();
@@ -46,10 +49,14 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
     public ObservableCollection<CablesDTO> LstCables { get; } = new ObservableCollection<CablesDTO>();
     public ObservableCollection<LineasVidaDTO> LstLineasVida { get; } = new ObservableCollection<LineasVidaDTO>();
 
-    public ContainersGridViewModel(IObjetosServicio objetosServicio, IListasServicio listasServicio)
+    public ObservableCollection<TiposMovimientoDTO> LstTiposMovimiento { get; } = new ObservableCollection<TiposMovimientoDTO>();
+    public ObservableCollection<TransportistasDTO> LstTransportistas { get; } = new ObservableCollection<TransportistasDTO>();
+
+    public ContainersGridViewModel(IObjetosServicio objetosServicio, IListasServicio listasServicio, IMovimientosServicio movimientosServicio)
     {
         _objetosServicio = objetosServicio;
         _listasServicio = listasServicio;
+        _movimientosServicio = movimientosServicio;
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -57,7 +64,7 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
         LstListas.Clear();
 
         //Cargo Listas
-        var listas = await _listasServicio.ObtenerListas(false);
+        var listas = await _listasServicio.ObtenerListas();
         if (listas.Any())
         {
             foreach (var item in listas)
@@ -75,7 +82,7 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
 
         //Modelos
         var lstModelos = LstListas.Where(x => x.LISTAS_ID_LISTA == 1100 || x.LISTAS_ID_REG == 1).ToList();
-        foreach (var item in lstSiglas)
+        foreach (var item in lstModelos)
         {
             LstModelos.Add(new ModelosDTO() { OBJ_MODELO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP });
         }
@@ -148,8 +155,8 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
         foreach (var item in lstLineasVida)
         {
             LstLineasVida.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP });
-        }
-        
+        }        
+
         var data = await _objetosServicio.ObtenerObjetos();
         if (data.Any())
         {
@@ -158,50 +165,7 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
                 Source.Add(item);
             }
         }        
-    }    
-
-    //public async void CrearNuevoObjeto()
-    //{
-    //    var nuevoObjeto = new Objetos()
-    //    {
-    //        OBJ_MATRICULA = "NUEVO CONTAINER",
-    //        OBJ_ID_ESTADO_REG = "A",
-    //        OBJ_SIGLAS_LISTA = 1000,
-    //        OBJ_SIGLAS = 1,
-    //        OBJ_MODELO_LISTA = 1100,
-    //        OBJ_MODELO = 1,
-    //        OBJ_ID_OBJETO = 1198,
-    //        OBJ_VARIANTE_LISTA = 1200,
-    //        OBJ_VARIANTE = 1,
-    //        OBJ_TIPO_LISTA = 1300,
-    //        OBJ_TIPO = 1,
-    //        OBJ_INSPEC_CSC = "",
-    //        OBJ_PROPIETARIO_LISTA = 1400,
-    //        OBJ_PROPIETARIO = 1,
-    //        OBJ_TARA_LISTA = 1500,
-    //        OBJ_TARA = 1,
-    //        OBJ_PMP_LISTA = 1600,
-    //        OBJ_PMP = 1,
-    //        OBJ_CARGA_UTIL = 0,
-    //        OBJ_ALTURA_EXTERIOR_LISTA = 1700,
-    //        OBJ_ALTURA_EXTERIOR = 1,
-    //        OBJ_CUELLO_CISNE_LISTA = 1800,
-    //        OBJ_CUELLO_CISNE = 1,
-    //        OBJ_BARRAS_LISTA = 1900,
-    //        OBJ_BARRAS = 1,
-    //        OBJ_CABLES_LISTA = 2000,
-    //        OBJ_CABLES = 1,
-    //        OBJ_LINEA_VIDA_LISTA = 2100,
-    //        OBJ_LINEA_VIDA = 1,
-    //        OBJ_OBSERVACIONES = ""
-    //    };
-
-    //    var result = await _objetosServicio.CrearObjeto(nuevoObjeto);
-    //    //if (result)
-    //    //{
-    //    //    Source.Add(nuevoObjeto);
-    //    //};
-    //}
+    }        
 
     public async void GuardarObjeto(Objetos objeto)
     {
@@ -221,6 +185,45 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
     {
         await _objetosServicio.BorrarObjeto(objeto.OBJ_ID_REG);
         Source.Remove(objeto);
+    }
+
+    public async void CargarMovimientos(Objetos objeto)
+    {
+        MovimsDTO.Clear();
+
+        var data = await _movimientosServicio.ObtenerMovimientos(objeto.OBJ_ID_REG);
+        if (data.Any())
+        {
+            foreach (var item in data)
+            {
+                var movimDTO = new MovimDTO()
+                {
+                    MOVIM_ID_REG = item.MOVIM_ID_REG,
+                    MOVIM_FECHA = item.MOVIM_FECHA,
+                    MOVIM_TIPO_MOVIM = item.MOVIM_TIPO_MOVIM,
+                    MOVIM_TIPO_MOVIM_DESCRIPCION = LstListas.Where(x => x.LISTAS_ID_REG == item.MOVIM_TIPO_MOVIM).FirstOrDefault().LISTAS_ID_LISTA_DESCRIP,                    
+                    MOVIM_PESO = item.MOVIM_PESO,
+                    MOVIM_PESO_DESCRIPCION = LstListas.Where(x => x.LISTAS_ID_REG == item.MOVIM_PESO).FirstOrDefault().LISTAS_ID_LISTA_DESCRIP,
+                    MOVIM_TRANSPORTISTA = item.MOVIM_TRANSPORTISTA,
+                    MOVIM_TRANSPORTISTA_DESCRIPCION = LstListas.Where(x => x.LISTAS_ID_REG == item.MOVIM_TRANSPORTISTA).FirstOrDefault().LISTAS_ID_LISTA_DESCRIP,
+                    MOVIM_CLIENTE = item.MOVIM_CLIENTE,
+                    MOVIM_CLIENTE_DESCRIPCION = LstListas.Where(x => x.LISTAS_ID_REG == item.MOVIM_CLIENTE).FirstOrDefault().LISTAS_ID_LISTA_DESCRIP,
+                    MOVIM_CHOFER = item.MOVIM_CHOFER,
+                    MOVIM_CHOFER_DESCRIPCION = LstListas.Where(x => x.LISTAS_ID_REG == item.MOVIM_CHOFER).FirstOrDefault().LISTAS_ID_LISTA_DESCRIP,
+                    MOVIM_CAMION_ID = item.MOVIM_CAMION_ID,
+                    MOVIM_REMOLQUE_ID = item.MOVIM_REMOLQUE_ID,
+                    MOVIM_ALBARAN_ID = item.MOVIM_ALBARAN_ID,
+                    MOVIM_OBSERVACIONES = item.MOVIM_OBSERVACIONES,
+                    MOVIM_ENTRADA_SALIDA = item.MOVIM_ENTRADA_SALIDA,
+                    MOVIM_ENTRADA_SALIDA_DESCRIPCION = LstListas.Where(x => x.LISTAS_ID_REG == item.MOVIM_ENTRADA_SALIDA).FirstOrDefault().LISTAS_ID_LISTA_DESCRIP,
+                    MOVIM_ALMACEN = item.MOVIM_ALMACEN,
+                    MOVIM_ALMACEN_DESCRIPCION = LstListas.Where(x => x.LISTAS_ID_REG == item.MOVIM_ALMACEN).FirstOrDefault().LISTAS_ID_LISTA_DESCRIP,
+                    MOVIM_FECHA_ACTUALIZACION = item.MOVIM_FECHA_ACTUALIZACION,
+                };
+
+                MovimsDTO.Add(movimDTO);
+            }
+        }
     }
 
     public void OnNavigatedFrom()

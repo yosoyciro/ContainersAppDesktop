@@ -39,6 +39,34 @@
                 SelectionMode="Single"
                 SelectionChanged="DataGrid_SelectionChanged"
                 AlternatingRowBackground="DarkSlateGray">
+                <controls:DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                        <Border>
+                            <StackPanel Margin="20,0,10,10" Padding="5" Spacing="3">
+                                <TextBlock Margin="20" Text="Movimientos del Container"/>
+                                <Grid>
+                                    <controls:DataGrid x:Name="MovimientosGrid" ItemsSource="{Binding ViewModel.MovimsDTO}" AutoGenerateColumns="False">
+                                        <controls:DataGrid.Columns>
+                                            <controls:DataGridTextColumn Header="ID" Binding="{Binding MOVIM_ID_REG}" Width="60"/>
+                                            <controls:DataGridTextColumn Header="Fecha" Binding="{Binding MOVIM_FECHA}" Width="90"/>
+                                            <controls:DataGridTextColumn Header="Tipo Movimiento" Binding="{Binding MOVIM_TIPO_MOVIM_DESCRIPCION}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Peso" Binding="{Binding MOVIM_PESO_DESCRIPCION}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Transportista" Binding="{Binding MOVIM_TRANSPORTISTA_DESCRIPCION}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Cliente" Binding="{Binding MOVIM_CLIENTE_DESCRIPCION}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Chofer" Binding="{Binding MOVIM_CHOFER_DESCRIPCION}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Camión" Binding="{Binding MOVIM_CAMION_ID}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Remolque" Binding="{Binding MOVIM_REMOLQUE_ID}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Albarán" Binding="{Binding MOVIM_ALBARAN_ID}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Observaciones" Binding="{Binding MOVIM_OBSERVACIONES}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Entrada/Salida" Binding="{Binding MOVIM_ENTRADA_SALIDA_DESCRIPCION}" Width="150"/>
+                                            <controls:DataGridTextColumn Header="Almacen" Binding="{Binding MOVIM_ALMACEN_DESCRIPCION}" Width="150"/>
+                                        </controls:DataGrid.Columns>
+                                    </controls:DataGrid>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </controls:DataGrid.RowDetailsTemplate>
                 <controls:DataGrid.Columns>
                     <controls:DataGridTextColumn Header="ID" Binding="{Binding OBJ_ID_REG}" IsReadOnly="True" Visibility="Collapsed"/>
                     <controls:DataGridTextColumn Header="Matrícula"
@@ -111,7 +139,6 @@
                                              Binding="{Binding OBJ_OBSERVACIONES}"/>
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
-
         </Grid>
     </Border>
 </Page>

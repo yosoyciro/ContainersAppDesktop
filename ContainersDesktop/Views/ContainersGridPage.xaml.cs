@@ -2,7 +2,9 @@
 using CommunityToolkit.WinUI.UI.Controls;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.ViewModels;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 
 namespace ContainersDesktop.Views;
 
@@ -100,6 +102,16 @@ public sealed partial class ContainersGridPage : Page
         {
             objetoAgregar = ContainersDataGrid!.SelectedItem as Objetos; //Entity Object
             FechaInspecDatePicker.Date = objetoAgregar!.OBJ_INSPEC_CSC == "" ? DateTime.Now.Date : Convert.ToDateTime(objetoAgregar.OBJ_INSPEC_CSC);
+
+            ViewModel.CargarMovimientos(objetoAgregar);
+            Console.WriteLine("Movims", ViewModel.Movims);
+            var childGrids = FindVisualChildren<DataGrid>(ContainersDataGrid);
+            foreach (DataGrid childGrid in childGrids)
+            {
+                //Console.WriteLine("childs", childGrid);
+                var dataGridMovimientos = childGrid as DataGrid;
+                dataGridMovimientos.ItemsSource = ViewModel.MovimsDTO;
+            }
         }        
     }
 
@@ -108,8 +120,7 @@ public sealed partial class ContainersGridPage : Page
         if (args.NewDate != null)
         {
             objetoAgregar.OBJ_INSPEC_CSC = Convert.ToDateTime(args.NewDate!.Value.Date).ToShortDateString();
-        }
-        
+        }        
     }
 
     private void btnBorrar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -121,6 +132,25 @@ public sealed partial class ContainersGridPage : Page
         catch (Exception ex)
         {
             throw new Exception(ex.Message);
+        }
+    }
+    private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+    {
+        if (depObj != null)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                if (child != null && child is T)
+                {
+                    yield return (T)child;
+                }
+
+                foreach (T childOfChild in FindVisualChildren<T>(child))
+                {
+                    yield return childOfChild;
+                }
+            }
         }
     }
 }

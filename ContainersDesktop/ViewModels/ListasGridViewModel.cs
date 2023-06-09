@@ -16,7 +16,7 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
     private readonly IClaListServicio _claListServicio;
 
     public ObservableCollection<Listas> Source { get; } = new();
-    public List<ClaList> LstClaList { get; } = new();
+    public List<ClaList> LstClaList { get; } = new List<ClaList>();
     public ObservableCollection<ClaListDTO> LstClaListDTO { get; } = new();
     // Sorting implementation using LINQ
     private string _cachedSortedColumn = string.Empty;
@@ -30,6 +30,16 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
     public async void OnNavigatedTo(object parameter)
     {
         Source.Clear();
+        await CargarClaListas();
+        await LlenarSource();
+    }
+
+    public void OnNavigatedFrom()
+    {
+    }
+
+    public async Task<List<ClaList>> CargarClaListas()
+    {
         //ClaList
         LstClaList.Clear();
         var claListListas = await _claListServicio.ObtenerClaListas();
@@ -46,11 +56,7 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
             LstClaListDTO.Add(new ClaListDTO() { LISTAS_ID_LISTA = item.CLALIST_ID_REG, DESCRIPCION = item.CLALIST_DESCRIP });
         }
 
-        await LlenarSource(false);
-    }
-
-    public void OnNavigatedFrom()
-    {
+        return LstClaList; 
     }
 
     public async void GuardarLista(Listas lista)
@@ -65,8 +71,6 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
             await _listasServicio.ActualizarLista(lista);
 
         }
-
-        //await LlenarSource(false);
     }
 
     public async void BorrarLista(Listas lista)
@@ -75,9 +79,9 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
         Source.Remove(lista);
     }
 
-    public async Task LlenarSource(bool verTodos)
+    public async Task LlenarSource()
     {        
-        var data = await _listasServicio.ObtenerListas(verTodos);
+        var data = await _listasServicio.ObtenerListas();
 
         foreach (var item in data.OrderBy(x => x.LISTAS_ID_LISTA).ThenBy(x => x.LISTAS_ID_LISTA_ORDEN))
         {
@@ -140,7 +144,8 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
     public enum FilterOptions
     {
         Todos = -1,
-        Clase_Lista = 0,
+        Solo_Activos = 0,
+        Clase_Lista = 1,
     }
 
     public ObservableCollection<Listas> FilterData(FilterOptions filterBy, string filterValue)
@@ -149,6 +154,11 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
         {
             case FilterOptions.Todos:
                 return new ObservableCollection<Listas>(Source);
+
+            case FilterOptions.Solo_Activos:
+                return new ObservableCollection<Listas>(from item in Source
+                                                               where item.LISTAS_ID_ESTADO_REG == "A"
+                                                               select item);
 
             case FilterOptions.Clase_Lista:
                 return new ObservableCollection<Listas>(from item in Source

@@ -15,7 +15,7 @@ public class ObjetosServicio : IObjetosServicio
         {
             using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
             {
-                db.Open();
+                await db.OpenAsync();
 
                 SqliteCommand updateCommand = new SqliteCommand();
                 updateCommand.Connection = db;

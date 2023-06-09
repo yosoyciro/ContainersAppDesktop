@@ -1,4 +1,5 @@
 ﻿using ContainersDesktop.Core.Contracts.Services;
+using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using Microsoft.Data.Sqlite;
 using Windows.Storage;
@@ -26,7 +27,7 @@ public class ListasServicio : IListasServicio
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA", lista.LISTAS_ID_LISTA);
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_ORDEN", lista.LISTAS_ID_LISTA_ORDEN);
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_DESCRIP", lista.LISTAS_ID_LISTA_DESCRIP);
-                insertCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                insertCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 await insertCommand.ExecuteReaderAsync();
 
@@ -39,7 +40,7 @@ public class ListasServicio : IListasServicio
         }
     }
 
-    public async Task<List<Listas>> ObtenerListas(bool verTodos)
+    public async Task<List<Listas>> ObtenerListas()
     {
         List<Listas> listas = new List<Listas>();
 
@@ -49,21 +50,22 @@ public class ListasServicio : IListasServicio
             db.Open();
 
             SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT LISTAS_ID_REG, LISTAS_ID_ESTADO_REG, LISTAS_ID_LISTA, LISTAS_ID_LISTA_ORDEN, LISTAS_ID_LISTA_DESCRIP FROM LISTAS", db);
+                ("SELECT LISTAS_ID_REG, LISTAS_ID_ESTADO_REG, LISTAS_ID_LISTA, LISTAS_ID_LISTA_ORDEN, LISTAS_ID_LISTA_DESCRIP, LISTAS_FECHA_ACTUALIZACION FROM LISTAS", db);
 
             SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
 
             while (query.Read())
             {
-                if (query.GetString(1) == "A" || verTodos == true)
+                if (query.GetString(1) == "A")
                 {
                     var nuevaLista = new Listas()
-                    {
+                    {                        
                         LISTAS_ID_REG = query.GetInt32(0),
                         LISTAS_ID_ESTADO_REG = query.GetString(1),
                         LISTAS_ID_LISTA = query.GetInt32(2),
                         LISTAS_ID_LISTA_ORDEN = query.GetInt32(3),
                         LISTAS_ID_LISTA_DESCRIP = query.GetString(4),
+                        LISTAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(5)),
                     };
                     listas.Add(nuevaLista);
                 }
@@ -94,7 +96,7 @@ public class ListasServicio : IListasServicio
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA", lista.LISTAS_ID_LISTA);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_ORDEN", lista.LISTAS_ID_LISTA_ORDEN);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_DESCRIP", lista.LISTAS_ID_LISTA_DESCRIP);
-                updateCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                updateCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_REG", lista.LISTAS_ID_REG);
 
                 await updateCommand.ExecuteReaderAsync();
@@ -121,7 +123,7 @@ public class ListasServicio : IListasServicio
                     ("UPDATE LISTAS SET LISTAS_ID_ESTADO_REG = 'B', LISTAS_FECHA_ACTUALIZACION = @CLALIST_FECHA_ACTUALIZACION WHERE LISTAS_ID_REG = @LISTAS_ID_REG", db);
 
                 deleteCommand.Parameters.AddWithValue("@LISTAS_ID_REG", id);
-                deleteCommand.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                deleteCommand.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 SqliteDataReader query = await deleteCommand.ExecuteReaderAsync();
 

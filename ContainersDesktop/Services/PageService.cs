@@ -19,6 +19,7 @@ public class PageService : IPageService
         Configure<ListasGridViewModel, ListasGridPage>();
         Configure<TiposListasGridViewModel, TiposListasGridPage>();
         Configure<SettingsViewModel, SettingsPage>();
+        Configure<DispositivosViewModel, DispositivosPage>();
     }
 
     public Type GetPageType(string key)

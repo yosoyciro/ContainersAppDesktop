@@ -75,6 +75,9 @@ public partial class App : Application
             services.AddTransient<IObjetosServicio, ObjetosServicio>();
             services.AddTransient<IListasServicio, ListasServicio>();
             services.AddTransient<IClaListServicio, ClaListServicio>();
+            services.AddTransient<IDispositivosServicio, DispositivosServicio>();
+            services.AddTransient<IMovimientosServicio, MovimientosServicio>();
+            services.AddTransient<AzureStorageManagement>();
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
@@ -89,6 +92,8 @@ public partial class App : Application
             services.AddTransient<MainPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ShellViewModel>();
+            services.AddTransient<DispositivosViewModel>();
+            services.AddTransient<DispositivosPage>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

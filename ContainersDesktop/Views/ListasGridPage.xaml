@@ -49,12 +49,13 @@
                 SelectionMode="Single"
                 SelectionChanged="ListaGrid_SelectionChanged"
                 AlternatingRowBackground="DarkSlateGray"
-                CanUserSortColumns="True"
+                CanUserSortColumns="True"                
                 Sorting="ListaGrid_Sorting">
                 <controls:DataGrid.Resources>
                     <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                 </controls:DataGrid.Resources>
                 <controls:DataGrid.Columns>
+                    <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_REG}" Header="ID" IsReadOnly="True" />
                     <controls:DataGridComboBoxColumn Header="Clase Lista"
                                                      Tag="ClaseLista"
                                                  Binding="{Binding LISTAS_ID_LISTA}"      
@@ -62,6 +63,7 @@
                                                  DisplayMemberPath="DESCRIPCION"/>
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_LISTA_ORDEN}" Header="Orden" />
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_LISTA_DESCRIP}" Header="Descripción" />
+                    <controls:DataGridTextColumn Binding="{Binding LISTAS_FECHA_ACTUALIZACION, Mode=TwoWay}" Header="Fecha Actualización" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
         </Grid>

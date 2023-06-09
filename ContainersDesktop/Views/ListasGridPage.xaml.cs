@@ -6,6 +6,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System.IO;
+using ContainersDesktop.Contracts.Services;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace ContainersDesktop.Views;
 
@@ -23,11 +25,16 @@ public sealed partial class ListasGridPage : Page
     {
         ViewModel = App.GetService<ListasGridViewModel>();
         InitializeComponent();
-    }
+
+        //var comboBoxColumnClaseLista = ListaGrid.Columns.FirstOrDefault(x => x.Tag?.Equals("ClaseLista") == true) as DataGridComboBoxColumn;
+        //if (comboBoxColumnClaseLista != null)
+        //{
+        //    comboBoxColumnClaseLista.ItemsSource = await ViewModel.CargarClaListas();
+        //}
+    }    
 
     private void btnAgregar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        //ViewModel.CrearNuevoObjeto();
         var nuevoRegistro = new Listas()
         {
             LISTAS_ID_ESTADO_REG = "A",
@@ -81,6 +88,9 @@ public sealed partial class ListasGridPage : Page
         {
             SelectedLista = ListaGrid!.SelectedItem as Listas;
             ViewModel.GuardarLista(SelectedLista);
+            
+            //var previousSortedColumn = ViewModel.CachedSortedColumn;
+            //ListaGrid.ItemsSource = ViewModel.SortData(previousSortedColumn, );
         }
         catch (Exception ex)
         {
@@ -111,18 +121,18 @@ public sealed partial class ListasGridPage : Page
     private void ListaGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
     {
         // Clear previous sorted column if we start sorting a different column
-        //string previousSortedColumn = ViewModel.CachedSortedColumn;
-        //if (previousSortedColumn != string.Empty)
-        //{
-        //    foreach (DataGridColumn dataGridColumn in ListaGrid.Columns)
-        //    {
-        //        if (dataGridColumn.Tag != null && dataGridColumn.Tag.ToString() == previousSortedColumn &&
-        //            (e.Column.Tag == null || previousSortedColumn != e.Column.Tag.ToString()))
-        //        {
-        //            dataGridColumn.SortDirection = null;
-        //        }
-        //    }
-        //}
+        var previousSortedColumn = ViewModel.CachedSortedColumn;
+        if (previousSortedColumn != string.Empty)
+        {
+            foreach (DataGridColumn dataGridColumn in ListaGrid.Columns)
+            {
+                if (dataGridColumn.Tag != null && dataGridColumn.Tag.ToString() == previousSortedColumn &&
+                    (e.Column.Tag == null || previousSortedColumn != e.Column.Tag.ToString()))
+                {
+                    dataGridColumn.SortDirection = null;
+                }
+            }
+        }
 
         // Toggle clicked column's sorting method
         if (e.Column.Tag != null)
@@ -142,15 +152,20 @@ public sealed partial class ListasGridPage : Page
                 ListaGrid.ItemsSource = ViewModel.FilterData(ListasGridViewModel.FilterOptions.Todos, "1900");
                 e.Column.SortDirection = null;
             }
-        }
-
-        
+        }        
     }
 
-    private async void chkVerTodos_Click(object sender, RoutedEventArgs e)
+    private void chkVerTodos_Click(object sender, RoutedEventArgs e)
     {
-        bool verTodos = chkVerTodos.IsChecked!.Value == true ? true : false;
-        ViewModel.Source.Clear();
-        await ViewModel.LlenarSource(verTodos);
-    }
+        var verTodos = chkVerTodos.IsChecked!.Value == true ? true : false;
+
+        if (verTodos)
+        {
+            ListaGrid.ItemsSource = ViewModel.FilterData(ListasGridViewModel.FilterOptions.Todos, "");
+        }        
+        else
+        {
+            ListaGrid.ItemsSource = ViewModel.FilterData(ListasGridViewModel.FilterOptions.Solo_Activos, "");
+        }
+    }    
 }

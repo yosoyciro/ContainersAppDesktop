@@ -1,12 +1,20 @@
 ﻿using ContainersDesktop.Core.Models;
 using Microsoft.Data.Sqlite;
-using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Windows.Media.Playlists;
 using Windows.Storage;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ContainersDesktop.Core.Persistencia;
 public static class DataAccess
 {
+    //private readonly IConfiguration _configuration;
+
+    //public DataAccess(IConfiguration configuration)
+    //{
+    //    _configuration = configuration;
+    //}
+
     public static async void InicializarBase()
     {
         await ApplicationData.Current.LocalFolder.CreateFileAsync("Containers.db", CreationCollisionOption.OpenIfExists);
@@ -17,7 +25,12 @@ public static class DataAccess
         try
         {
             #region ClaList
-            var claListTableCommand = "CREATE TABLE IF NOT EXISTS CLALIST (CLALIST_ID_REG INTEGER NOT NULL UNIQUE, CLALIST_ID_ESTADO_REG TEXT NOT NULL DEFAULT 'A', CLALIST_DESCRIP TEXT NOT NULL DEFAULT '.', PRIMARY KEY(CLALIST_ID_REG));";
+
+            var claListTableCommand = "CREATE TABLE IF NOT EXISTS CLALIST (CLALIST_ID_REG INTEGER NOT NULL UNIQUE, " +
+                " CLALIST_ID_ESTADO_REG TEXT NOT NULL DEFAULT 'A', " +
+                " CLALIST_DESCRIP TEXT NOT NULL DEFAULT '.', " +
+                " CLALIST_FECHA_ACTUALIZACION TEXT NOT NULL DEFAULT '.'," +
+                " PRIMARY KEY(CLALIST_ID_REG));";
 
             SqliteCommand claListCreateTable = new SqliteCommand(claListTableCommand, db);
 
@@ -52,8 +65,8 @@ public static class DataAccess
                 new ClaList() { CLALIST_ID_REG = 3600, CLALIST_ID_ESTADO_REG = "A", CLALIST_DESCRIP = "ALMACEN" },
             };
 
-                var insertCmd = "INSERT INTO CLALIST (CLALIST_ID_REG, CLALIST_ID_ESTADO_REG, CLALIST_DESCRIP) " +
-                    " VALUES(@CLALIST_ID_REG, @CLALIST_ID_ESTADO_REG, @CLALIST_DESCRIP)";
+                var insertCmd = "INSERT INTO CLALIST (CLALIST_ID_REG, CLALIST_ID_ESTADO_REG, CLALIST_DESCRIP, CLALIST_FECHA_ACTUALIZACION) " +
+                    " VALUES(@CLALIST_ID_REG, @CLALIST_ID_ESTADO_REG, @CLALIST_DESCRIP, @CLALIST_FECHA_ACTUALIZACION)";
                 foreach (ClaList claList in clasListLista)
                 {
                     using (var cmd = new SqliteCommand(insertCmd, db))
@@ -61,6 +74,7 @@ public static class DataAccess
                         cmd.Parameters.AddWithValue("@CLALIST_ID_REG", claList.CLALIST_ID_REG);
                         cmd.Parameters.AddWithValue("@CLALIST_ID_ESTADO_REG", claList.CLALIST_ID_ESTADO_REG);
                         cmd.Parameters.AddWithValue("@CLALIST_DESCRIP", claList.CLALIST_DESCRIP);
+                        cmd.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -74,6 +88,7 @@ public static class DataAccess
             "LISTAS_ID_LISTA INTEGER NOT NULL DEFAULT 0, " +
             "LISTAS_ID_LISTA_ORDEN INTEGER NOT NULL DEFAULT 0, " +
             "LISTAS_ID_LISTA_DESCRIP TEXT NOT NULL DEFAULT ''," +
+            "LISTAS_FECHA_ACTUALIZACION TEXT NOT NULL DEFAULT '.'," +
             "FOREIGN KEY(LISTAS_ID_LISTA) REFERENCES CLALIST (CLALIST_ID_REG), PRIMARY KEY(LISTAS_ID_REG AUTOINCREMENT));";
 
             SqliteCommand listasCreateTable = new SqliteCommand(listasTableCommand, db);
@@ -109,8 +124,8 @@ public static class DataAccess
                     new Listas() { LISTAS_ID_REG = 20, LISTAS_ID_ESTADO_REG = "A", LISTAS_ID_LISTA = 3600, LISTAS_ID_LISTA_ORDEN = 0, LISTAS_ID_LISTA_DESCRIP = "NO ASIGNADO" },
                 };
 
-                var insertCmd = "INSERT INTO LISTAS (LISTAS_ID_REG, LISTAS_ID_ESTADO_REG, LISTAS_ID_LISTA, LISTAS_ID_LISTA_ORDEN, LISTAS_ID_LISTA_DESCRIP) " +
-                    " VALUES(@LISTAS_ID_REG, @LISTAS_ID_ESTADO_REG, @LISTAS_ID_LISTA, @LISTAS_ID_LISTA_ORDEN ,@LISTAS_ID_LISTA_DESCRIP)";
+                var insertCmd = "INSERT INTO LISTAS (LISTAS_ID_REG, LISTAS_ID_ESTADO_REG, LISTAS_ID_LISTA, LISTAS_ID_LISTA_ORDEN, LISTAS_ID_LISTA_DESCRIP, LISTAS_FECHA_ACTUALIZACION) " +
+                    " VALUES(@LISTAS_ID_REG, @LISTAS_ID_ESTADO_REG, @LISTAS_ID_LISTA, @LISTAS_ID_LISTA_ORDEN ,@LISTAS_ID_LISTA_DESCRIP, @LISTAS_FECHA_ACTUALIZACION)";
                 foreach (Listas lista in listas)
                 {
                     using (var cmd = new SqliteCommand(insertCmd, db))
@@ -120,6 +135,7 @@ public static class DataAccess
                         cmd.Parameters.AddWithValue("@LISTAS_ID_LISTA", lista.LISTAS_ID_LISTA);
                         cmd.Parameters.AddWithValue("@LISTAS_ID_LISTA_ORDEN", lista.LISTAS_ID_LISTA_ORDEN);
                         cmd.Parameters.AddWithValue("@LISTAS_ID_LISTA_DESCRIP", lista.LISTAS_ID_LISTA_DESCRIP);
+                        cmd.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -160,6 +176,7 @@ public static class DataAccess
                 "OBJ_LINEA_VIDA_LISTA  INTEGER NOT NULL DEFAULT 2100," +
                 "OBJ_LINEA_VIDA    INTEGER NOT NULL DEFAULT 1," +
                 "OBJ_OBSERVACIONES TEXT NOT NULL DEFAULT '.'," +
+                "OBJ_FECHA_ACTUALIZACION TEXT NOT NULL DEFAULT '.'," +
                 "PRIMARY KEY(OBJ_ID_REG AUTOINCREMENT)," +
                 "FOREIGN KEY(OBJ_MODELO) REFERENCES LISTAS(LISTAS_ID_REG)," +
                 "FOREIGN KEY(OBJ_TIPO) REFERENCES LISTAS(LISTAS_ID_REG)," +
@@ -178,48 +195,122 @@ public static class DataAccess
 
             await objetosCreateTable.ExecuteReaderAsync();
 
-            //db.Open();
+            #endregion
 
-            //SqliteCommand insertCommand = new SqliteCommand();
-            //insertCommand.Connection = db;
+            #region Movimientos
 
-            //insertCommand.CommandText = "INSERT INTO OBJETOS VALUES (@OBJ_ID_REG, @OBJ_MATRICULA, @OBJ_ID_ESTADO_REG, @OBJ_SIGLAS_LISTA, @OBJ_SIGLAS, @OBJ_MODELO_LISTA, " +
-            //    "@OBJ_MODELO, @OBJ_ID_OBJETO, @OBJ_VARIANTE_LISTA, @OBJ_VARIANTE, @OBJ_TIPO_LISTA, @OBJ_TIPO, @OBJ_INSPEC_CSC, @OBJ_PROPIETARIO_LISTA, @OBJ_PROPIETARIO, " +
-            //    "@OBJ_TARA_LISTA, @OBJ_TARA, @OBJ_PMP_LISTA, @OBJ_PMP, @OBJ_CARGA_UTIL, @OBJ_ALTURA_EXTERIOR_LISTA, @OBJ_ALTURA_EXTERIOR, @OBJ_CUELLO_CISNE_LISTA, " +
-            //    "@OBJ_CUELLO_CISNE, @OBJ_BARRAS_LISTA, @OBJ_BARRAS, @OBJ_CABLES_LISTA, @OBJ_CABLES, @OBJ_LINEA_VIDA_LISTA, @OBJ_LINEA_VIDA, @OBJ_OBSERVACIONES);";
-            //insertCommand.Parameters.AddWithValue("@OBJ_ID_REG", objeto.OBJ_ID_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_MATRICULA", objeto.OBJ_MATRICULA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_ID_ESTADO_REG", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_SIGLAS_LISTA", objeto.OBJ_SIGLAS_LISTA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_SIGLAS", objeto.OBJ_SIGLAS);
-            //insertCommand.Parameters.AddWithValue("@OBJ_MODELO_LISTA", objeto.OBJ_MODELO_LISTA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_MODELO", objeto.OBJ_TARA_LISTA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_ID_OBJETO", objeto.OBJ_TARA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_VARIANTE_LISTA", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_VARIANTE", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_TIPO_LISTA", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_TIPO", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_INSPEC_CSC", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_PROPIETARIO_LISTA", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_PROPIETARIO", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_TARA_LISTA", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_TARA", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_PMP_LISTA", objeto.OBJ_MATRICULA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_PMP", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_CARGA_UTIL", objeto.OBJ_SIGLAS_LISTA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_ALTURA_EXTERIOR_LISTA", objeto.OBJ_SIGLAS);
-            //insertCommand.Parameters.AddWithValue("@OBJ_ALTURA_EXTERIOR", objeto.OBJ_MODELO_LISTA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_CUELLO_CISNE_LISTA", objeto.OBJ_TARA_LISTA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_CUELLO_CISNE", objeto.OBJ_TARA);
-            //insertCommand.Parameters.AddWithValue("@OBJ_BARRAS_LISTA", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_BARRAS", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_CABLES_LISTA", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_CABLES", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_LINEA_VIDA_LISTA", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_LINEA_VIDA", objeto.OBJ_ID_ESTADO_REG);
-            //insertCommand.Parameters.AddWithValue("@OBJ_OBSERVACIONES", objeto.OBJ_ID_ESTADO_REG);
+            var movimientosTableCommand = "CREATE TABLE IF NOT EXISTS MOVIM (MOVIM_ID_REG INTEGER NOT NULL UNIQUE, " +
+                "MOVIM_ID_REG_MOBILE INTEGER NOT NULL, " +
+                "MOVIM_ID_ESTADO_REG   TEXT NOT NULL DEFAULT 'A', " +
+	            "MOVIM_FECHA TEXT NOT NULL DEFAULT 'AAAA-MM-DD', "                               +
+	            "MOVIM_ID_OBJETO  INTEGER NOT NULL DEFAULT 1, "                                     +
+	            "MOVIM_TIPO_MOVIM_LISTA  INTEGER NOT NULL DEFAULT 3000, "                         +
+	            "MOVIM_TIPO_MOVIM  INTEGER NOT NULL DEFAULT 1,       "                              +
+	            "MOVIM_PESO_LISTA  INTEGER NOT NULL DEFAULT 3100,    "                              +
+	            "MOVIM_PESO  INTEGER NOT NULL DEFAULT 1,     "                                    +
+	            "MOVIM_TRANSPORTISTA_LISTA INTEGER NOT NULL DEFAULT 3200, "                         +
+	            "MOVIM_TRANSPORTISTA   INTEGER NOT NULL DEFAULT 1, "                                +
+	            "MOVIM_CLIENTE_LISTA   INTEGER NOT NULL DEFAULT 3300, "                             +
+	            "MOVIM_CLIENTE INTEGER NOT NULL DEFAULT 1,  "                                       +
+	            "MOVIM_CHOFER_LISTA   INTEGER NOT NULL DEFAULT 3400, "                             +
+	            "MOVIM_CHOFER INTEGER NOT NULL DEFAULT 1,  "                                       +
+	            "MOVIM_CAMION_ID   TEXT NOT NULL DEFAULT '.', "                                      +
+	            "MOVIM_REMOLQUE_ID TEXT NOT NULL DEFAULT '.', "                                     +
+	            "MOVIM_ALBARAN_ID  TEXT NOT NULL DEFAULT '.', "                                     +
+	            "MOVIM_OBSERVACIONES   TEXT NOT NULL DEFAULT '.', "                                 +
+	            "MOVIM_ENTRADA_SALIDA_LISTA    INTEGER NOT NULL DEFAULT 3500, "                     +
+	            "MOVIM_ENTRADA_SALIDA  INTEGER NOT NULL DEFAULT 1, "                                +
+	            "MOVIM_ALMACEN_LISTA   INTEGER NOT NULL DEFAULT 3600, "                             +
+	            "MOVIM_ALMACEN INTEGER NOT NULL DEFAULT 1, "                                        +
+	            "MOVIM_PDF TEXT NOT NULL DEFAULT '.',  "                                            +
+                "MOVIM_FECHA_ACTUALIZACION TEXT NOT NULL DEFAULT '.', " +
+	            "FOREIGN KEY(MOVIM_CLIENTE) REFERENCES LISTAS(LISTAS_ID_REG), "                +
+	            "FOREIGN KEY(MOVIM_CHOFER) REFERENCES LISTAS(LISTAS_ID_REG), "                 +
+	            "FOREIGN KEY(MOVIM_ALMACEN) REFERENCES LISTAS(LISTAS_ID_REG), "                +
+	            "FOREIGN KEY(MOVIM_ENTRADA_SALIDA) REFERENCES LISTAS(LISTAS_ID_REG), "         +
+	            "FOREIGN KEY(MOVIM_TRANSPORTISTA) REFERENCES LISTAS(LISTAS_ID_REG), "          +
+	            "FOREIGN KEY(MOVIM_PESO) REFERENCES LISTAS(LISTAS_ID_REG),  "                  +
+	            "FOREIGN KEY(MOVIM_ID_OBJETO) REFERENCES OBJETOS(OBJ_ID_REG), "                 +
+	            "PRIMARY KEY(MOVIM_ID_REG AUTOINCREMENT), "                                         +
+	            "FOREIGN KEY(MOVIM_TIPO_MOVIM) REFERENCES LISTAS(LISTAS_ID_REG))";
 
-            //await insertCommand.ExecuteReaderAsync();
+            SqliteCommand movimientosCreateTable = new SqliteCommand(movimientosTableCommand, db);
+
+            await movimientosCreateTable.ExecuteReaderAsync();
+
+            SqliteCommand movimientosSelectCommand = new SqliteCommand("SELECT MOVIM_ID_REG FROM MOVIM", db);
+
+            SqliteDataReader movimientosQuery = await movimientosSelectCommand.ExecuteReaderAsync();
+            if (!movimientosQuery.HasRows)
+            {
+                // Crear una lista de objetos Movim
+                List<Movim> listaMovim = new List<Movim>();
+                // Agregar objetos a la lista
+                listaMovim.Add(new Movim() { MOVIM_ID_ESTADO_REG = "A",MOVIM_FECHA = "2023-06-09", MOVIM_ID_OBJETO = 1,MOVIM_TIPO_MOVIM_LISTA = 3000,MOVIM_TIPO_MOVIM = 28,MOVIM_PESO_LISTA = 3100,MOVIM_PESO = 1,MOVIM_TRANSPORTISTA_LISTA = 3200,MOVIM_TRANSPORTISTA = 1,MOVIM_CLIENTE_LISTA = 3300,MOVIM_CLIENTE = 1,MOVIM_CHOFER_LISTA = 3400,MOVIM_CHOFER = 1,MOVIM_CAMION_ID = "Camion 1",MOVIM_REMOLQUE_ID = "Remolque 1",MOVIM_ALBARAN_ID = "Albaran 1",MOVIM_OBSERVACIONES = "Observaciones 1",MOVIM_ENTRADA_SALIDA_LISTA = 3500,MOVIM_ENTRADA_SALIDA = 1,MOVIM_ALMACEN_LISTA = 3600,MOVIM_ALMACEN = 1,MOVIM_PDF = "" });
+                listaMovim.Add(new Movim() { MOVIM_ID_ESTADO_REG = "A", MOVIM_FECHA = "2023-06-09", MOVIM_ID_OBJETO = 1, MOVIM_TIPO_MOVIM_LISTA = 3000, MOVIM_TIPO_MOVIM = 28, MOVIM_PESO_LISTA = 3100, MOVIM_PESO = 1, MOVIM_TRANSPORTISTA_LISTA = 3200, MOVIM_TRANSPORTISTA = 1, MOVIM_CLIENTE_LISTA = 3300, MOVIM_CLIENTE = 1, MOVIM_CHOFER_LISTA = 3400, MOVIM_CHOFER = 1, MOVIM_CAMION_ID = "Camion 1", MOVIM_REMOLQUE_ID = "Remolque 1", MOVIM_ALBARAN_ID = "Albaran 1", MOVIM_OBSERVACIONES = "Observaciones 1", MOVIM_ENTRADA_SALIDA_LISTA = 3500, MOVIM_ENTRADA_SALIDA = 1, MOVIM_ALMACEN_LISTA = 3600, MOVIM_ALMACEN = 1, MOVIM_PDF = "" });
+                listaMovim.Add(new Movim() { MOVIM_ID_ESTADO_REG = "A",MOVIM_FECHA = "2023-06-09", MOVIM_ID_OBJETO = 2,MOVIM_TIPO_MOVIM_LISTA = 3000,MOVIM_TIPO_MOVIM = 29,MOVIM_PESO_LISTA = 3100,MOVIM_PESO = 1,MOVIM_TRANSPORTISTA_LISTA = 3200,MOVIM_TRANSPORTISTA = 1,MOVIM_CLIENTE_LISTA = 3300,MOVIM_CLIENTE = 1,MOVIM_CHOFER_LISTA = 3400,MOVIM_CHOFER = 1,MOVIM_CAMION_ID = "Camion 2",MOVIM_REMOLQUE_ID = "Remolque 2",MOVIM_ALBARAN_ID = "Albaran 2",MOVIM_OBSERVACIONES = "Observaciones 2",MOVIM_ENTRADA_SALIDA_LISTA = 3500,MOVIM_ENTRADA_SALIDA = 1,MOVIM_ALMACEN_LISTA = 3600,MOVIM_ALMACEN = 1,MOVIM_PDF = "" });
+                listaMovim.Add(new Movim() { MOVIM_ID_ESTADO_REG = "A", MOVIM_FECHA = "2023-06-09", MOVIM_ID_OBJETO = 2, MOVIM_TIPO_MOVIM_LISTA = 3000, MOVIM_TIPO_MOVIM = 29, MOVIM_PESO_LISTA = 3100, MOVIM_PESO = 1, MOVIM_TRANSPORTISTA_LISTA = 3200, MOVIM_TRANSPORTISTA = 1, MOVIM_CLIENTE_LISTA = 3300, MOVIM_CLIENTE = 1, MOVIM_CHOFER_LISTA = 3400, MOVIM_CHOFER = 1, MOVIM_CAMION_ID = "Camion 2", MOVIM_REMOLQUE_ID = "Remolque 2", MOVIM_ALBARAN_ID = "Albaran 2", MOVIM_OBSERVACIONES = "Observaciones 2", MOVIM_ENTRADA_SALIDA_LISTA = 3500, MOVIM_ENTRADA_SALIDA = 1, MOVIM_ALMACEN_LISTA = 3600, MOVIM_ALMACEN = 1, MOVIM_PDF = "" });
+
+                var insertMovimCmd = "INSERT INTO MOVIM (MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, " +
+                    "MOVIM_PESO_LISTA, MOVIM_PESO, MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, " +
+                    "MOVIM_CHOFER, MOVIM_CAMION_ID, MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, " +
+                    "MOVIM_ALMACEN_LISTA, MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION) " +
+                    "VALUES(@MOVIM_ID_ESTADO_REG, @MOVIM_FECHA, @MOVIM_ID_OBJETO, @MOVIM_TIPO_MOVIM_LISTA, @MOVIM_TIPO_MOVIM, " +
+                    "@MOVIM_PESO_LISTA, @MOVIM_PESO, @MOVIM_TRANSPORTISTA_LISTA, @MOVIM_TRANSPORTISTA, @MOVIM_CLIENTE_LISTA, @MOVIM_CLIENTE, @MOVIM_CHOFER_LISTA, " +
+                    "@MOVIM_CHOFER, @MOVIM_CAMION_ID, @MOVIM_REMOLQUE_ID, @MOVIM_ALBARAN_ID, @MOVIM_OBSERVACIONES, @MOVIM_ENTRADA_SALIDA_LISTA, @MOVIM_ENTRADA_SALIDA, " +
+                    "@MOVIM_ALMACEN_LISTA, @MOVIM_ALMACEN, @MOVIM_PDF, @MOVIM_FECHA_ACTUALIZACION)";
+                foreach (Movim movim in listaMovim)
+                {
+                    using (var cmd = new SqliteCommand(insertMovimCmd, db))
+                    {
+                        cmd.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", movim.MOVIM_ID_ESTADO_REG);
+                        cmd.Parameters.AddWithValue("@MOVIM_FECHA", DateTime.Now.ToShortDateString());
+                        cmd.Parameters.AddWithValue("@MOVIM_ID_OBJETO", movim.MOVIM_ID_OBJETO);
+                        cmd.Parameters.AddWithValue("@MOVIM_TIPO_MOVIM_LISTA", movim.MOVIM_TIPO_MOVIM_LISTA);
+                        cmd.Parameters.AddWithValue("@MOVIM_TIPO_MOVIM", movim.MOVIM_TIPO_MOVIM);
+                        cmd.Parameters.AddWithValue("@MOVIM_PESO_LISTA", movim.MOVIM_PESO_LISTA);
+                        cmd.Parameters.AddWithValue("@MOVIM_PESO", movim.MOVIM_PESO);
+                        cmd.Parameters.AddWithValue("@MOVIM_TRANSPORTISTA_LISTA", movim.MOVIM_TRANSPORTISTA_LISTA);
+                        cmd.Parameters.AddWithValue("@MOVIM_TRANSPORTISTA", movim.MOVIM_TRANSPORTISTA);
+                        cmd.Parameters.AddWithValue("@MOVIM_CLIENTE_LISTA", movim.MOVIM_CLIENTE_LISTA);
+                        cmd.Parameters.AddWithValue("@MOVIM_CLIENTE", movim.MOVIM_CLIENTE);
+                        cmd.Parameters.AddWithValue("@MOVIM_CHOFER_LISTA", movim.MOVIM_CHOFER_LISTA);
+                        cmd.Parameters.AddWithValue("@MOVIM_CHOFER", movim.MOVIM_CHOFER);
+                        cmd.Parameters.AddWithValue("@MOVIM_CAMION_ID", movim.MOVIM_CAMION_ID);
+                        cmd.Parameters.AddWithValue("@MOVIM_ALBARAN_ID", movim.MOVIM_ALBARAN_ID);
+                        cmd.Parameters.AddWithValue("@MOVIM_REMOLQUE_ID", movim.MOVIM_REMOLQUE_ID);
+                        cmd.Parameters.AddWithValue("@MOVIM_OBSERVACIONES", movim.MOVIM_OBSERVACIONES);
+                        cmd.Parameters.AddWithValue("@MOVIM_ENTRADA_SALIDA_LISTA", movim.MOVIM_ENTRADA_SALIDA_LISTA);
+                        cmd.Parameters.AddWithValue("@MOVIM_ENTRADA_SALIDA", movim.MOVIM_ENTRADA_SALIDA);                        
+                        cmd.Parameters.AddWithValue("@MOVIM_ALMACEN_LISTA", movim.MOVIM_ALMACEN_LISTA);
+                        cmd.Parameters.AddWithValue("@MOVIM_ALMACEN", movim.MOVIM_ALMACEN);
+                        cmd.Parameters.AddWithValue("@MOVIM_PDF", movim.MOVIM_PDF);
+                        cmd.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Dispositivos
+            var dispositivosTableCommand = "CREATE TABLE IF NOT EXISTS DISPOSITIVOS(DISPOSITIVOS_ID_REG INTEGER NOT NULL UNIQUE, " +
+                "DISPOSITIVOS_ID_ESTADO_REG TEXT NOT NULL DEFAULT 'A', DISPOSITIVOS_DESCRIP TEXT NOT NULL DEFAULT '.', " +
+                "DISPOSITIVOS_CONTAINER TEXT NOT NULL DEFAULT '.', DISPOSITIVOS_FECHA_ACTUALIZACION TEXT NOT NULL DEFAULT '.', PRIMARY KEY(DISPOSITIVOS_ID_REG));";
+
+            SqliteCommand dispositivosCreateTable = new SqliteCommand(dispositivosTableCommand, db);
+
+            await dispositivosCreateTable.ExecuteReaderAsync();
+
+            #endregion
+
+            #region Historial Sincronizaciones
+            var histSincTableCommand = "CREATE TABLE IF NOT EXISTS HIST_SINC(HIST_SINC_ID_REG INTEGER NOT NULL UNIQUE, " +
+                "HIST_SINC_FECHA_HORA TEXT NOT NULL DEFAULT '.', PRIMARY KEY(HIST_SINC_ID_REG));";
+
+            SqliteCommand histSincCreateTable = new SqliteCommand(histSincTableCommand, db);
+
+            await histSincCreateTable.ExecuteReaderAsync();
             #endregion
         }
         catch (Exception ex) 

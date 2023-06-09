@@ -62,7 +62,7 @@ public class ClaListServicio : IClaListServicio
 
                 insertCommand.Parameters.AddWithValue("@CLALIST_DESCRIP", claList.CLALIST_DESCRIP);
                 insertCommand.Parameters.AddWithValue("@CLALIST_ID_ESTADO_REG", "A");
-                insertCommand.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                insertCommand.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"));
 
                 await insertCommand.ExecuteReaderAsync();
 

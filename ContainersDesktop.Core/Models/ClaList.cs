@@ -1,6 +1,9 @@
-﻿namespace ContainersDesktop.Core.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ContainersDesktop.Core.Models;
 public class ClaList
 {
+    [Key]
     public int CLALIST_ID_REG
     {
         get;
