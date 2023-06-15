@@ -20,6 +20,7 @@ public class PageService : IPageService
         Configure<TiposListasGridViewModel, TiposListasGridPage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DispositivosViewModel, DispositivosPage>();
+        Configure<TiposListaDetailsViewModel, TiposListaDetailsPage>();
     }
 
     public Type GetPageType(string key)

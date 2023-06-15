@@ -17,6 +17,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\DispositivosPage.xaml" />
+    <None Remove="Views\ListaPorTipoPage.xaml" />
+    <None Remove="Views\TiposListaDetailsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +41,12 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\ListaPorTipoPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\TiposListaDetailsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\DispositivosPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

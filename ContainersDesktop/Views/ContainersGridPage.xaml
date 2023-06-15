@@ -40,7 +40,7 @@
                 SelectionChanged="DataGrid_SelectionChanged"
                 AlternatingRowBackground="DarkSlateGray">
                 <controls:DataGrid.RowDetailsTemplate>
-                <DataTemplate>
+                    <DataTemplate>
                         <Border>
                             <StackPanel Margin="20,0,10,10" Padding="5" Spacing="3">
                                 <TextBlock Margin="20" Text="Movimientos del Container"/>

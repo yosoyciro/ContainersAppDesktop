@@ -94,6 +94,10 @@ public partial class App : Application
             services.AddTransient<ShellViewModel>();
             services.AddTransient<DispositivosViewModel>();
             services.AddTransient<DispositivosPage>();
+            services.AddTransient<TiposListaDetailsViewModel>();
+            services.AddTransient<TiposListaDetailsPage>();
+            services.AddTransient<ListaPorTipoViewModel>();
+            services.AddTransient<ListaPorTipoPage>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

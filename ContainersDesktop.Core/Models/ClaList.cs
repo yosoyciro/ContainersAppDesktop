@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ContainersDesktop.Core.Models;
-public class ClaList
+public class ClaList : ObservableObject
 {
     [Key]
     public int CLALIST_ID_REG
@@ -26,5 +27,10 @@ public class ClaList
     {
         get;
         set;
+    }
+
+    public bool ApplyFilter(string filter)
+    {
+        return CLALIST_DESCRIP.Contains(filter, StringComparison.InvariantCultureIgnoreCase);
     }
 }

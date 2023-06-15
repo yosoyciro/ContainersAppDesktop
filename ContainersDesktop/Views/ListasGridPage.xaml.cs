@@ -1,13 +1,8 @@
 ﻿using CommunityToolkit.WinUI.UI.Controls;
-using System.Collections.ObjectModel;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using System.IO;
-using ContainersDesktop.Contracts.Services;
-using Microsoft.UI.Xaml.Navigation;
 
 namespace ContainersDesktop.Views;
 
@@ -21,16 +16,10 @@ public sealed partial class ListasGridPage : Page
         get;
     }
 
-    public ListasGridPage()
+    public ListasGridPage(ClaList claList)
     {
         ViewModel = App.GetService<ListasGridViewModel>();
         InitializeComponent();
-
-        //var comboBoxColumnClaseLista = ListaGrid.Columns.FirstOrDefault(x => x.Tag?.Equals("ClaseLista") == true) as DataGridComboBoxColumn;
-        //if (comboBoxColumnClaseLista != null)
-        //{
-        //    comboBoxColumnClaseLista.ItemsSource = await ViewModel.CargarClaListas();
-        //}
     }    
 
     private void btnAgregar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)

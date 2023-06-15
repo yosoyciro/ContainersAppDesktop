@@ -1,4 +1,6 @@
-﻿namespace ContainersDesktop.Core.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace ContainersDesktop.Core.Models;
 public class Listas
 {
     public int LISTAS_ID_REG

@@ -29,9 +29,9 @@ public partial class ListasGridViewModel : ObservableRecipient, INavigationAware
 
     public async void OnNavigatedTo(object parameter)
     {
-        Source.Clear();
-        await CargarClaListas();
-        await LlenarSource();
+        //Source.Clear();
+        //await CargarClaListas();
+        //await LlenarSource();
     }
 
     public void OnNavigatedFrom()
