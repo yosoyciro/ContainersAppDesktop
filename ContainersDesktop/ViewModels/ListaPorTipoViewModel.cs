@@ -2,13 +2,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
+using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Services;
 
 namespace ContainersDesktop.ViewModels;
 
 public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAware
-{
+{    
     public ObservableCollection<Listas> Source {
         get;
     } = new ();
@@ -61,5 +62,12 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
         lista.LISTAS_ID_LISTA = claLista.CLALIST_ID_REG;
         await _listasServicio.CrearLista(lista);
         Source.Add(lista);
+    }
+
+    public async Task ActualizarLista(Listas lista)
+    {        
+        await _listasServicio.ActualizarLista(lista);
+        var i = Source.IndexOf(lista);
+        Source[i].LISTAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(DateTime.Now.Date.ToShortDateString());
     }
 }

@@ -32,40 +32,13 @@ public sealed partial class ListaPorTipoPage : Page
         };
         ViewModel.Source.Add(nuevoRegistro);
     }
-
-    private async void btnBorrar_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (ListaGrid!.SelectedItem != null)
-            {
-                //SelectedLista = ListaGrid!.SelectedItem as Listas;
-                //ViewModel.BorrarLista(SelectedLista);
-            }
-        }
-        catch (Exception ex)
-        {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Error";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = ex.Message;
-
-            await dialog.ShowAsync();
-        }
-    }
     
     private async void ListaGrid_RowEditEnding(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridRowEditEndingEventArgs e)
     {
         Console.WriteLine(e.Row.DataContext);
         try
         {
-            ViewModel.SelectedLista = ListaGrid!.SelectedItem as Listas;
-            //ViewModel.GuardarLista(SelectedLista);
+            await ViewModel.ActualizarLista(ListaGrid!.SelectedItem as Listas);
 
             //var previousSortedColumn = ViewModel.CachedSortedColumn;
             //ListaGrid.ItemsSource = ViewModel.SortData(previousSortedColumn, );
@@ -127,8 +100,18 @@ public sealed partial class ListaPorTipoPage : Page
         await ViewModel.AgregarLista(AgregarDialog.DataContext as Listas);
     }
 
+    private async Task ActualizarRegistro()
+    {
+        await ViewModel.ActualizarLista(AgregarDialog.DataContext as Listas);
+    }
+
     private void Volver()
     {
         Frame.GoBack();
+    }
+
+    private void ListaGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ViewModel.SelectedLista = ListaGrid!.SelectedItem as Listas;
     }
 }

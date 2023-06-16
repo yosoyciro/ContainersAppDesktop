@@ -29,32 +29,7 @@ public sealed partial class TiposListaDetailsPage : Page
             ClaListListView.ItemsSource = ViewModel.Items;
         }
     }
-
-    private void btnListas_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        if (ViewModel.SelectedClaList != null)
-        {
-            Frame.Navigate(typeof(ListasGridPage));
-        }
-    }
-
-    private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (ViewModel.SelectedClaList != null)
-            {
-
-            }
-        }
-        catch (Exception ex)
-        {
-
-            throw;
-        }
-
-    }
-
+    
     public ICommand NuevoCommand => new AsyncRelayCommand(OpenNewDialog);
     public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);
     public ICommand AgregarCommand => new AsyncRelayCommand(AgregarRegistro);

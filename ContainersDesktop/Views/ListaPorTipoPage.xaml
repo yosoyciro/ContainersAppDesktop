@@ -27,7 +27,7 @@
                               Label="Agregar" />
                 <AppBarButton Command="{x:Bind BorrarCommand}"
                               CommandParameter="{x:Bind ViewModel.SelectedLista, Mode=OneWay}"
-                              IsEnabled="{x:Bind ViewModel.HasCurrent}" 
+                              IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
                               Icon="Delete"
                               Label="Borrar"/>
             </CommandBar>
@@ -37,7 +37,7 @@
                 Grid.Row="1"
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"
-                SelectedItem="{x:Bind ViewModel.SelectedLista}"
+                SelectionChanged="ListaGrid_SelectionChanged"
                 ItemsSource="{x:Bind ViewModel.Source}"
                 RowEditEnding="ListaGrid_RowEditEnding" 
                 SelectionMode="Single"

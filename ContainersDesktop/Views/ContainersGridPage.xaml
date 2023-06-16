@@ -14,28 +14,25 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Button
-                Name="btnAgregar"
-                Grid.Row="0"
-                Margin="0, 0, 0, 20"
-                Content="Agregar Container" 
-                Click="btnAgregar_Click"
-            />
-
-            <Button
-                Name="btnBorrar"
-                Grid.Row="0"
-                Margin="170, 0, 0, 20"
-                Content="Borrar Container" 
-                Click="btnBorrar_Click"
-            />
+            <CommandBar Background="Transparent"
+                        DefaultLabelPosition="Right"
+                        Grid.Column="1">
+                <AppBarButton Command="{x:Bind NuevoCommand, Mode=OneWay}"
+                              Icon="Add"
+                              Label="Agregar" />
+                <AppBarButton Command="{x:Bind BorrarCommand}"
+                              CommandParameter="{x:Bind ViewModel.SelectedObjeto, Mode=OneWay}"
+                              IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                              Icon="Delete"
+                              Label="Borrar"/>
+            </CommandBar>
 
             <controls:DataGrid 
                 Name="ContainersDataGrid"
                 Grid.Row="1" 
                 ItemsSource="{x:Bind ViewModel.Source}" 
                 AutoGenerateColumns="False"
-                BeginningEdit="DataGrid_BeginningEdit" CellEditEnding="DataGrid_CellEditEnding" RowEditEnding="DataGrid_RowEditEnding" PreparingCellForEdit="DataGrid_PreparingCellForEdit"
+                RowEditEnding="DataGrid_RowEditEnding"
                 SelectionMode="Single"
                 SelectionChanged="DataGrid_SelectionChanged"
                 AlternatingRowBackground="DarkSlateGray">
@@ -139,6 +136,184 @@
                                              Binding="{Binding OBJ_OBSERVACIONES}"/>
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
+
+            <ContentDialog x:Name="AgregarDialog"
+                       PrimaryButtonText="Aceptar"
+                           IsPrimaryButtonEnabled="{x:Bind ViewModel.ObjetosViewModel.HasErrors, Mode=OneWay}"
+                       CloseButtonText="Cancelar"
+                           Width="1200">
+                <RelativePanel HorizontalAlignment="Stretch">
+                    <TextBox x:Name="TxtMatricula"
+                                Header="Matricula"                        
+                                Text="{x:Bind ViewModel.ObjetosViewModel.Matricula, Mode=TwoWay}"
+                                Width="200"
+                                 Margin="4"
+                             />
+                    <Grid>
+                        <SymbolIcon Symbol="Important"
+                                    Foreground="Red"
+                                    Visibility="{x:Bind ViewModel.ObjetosViewModel.HasErrors, Mode=OneWay}"
+                                    HorizontalAlignment="Right"
+                                    Margin="0 8">
+                            <ToolTipService.ToolTip>
+                                <TextBlock Text="{x:Bind ViewModel.ObjetosViewModel.Errors, Mode=OneWay}"
+                                           Foreground="Red" />
+                            </ToolTipService.ToolTip>
+                        </SymbolIcon>
+                    </Grid>
+                    <NumberBox x:Name="TxtIdModelo"
+                                Header="ID Modelo"                                                              
+                                Width="150"
+                             Text="{Binding OBJ_ID_MODELO, Mode=TwoWay}"
+                             RelativePanel.RightOf="TxtMatricula"
+                                Margin="4"
+                    />
+                    
+                    <ComboBox x:Name="ComboSiglas"
+                                Header="Siglas"
+                                ItemsSource="{x:Bind ViewModel.LstSiglas, Mode=OneWay}"
+                                SelectedItem="{Binding OBJ_SIGLAS}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="TxtMatricula"
+                                Width="150"
+                                Margin="4"
+                    />
+                    <ComboBox x:Name="ComboModelo"
+                                Header="Modelo"
+                                ItemsSource="{x:Bind ViewModel.LstModelos, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_MODELO}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="TxtMatricula"
+                                RelativePanel.RightOf="ComboSiglas"
+                                Width="150"
+                                Margin="4"
+                    />
+                    <ComboBox x:Name="ComboVariante"
+                                Header="Variante"
+                                ItemsSource="{x:Bind ViewModel.LstVariantes, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_VARIANTE}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="TxtMatricula"
+                                RelativePanel.RightOf="ComboModelo"
+                                Width="150"
+                                Margin="4"
+                    />
+                    
+                    <ComboBox x:Name="ComboTipo"
+                                Header="Tipo"
+                                ItemsSource="{x:Bind ViewModel.LstTipos, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_TIPO}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboSiglas"
+                                Width="150"
+                                Margin="4"
+                    />
+                    <CalendarDatePicker x:Name="TxtFechaCSC"
+                                Header="Fecha CSC"        
+                                DateChanged="dpDate_DateChanged"
+                                RelativePanel.Below="ComboSiglas"
+                                RelativePanel.RightOf="ComboTipo"
+                                Width="150"
+                                Margin="4"
+                    />
+                    <ComboBox x:Name="ComboPropietario"
+                                Header="Propietario"
+                                ItemsSource="{x:Bind ViewModel.LstPropietarios, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_PROPIETARIO}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboSiglas"
+                                RelativePanel.RightOf="TxtFechaCSC"
+                                Width="150"
+                                Margin="4"
+                    />
+
+                    <ComboBox x:Name="ComboTara"
+                                Header="TARA"
+                                ItemsSource="{x:Bind ViewModel.LstTara, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_TARA}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboTipo"
+                                Width="150"
+                                Margin="4"
+                    />
+                    <ComboBox x:Name="ComboPMP"
+                                Header="PMP"
+                                ItemsSource="{x:Bind ViewModel.LstModelos, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_PMP}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboTipo"
+                                RelativePanel.RightOf="ComboTara"
+                                Width="150"
+                                Margin="4"
+                    />
+                    <TextBox x:Name="TxtCargaUtil"
+                                Header="Carga Util"                                
+                                RelativePanel.Below="ComboTipo"
+                                RelativePanel.RightOf="ComboPMP"
+                                Width="150"
+                                Margin="4"
+                    />
+
+                    <ComboBox x:Name="ComboAlturaExterior"
+                                Header="Alt. Exterior"
+                                ItemsSource="{x:Bind ViewModel.LstAlturasExterior, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_ALTURA_EXTERIOR}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboTara"
+                                Width="150"
+                                Margin="4"
+                    />
+                    <ComboBox x:Name="ComboCuelloCisne"
+                                Header="Cuello Cisne"
+                                ItemsSource="{x:Bind ViewModel.LstCuellosCisne, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_CUELLO_CISNE}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboTara"
+                                RelativePanel.RightOf="ComboAlturaExterior"
+                                Width="150"
+                                Margin="4"
+                    />
+                    <ComboBox x:Name="ComboBarras"
+                                Header="Barras"
+                                ItemsSource="{x:Bind ViewModel.LstBarras, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_BARRAS}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboTara"
+                                RelativePanel.RightOf="ComboCuelloCisne"
+                                Width="150"
+                                Margin="4"
+                    />
+
+                    <ComboBox x:Name="ComboCables"
+                                Header="Cables"
+                                ItemsSource="{x:Bind ViewModel.LstCables, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_CABLES}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboAlturaExterior"
+                                Width="150"
+                                Margin="4"
+                    />
+                    <ComboBox x:Name="ComboLineasVida"
+                                Header="Lineas Vida"
+                                ItemsSource="{x:Bind ViewModel.LstLineasVida, Mode=OneWay}"
+                              SelectedItem="{Binding OBJ_LINEA_VIDA}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboAlturaExterior"
+                                RelativePanel.RightOf="ComboCables"
+                                Width="150"
+                                Margin="4"
+                    />
+
+                    <TextBox x:Name="TxtObservaciones"
+                                Header="Observaciones"
+                                Text="{Binding OBJ_OBSERVACIONES, Mode=TwoWay}"
+                                TextWrapping="Wrap"
+                                RelativePanel.Below="ComboCables"
+                                Width="500"
+                                Height="100"/>
+
+                </RelativePanel>
+            </ContentDialog>
         </Grid>
     </Border>
 </Page>

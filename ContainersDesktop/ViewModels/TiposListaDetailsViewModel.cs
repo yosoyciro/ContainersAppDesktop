@@ -11,7 +11,7 @@ public partial class TiposListaDetailsViewModel : ObservableRecipient, INavigati
     [ObservableProperty]
     public string filter;
     public ObservableCollection<ClaList> Items { get; set; } = new();
-    //public ClaList  = new();
+
     private ClaList current;
     public ClaList SelectedClaList
     {

@@ -11,6 +11,17 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IMovimientosServicio _movimientosServicio;
     private readonly AzureStorageManagement _azureStorageManagement;
+    private Dispositivos current;
+    public Dispositivos SelectedDispositivo
+    {
+        get => current;
+        set
+        {
+            SetProperty(ref current, value);
+            OnPropertyChanged(nameof(HasCurrent));
+        }
+    }
+    public bool HasCurrent => current is not null;
 
     public ObservableCollection<Dispositivos> Source { get; } = new();
 
@@ -36,22 +47,24 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
         }
     }
 
-    public async void GuardarDispositivo(Dispositivos dispositivo)
+    public async Task CrearDispositivo(Dispositivos dispositivo)
     {
-        if (dispositivo != null && dispositivo.DISPOSITIVOS_ID_REG == 0)
-        {
-            await _dispositivosServicio.CrearDispositivo(dispositivo);
-        }
-        else
-        {
-            await _dispositivosServicio.ActualizarDispositivo(dispositivo);
-        }
+        
+        await _dispositivosServicio.CrearDispositivo(dispositivo);
+        Source.Add(dispositivo);       
     }
 
-    public async void BorrarDispositivo(Dispositivos dispositivo)
+    public async Task ActualizarDispositivo(Dispositivos dispositivo)
     {
-        await _dispositivosServicio.BorrarDispositivo(dispositivo.DISPOSITIVOS_ID_REG);
-        Source.Remove(dispositivo);
+        await _dispositivosServicio.ActualizarDispositivo(dispositivo);
+        //var i = Source.IndexOf(dispositivo);
+        //Source[i] = dispositivo;
+    }
+
+    public async Task BorrarDispositivo()
+    {
+        await _dispositivosServicio.BorrarDispositivo(SelectedDispositivo.DISPOSITIVOS_ID_REG);
+        Source.Remove(SelectedDispositivo);
     }
 
     public async Task<bool> SincronizarInformacion()

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ContainersDesktop.Core.Models;
-public class Objetos : ObservableObject
+public class Objetos : ObservableValidator
 {
     [Key]
     public int OBJ_ID_REG

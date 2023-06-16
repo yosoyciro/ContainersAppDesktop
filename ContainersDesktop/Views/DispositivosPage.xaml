@@ -15,30 +15,22 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Button
-                Name="btnAgregar"
-                Grid.Row="0"
-                Margin="0, 0, 0, 20"
-                Content="Agregar" 
-                Click="btnAgregar_Click"
-            />
-
-            <Button
-                Name="btnBorrar"
-                Grid.Row="0"
-                Margin="100, 0, 0, 20"
-                Content="Borrar" 
-                Click="btnBorrar_Click"
-            />
-
-            <Button
-                Name="btnSincronizar"
-                Grid.Row="0"
-                Margin="180, 0, 0, 20"
-                Content="Sincronizar" 
-                Click="btnSincronizar_Click"
-            />
-
+            <CommandBar Background="Transparent"
+                        DefaultLabelPosition="Right"
+                        Grid.Column="1">
+                <AppBarButton Command="{x:Bind NuevoCommand, Mode=OneWay}"
+                              Icon="Add"
+                              Label="Agregar" />
+                <AppBarButton Command="{x:Bind BorrarCommand}"
+                              CommandParameter="{x:Bind ViewModel.SelectedDispositivo, Mode=OneWay}"
+                              IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                              Icon="Delete"
+                              Label="Borrar"/>
+                <AppBarButton Command="{x:Bind SincronizarCommand}"
+                              Icon="Sync"
+                              Label="Sincronizar"/>
+            </CommandBar>
+            
             <controls:DataGrid
                 Name="DispositivosGrid"
                 Grid.Row="1"
@@ -46,9 +38,9 @@
                 GridLinesVisibility="Horizontal"
                 SelectedItem="{Binding SelectedDispositivo}"
                 ItemsSource="{x:Bind ViewModel.Source}"
-                BeginningEdit="ClaListGrid_BeginningEdit" CellEditEnding="ClaListGrid_CellEditEnding" RowEditEnding="ClaListGrid_RowEditEnding" PreparingCellForEdit="ClaListGrid_PreparingCellForEdit"
+                RowEditEnding="DispositivosGrid_RowEditEnding"
                 SelectionMode="Single"
-                SelectionChanged="ClaListGrid_SelectionChanged"
+                SelectionChanged="DispositivosGrid_SelectionChanged"
                 AlternatingRowBackground="DarkSlateGray">
                 <controls:DataGrid.Resources>
                     <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
@@ -59,6 +51,24 @@
                     <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_CONTAINER}" Header="Cloud Container" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
+
+            <ContentDialog x:Name="AgregarDialog"
+                            PrimaryButtonText="Aceptar"
+                            CloseButtonText="Cancelar"
+                            >
+                <RelativePanel HorizontalAlignment="Stretch">
+                    <TextBox x:Name="Dispositivo"
+                        Header="Dispositivo"
+                        Text="{Binding DISPOSITIVOS_DESCRIP, Mode=TwoWay}"
+                             MaxWidth="500"/>
+                    <TextBox x:Name="CloudContainer"
+                        Header="Cloud Container"
+                        Text="{Binding DISPOSITIVOS_CONTAINER, Mode=TwoWay}"
+                        RelativePanel.RightOf="Dispositivo"
+                        RelativePanel.AlignRightWithPanel="True"
+                        Margin="0,0,0,10" />
+                </RelativePanel>
+            </ContentDialog>
         </Grid>
     </Border>
 </Page>

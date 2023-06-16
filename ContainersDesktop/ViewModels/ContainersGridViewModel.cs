@@ -1,34 +1,40 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.DTO;
-using Microsoft.UI.Xaml;
-using Windows.Media.Playlists;
 
 namespace ContainersDesktop.ViewModels;
 
-public partial class ContainersGridViewModel : ObservableRecipient, INavigationAware
+public partial class ContainersGridViewModel : ObservableValidator, INavigationAware
 {
+    private ObjetosViewModel _objetosViewModel = new();
+    public ObjetosViewModel ObjetosViewModel => _objetosViewModel;
+
+
     private readonly IObjetosServicio _objetosServicio;
     private readonly IListasServicio _listasServicio;
     private readonly IMovimientosServicio _movimientosServicio;
 
     [ObservableProperty]
     public DateTime fechaInspec;
-    //private ObservableCollection<Objetos> _source = new();
-    //public ObservableCollection<Objetos> Source
-    //{
-    //    get => _source;
-    //    set
-    //    {
-    //        SetProperty(ref _source, value, true);
-    //        OnPropertyChanged(nameof(Source));
-    //    }
-    //}
+
+    private Objetos current;
+    public Objetos SelectedObjeto
+    {
+        get => current;
+        set
+        {
+            SetProperty(ref current, value);
+            OnPropertyChanged(nameof(HasCurrent));
+        }
+    }
+    public bool HasCurrent => current is not null;
+
     public ObservableCollection<Objetos> Source
     {
         get;
@@ -167,24 +173,22 @@ public partial class ContainersGridViewModel : ObservableRecipient, INavigationA
         }        
     }        
 
-    public async void GuardarObjeto(Objetos objeto)
+    public async Task CrearObjeto(Objetos objeto)
     {
-        if (objeto != null && objeto.OBJ_ID_REG == 0)
-        //var result = await _objetosServicio.ObtenerObjetoPorId(objeto.OBJ_ID_REG);
-        {
-            await _objetosServicio.CrearObjeto(objeto);
-        }
-        else
-        {
-            await _objetosServicio.ActualizarObjeto(objeto);
-        }
-        
+        await _objetosServicio.CrearObjeto(objeto);
     }
 
-    public async void BorrarObjeto(Objetos objeto)
+    public async Task ActualizarObjeto(Objetos objeto)
     {
-        await _objetosServicio.BorrarObjeto(objeto.OBJ_ID_REG);
-        Source.Remove(objeto);
+        await _objetosServicio.ActualizarObjeto(objeto);
+        var i = Source.IndexOf(objeto);
+        Source[i] = objeto;
+    }
+
+    public async Task BorrarObjeto()
+    {
+        await _objetosServicio.BorrarObjeto(SelectedObjeto.OBJ_ID_REG);
+        Source.Remove(SelectedObjeto);
     }
 
     public async void CargarMovimientos(Objetos objeto)

@@ -1,15 +1,13 @@
+using CommunityToolkit.Mvvm.Input;
+using System.Windows.Input;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace ContainersDesktop.Views;
 public sealed partial class DispositivosPage : Page
-{
-    private Dispositivos SelectedDispositivo = new();
+{    
     public DispositivosViewModel ViewModel
     {
         get;
@@ -38,8 +36,8 @@ public sealed partial class DispositivosPage : Page
         {
             if (DispositivosGrid!.SelectedItem != null)
             {
-                SelectedDispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
-                ViewModel.BorrarDispositivo(SelectedDispositivo);
+                ViewModel.SelectedDispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
+                ViewModel.BorrarDispositivo();
             }
         }
         catch (Exception ex)
@@ -56,52 +54,9 @@ public sealed partial class DispositivosPage : Page
 
             await dialog.ShowAsync();
         }
-    }
-
-    private void ClaListGrid_BeginningEdit(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridBeginningEditEventArgs e)
-    {
-
-    }
-
-    private void ClaListGrid_CellEditEnding(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridCellEditEndingEventArgs e)
-    {
-
-    }
-
-    private async void ClaListGrid_RowEditEnding(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridRowEditEndingEventArgs e)
-    {
-        try
-        {
-            SelectedDispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
-            ViewModel.GuardarDispositivo(SelectedDispositivo);
-        }
-        catch (Exception ex)
-        {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Error";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = ex.Message;
-
-            await dialog.ShowAsync();
-        }
-    }
-
-    private void ClaListGrid_PreparingCellForEdit(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridPreparingCellForEditEventArgs e)
-    {
-
-    }
-
-    private void ClaListGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-
-    }
-
-    private async void btnSincronizar_Click(object sender, RoutedEventArgs e)
+    }   
+    
+    private async Task SincronizarDatos()
     {
         try
         {
@@ -119,10 +74,77 @@ public sealed partial class DispositivosPage : Page
 
             await dialog.ShowAsync();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-
             throw;
-        }        
+        }
+    }
+
+    public ICommand NuevoCommand => new AsyncRelayCommand(OpenNewDialog);
+    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarDispositivo);
+    public ICommand AgregarCommand => new AsyncRelayCommand(AgregarDispositivo);
+    public ICommand SincronizarCommand => new AsyncRelayCommand(SincronizarDatos);
+
+    private async Task OpenNewDialog()
+    {
+        AgregarDialog.Title = "Nuevo dispositivo";
+        AgregarDialog.PrimaryButtonText = "Agregar";
+        AgregarDialog.PrimaryButtonCommand = AgregarCommand;
+        AgregarDialog.DataContext = new Dispositivos();
+        await AgregarDialog.ShowAsync();
+    }
+
+    private async Task BorrarDispositivo()
+    {
+        try
+        {
+            await ViewModel.BorrarDispositivo();
+        }
+        catch (Exception ex)
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Error";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = ex.Message;
+
+            await dialog.ShowAsync();
+        }
+    }
+
+    private async Task AgregarDispositivo()
+    {
+        await ViewModel.CrearDispositivo(AgregarDialog.DataContext as Dispositivos);
+    }
+
+    private async void DispositivosGrid_RowEditEnding(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridRowEditEndingEventArgs e)
+    {
+        try
+        {
+            await ViewModel.ActualizarDispositivo(DispositivosGrid!.SelectedItem as Dispositivos);
+        }
+        catch (Exception ex)
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Error";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = ex.Message;
+
+            await dialog.ShowAsync();
+        }
+    }
+
+    private void DispositivosGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ViewModel.SelectedDispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
     }
 }
