@@ -186,4 +186,10 @@ public class MovimDTO
         get;
         set;
     }
+
+    public string MOVIM_ID_DISPOSITIVO
+    {
+        get;
+        set;
+    }
 }

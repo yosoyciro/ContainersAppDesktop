@@ -60,13 +60,14 @@
                     <TextBox x:Name="Dispositivo"
                         Header="Dispositivo"
                         Text="{Binding DISPOSITIVOS_DESCRIP, Mode=TwoWay}"
-                             MaxWidth="500"/>
+                             Width="300"/>
                     <TextBox x:Name="CloudContainer"
                         Header="Cloud Container"
                         Text="{Binding DISPOSITIVOS_CONTAINER, Mode=TwoWay}"
-                        RelativePanel.RightOf="Dispositivo"
+                        RelativePanel.Below="Dispositivo"
                         RelativePanel.AlignRightWithPanel="True"
-                        Margin="0,0,0,10" />
+                        Width="300" 
+                        Margin="0,10,0,0"/>
                 </RelativePanel>
             </ContentDialog>
         </Grid>

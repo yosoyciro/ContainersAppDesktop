@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d">
-
+    
     <Border>
         <Grid>
             <Grid.RowDefinitions>
@@ -137,11 +137,10 @@
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
 
-            <ContentDialog x:Name="AgregarDialog"
-                       PrimaryButtonText="Aceptar"
-                           IsPrimaryButtonEnabled="{x:Bind ViewModel.ObjetosViewModel.HasErrors, Mode=OneWay}"
-                       CloseButtonText="Cancelar"
-                           Width="1200">
+            <ContentDialog  x:Name="AgregarDialog"
+                            PrimaryButtonText="Aceptar"                            
+                            CloseButtonText="Cancelar"
+                            Width="1200">
                 <RelativePanel HorizontalAlignment="Stretch">
                     <TextBox x:Name="TxtMatricula"
                                 Header="Matricula"                        
@@ -149,18 +148,6 @@
                                 Width="200"
                                  Margin="4"
                              />
-                    <Grid>
-                        <SymbolIcon Symbol="Important"
-                                    Foreground="Red"
-                                    Visibility="{x:Bind ViewModel.ObjetosViewModel.HasErrors, Mode=OneWay}"
-                                    HorizontalAlignment="Right"
-                                    Margin="0 8">
-                            <ToolTipService.ToolTip>
-                                <TextBlock Text="{x:Bind ViewModel.ObjetosViewModel.Errors, Mode=OneWay}"
-                                           Foreground="Red" />
-                            </ToolTipService.ToolTip>
-                        </SymbolIcon>
-                    </Grid>
                     <NumberBox x:Name="TxtIdModelo"
                                 Header="ID Modelo"                                                              
                                 Width="150"
@@ -209,7 +196,8 @@
                                 Margin="4"
                     />
                     <CalendarDatePicker x:Name="TxtFechaCSC"
-                                Header="Fecha CSC"        
+                                Header="Fecha CSC"      
+                                PlaceholderText="Elija una fecha"
                                 DateChanged="dpDate_DateChanged"
                                 RelativePanel.Below="ComboSiglas"
                                 RelativePanel.RightOf="ComboTipo"
@@ -312,6 +300,18 @@
                                 Width="500"
                                 Height="100"/>
 
+                    <Grid RelativePanel.Below="TxtObservaciones">
+                        <SymbolIcon Symbol="ReportHacked"
+                                    Foreground="Red"
+                                    Visibility="{x:Bind ViewModel.ObjetosViewModel.HasErrors, Mode=OneWay}"
+                                    HorizontalAlignment="Right"
+                                    Margin="0 8">
+                            <ToolTipService.ToolTip>
+                                <TextBlock Text="{x:Bind ViewModel.ObjetosViewModel.Errors, Mode=OneWay}"
+                                           Foreground="Red" />
+                            </ToolTipService.ToolTip>
+                        </SymbolIcon>
+                    </Grid>
                 </RelativePanel>
             </ContentDialog>
         </Grid>

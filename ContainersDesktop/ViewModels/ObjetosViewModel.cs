@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ContainersDesktop.ViewModels;
 
@@ -13,18 +10,6 @@ public class ObjetosViewModel : ObservableValidator
 {
     #region Properties para dar de alta un container
     private string _matricula;
-
-    [Required(ErrorMessage = "La Matrícula es requerida")]
-    [MinLength(5, ErrorMessage = "La Matrícula debe tener un mínimo de 5 caracteres")]
-    public string Matricula
-    {
-        get => _matricula;
-        set => SetProperty(ref _matricula, value, true);
-    }
-
-    public string Errors => string.Join(Environment.NewLine, from ValidationResult e in GetErrors(null) select e.ErrorMessage);
-
-    #endregion
 
     public ObjetosViewModel()
     {
@@ -38,6 +23,19 @@ public class ObjetosViewModel : ObservableValidator
         PropertyChanged -= Matricula_PropertyChanged;
     }
 
+    [Required(ErrorMessage = "La Matrícula es requerida")]
+    [MinLength(5, ErrorMessage = "La Matrícula debe tener un mínimo de 5 caracteres")]
+    public string Matricula
+    {
+        get => _matricula;
+        set => SetProperty(ref _matricula, value, true);
+    }
+
+    public string Errors => string.Join(Environment.NewLine, from ValidationResult e in GetErrors(null) select e.ErrorMessage);
+    //public ICommand ValidateCommand => new RelayCommand(() => ValidateAllProperties());
+
+    #endregion
+
     #region Property value change
     private void Matricula_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
@@ -49,7 +47,7 @@ public class ObjetosViewModel : ObservableValidator
 
     private void Matricula_ErrorsChanged(object sender, DataErrorsChangedEventArgs e)
     {
-        OnPropertyChanged(nameof(Errors));
+        OnPropertyChanged(nameof(HasErrors));
     }
     #endregion
 }

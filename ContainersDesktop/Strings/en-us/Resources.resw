@@ -171,4 +171,7 @@
   <data name="Shell_TiposListaDetails.Content" xml:space="preserve">
     <value>Listas</value>
   </data>
+  <data name="Shell_Movimientos.Content" xml:space="preserve">
+    <value>Movimientos</value>
+  </data>
 </root>

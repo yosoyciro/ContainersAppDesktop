@@ -98,6 +98,8 @@ public partial class App : Application
             services.AddTransient<TiposListaDetailsPage>();
             services.AddTransient<ListaPorTipoViewModel>();
             services.AddTransient<ListaPorTipoPage>();
+            services.AddTransient<MovimientosViewModel>();
+            services.AddTransient<MovimientosPage>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

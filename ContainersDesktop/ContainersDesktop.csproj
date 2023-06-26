@@ -18,6 +18,7 @@
   <ItemGroup>
     <None Remove="Views\DispositivosPage.xaml" />
     <None Remove="Views\ListaPorTipoPage.xaml" />
+    <None Remove="Views\MovimientosPage.xaml" />
     <None Remove="Views\TiposListaDetailsPage.xaml" />
   </ItemGroup>
 
@@ -59,4 +60,12 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Views\MovimientosPage.xaml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Remove="Views\MovimientosPage.xaml" />
+  </ItemGroup>
 </Project>

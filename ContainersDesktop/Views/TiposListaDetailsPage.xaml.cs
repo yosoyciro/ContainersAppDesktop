@@ -75,4 +75,15 @@ public sealed partial class TiposListaDetailsPage : Page
     {
         Frame.Navigate(typeof(ListaPorTipoPage), ViewModel.SelectedClaList);
     }
+
+    private void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+        {
+            if (sender.Text == "")
+            {
+                ClaListListView.ItemsSource = ViewModel.Items;
+            }
+        }
+    }
 }

@@ -120,7 +120,7 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
                 if (dbDescarga != string.Empty)
                 {
                     //TODO - Proceso e incorporo los movimientos
-                    await _movimientosServicio.SincronizarMovimientos(dbDescarga);
+                    await _movimientosServicio.SincronizarMovimientos(dbDescarga, item.DISPOSITIVOS_ID_REG);
 
                     if (File.Exists(dbDescarga))
                     {

@@ -21,6 +21,7 @@ public class PageService : IPageService
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DispositivosViewModel, DispositivosPage>();
         Configure<TiposListaDetailsViewModel, TiposListaDetailsPage>();
+        Configure<MovimientosViewModel, MovimientosPage>();
     }
 
     public Type GetPageType(string key)

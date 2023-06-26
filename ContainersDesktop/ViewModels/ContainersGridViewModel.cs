@@ -174,8 +174,8 @@ public partial class ContainersGridViewModel : ObservableValidator, INavigationA
     }        
 
     public async Task CrearObjeto(Objetos objeto)
-    {
-        await _objetosServicio.CrearObjeto(objeto);
+    {    
+        await _objetosServicio.CrearObjeto(objeto);        
     }
 
     public async Task ActualizarObjeto(Objetos objeto)
@@ -195,7 +195,7 @@ public partial class ContainersGridViewModel : ObservableValidator, INavigationA
     {
         MovimsDTO.Clear();
 
-        var data = await _movimientosServicio.ObtenerMovimientos(objeto.OBJ_ID_REG);
+        var data = await _movimientosServicio.ObtenerMovimientosObjeto(objeto.OBJ_ID_REG);
         if (data.Any())
         {
             foreach (var item in data)

@@ -16,6 +16,12 @@ public class Movim
         set;
     }
 
+    public int MOVIM_ID_DISPOSITIVO
+    {
+        get;
+        set;
+    }
+
     public string MOVIM_ID_ESTADO_REG
     {
         get;

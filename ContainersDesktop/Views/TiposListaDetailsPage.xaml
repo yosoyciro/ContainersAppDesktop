@@ -30,6 +30,7 @@
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
             <AutoSuggestBox QuerySubmitted="SearchBox_QuerySubmitted"
+                            TextChanged="AutoSuggestBox_TextChanged"                            
                             QueryIcon="Find"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"/>
@@ -72,7 +73,8 @@
                          Header="Descripción"
                          HorizontalAlignment="Stretch"
                          Text="{Binding CLALIST_DESCRIP, Mode=TwoWay}"
-                         Margin="4" />
+                         Margin="4" 
+                         Width="300"/>
             </RelativePanel>
         </ContentDialog>
     </Grid>
