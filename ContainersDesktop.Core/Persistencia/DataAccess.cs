@@ -303,7 +303,9 @@ public static class DataAccess
 
             #region Historial Sincronizaciones
             var histSincTableCommand = "CREATE TABLE IF NOT EXISTS HIST_SINC(HIST_SINC_ID_REG INTEGER NOT NULL UNIQUE, " +
-                "HIST_SINC_FECHA_HORA TEXT NOT NULL DEFAULT '.', PRIMARY KEY(HIST_SINC_ID_REG));";
+                "HIST_SINC_FECHA_HORA_INICIO TEXT NOT NULL DEFAULT '.', HIST_SINC_FECHA_HORA_INICIO TEXT NOT NULL DEFAULT '.', " +
+                "HIST_SINC_DISPOSITIVO_ORIGEN INTEGER NOT NULL, HIST_SINC_RESULTADO  INTEGER NOT NULL, " +
+                "PRIMARY KEY(HIST_SINC_ID_REG));";
 
             SqliteCommand histSincCreateTable = new SqliteCommand(histSincTableCommand, db);
 

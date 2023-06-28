@@ -24,12 +24,14 @@ public partial class ShellViewModel : ObservableRecipient
     {
         get;
     }
+    public LoginViewModel _loginViewModel;
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
+    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, LoginViewModel loginViewModel)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
+        _loginViewModel = loginViewModel;
     }
 
     private void OnNavigated(object sender, NavigationEventArgs e)

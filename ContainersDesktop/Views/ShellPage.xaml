@@ -27,6 +27,7 @@
         </Grid>
         <NavigationView
             x:Name="NavigationViewControl"
+            IsPaneVisible="False"
             Canvas.ZIndex="0"
             IsBackButtonVisible="Visible"
             IsBackEnabled="{x:Bind ViewModel.IsBackEnabled, Mode=OneWay}"

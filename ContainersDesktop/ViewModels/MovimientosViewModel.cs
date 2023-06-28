@@ -11,6 +11,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     private readonly IMovimientosServicio _movimientosServicio;
     private readonly IListasServicio _listasServicio;
     private readonly IDispositivosServicio _dispositivosServicio;
+    private readonly IObjetosServicio _objetosServicio;
 
     private Movim current;
     public Movim Current
@@ -28,14 +29,16 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     {
         get;
     } = new();
-    public ObservableCollection<Listas> LstListas { get; } = new ObservableCollection<Listas>();
-    public ObservableCollection<Dispositivos> LstDispositivos { get; } = new ObservableCollection<Dispositivos>();
+    private ObservableCollection<Listas> LstListas { get; } = new();
+    private ObservableCollection<Dispositivos> LstDispositivos { get; } = new();
+    private ObservableCollection<Objetos> LstObjetos { get; } = new();
 
-    public MovimientosViewModel(IMovimientosServicio movimientosServicio, IListasServicio listasServicio, IDispositivosServicio dispositivosServicio)
+    public MovimientosViewModel(IMovimientosServicio movimientosServicio, IListasServicio listasServicio, IDispositivosServicio dispositivosServicio, IObjetosServicio objetosServicio)
     {
         _movimientosServicio = movimientosServicio;
         _listasServicio = listasServicio;
         _dispositivosServicio = dispositivosServicio;
+        _objetosServicio = objetosServicio;
     }
     public void OnNavigatedFrom()
     {
@@ -43,6 +46,8 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
 
     public async void OnNavigatedTo(object parameter)
     {
+        var objeto = parameter as Objetos ?? null;
+
         //Cargo Listas
         LstListas.Clear();        
         var listas = await _listasServicio.ObtenerListas();
@@ -65,10 +70,20 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
             }
         }
 
+        //Objetos
+        LstObjetos.Clear();
+        var objetos = await _objetosServicio.ObtenerObjetos();
+        if (objetos.Any())
+        {
+            foreach (var item in objetos)
+            {
+                LstObjetos.Add(item);
+            }
+        }
 
         //Movimientos
         Items.Clear();
-        var data = await _movimientosServicio.ObtenerMovimientosTodos();
+        var data = objeto != null ? await _movimientosServicio.ObtenerMovimientosObjeto(objeto.OBJ_ID_REG) : await _movimientosServicio.ObtenerMovimientosTodos();
         if (data.Any())
         {
             foreach (var item in data)
@@ -76,6 +91,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
                 var movimDTO = new MovimDTO()
                 {
                     MOVIM_ID_REG = item.MOVIM_ID_REG,
+                    MOVIM_MATRICULA_OBJ = LstObjetos.Where(x => x.OBJ_ID_REG == item.MOVIM_ID_OBJETO).FirstOrDefault().OBJ_MATRICULA,
                     MOVIM_FECHA = item.MOVIM_FECHA,
                     MOVIM_TIPO_MOVIM = item.MOVIM_TIPO_MOVIM,
                     MOVIM_TIPO_MOVIM_DESCRIPCION = LstListas.Where(x => x.LISTAS_ID_REG == item.MOVIM_TIPO_MOVIM).FirstOrDefault().LISTAS_ID_LISTA_DESCRIP,

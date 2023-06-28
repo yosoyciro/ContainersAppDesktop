@@ -26,44 +26,6 @@ public sealed partial class ContainersGridPage : Page
         InitializeComponent();
     }
 
-    //private void btnAgregar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    //{
-    //    //ViewModel.CrearNuevoObjeto();
-    //    var nuevoRegistro = new Objetos()
-    //    {
-    //        OBJ_MATRICULA = "NUEVO CONTAINER",
-    //        OBJ_ID_ESTADO_REG = "A",
-    //        OBJ_SIGLAS_LISTA = 1000,
-    //        OBJ_SIGLAS = 1,
-    //        OBJ_MODELO_LISTA = 1100,
-    //        OBJ_MODELO = 1,
-    //        OBJ_ID_OBJETO = 1198,
-    //        OBJ_VARIANTE_LISTA = 1200,
-    //        OBJ_VARIANTE = 1,
-    //        OBJ_TIPO_LISTA = 1300,
-    //        OBJ_TIPO = 1,
-    //        OBJ_INSPEC_CSC = "",
-    //        OBJ_PROPIETARIO_LISTA = 1400,
-    //        OBJ_PROPIETARIO = 1,
-    //        OBJ_TARA_LISTA = 1500,
-    //        OBJ_TARA = 1,
-    //        OBJ_PMP_LISTA = 1600,
-    //        OBJ_PMP = 1,
-    //        OBJ_CARGA_UTIL = 0,
-    //        OBJ_ALTURA_EXTERIOR_LISTA = 1700,
-    //        OBJ_ALTURA_EXTERIOR = 1,
-    //        OBJ_CUELLO_CISNE_LISTA = 1800,
-    //        OBJ_CUELLO_CISNE = 1,
-    //        OBJ_BARRAS_LISTA = 1900,
-    //        OBJ_BARRAS = 1,
-    //        OBJ_CABLES_LISTA = 2000,
-    //        OBJ_CABLES = 1,
-    //        OBJ_LINEA_VIDA_LISTA = 2100,
-    //        OBJ_LINEA_VIDA = 1,
-    //        OBJ_OBSERVACIONES = ""
-    //    };
-    //    ViewModel.Source.Add(nuevoRegistro);
-    //}       
     
     private async void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
     {
@@ -128,6 +90,7 @@ public sealed partial class ContainersGridPage : Page
 
     public ICommand NuevoCommand => new AsyncRelayCommand(OpenNewDialog);
     public ICommand BorrarCommand => new AsyncRelayCommand(BorrarObjeto);
+    public ICommand MovimientosCommand => new RelayCommand(VerMovimientos);
     public ICommand AgregarCommand => new AsyncRelayCommand(AgregarObjeto);
 
     private async Task OpenNewDialog()
@@ -164,5 +127,20 @@ public sealed partial class ContainersGridPage : Page
     private async Task AgregarObjeto()
     {
         await ViewModel.CrearObjeto(AgregarDialog.DataContext as Objetos);
+    }
+
+    private void VerMovimientos()
+    {
+        Frame.Navigate(typeof(MovimientosPage), ViewModel.SelectedObjeto);
+    }    
+
+    private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+    {
+
+    }
+
+    private void chkMostrarTodos_Checked(object sender, RoutedEventArgs e)
+    {
+
     }
 }

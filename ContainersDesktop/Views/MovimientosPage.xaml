@@ -29,6 +29,7 @@
                 <controls:DataGrid x:Name="MovimientosGrid" ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" AutoGenerateColumns="False">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="ID" Binding="{Binding MOVIM_ID_REG}" Width="60"/>
+                        <controls:DataGridTextColumn Header="Container" Binding="{Binding MOVIM_MATRICULA_OBJ}" Width="150"/>
                         <controls:DataGridTextColumn Header="Dispositivo" Binding="{Binding MOVIM_ID_DISPOSITIVO}" Width="150"/>
                         <controls:DataGridTextColumn Header="Fecha" Binding="{Binding MOVIM_FECHA}" Width="90"/>
                         <controls:DataGridTextColumn Header="Tipo Movimiento" Binding="{Binding MOVIM_TIPO_MOVIM_DESCRIPCION}" Width="150"/>

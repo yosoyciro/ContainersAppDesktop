@@ -100,6 +100,8 @@ public partial class App : Application
             services.AddTransient<ListaPorTipoPage>();
             services.AddTransient<MovimientosViewModel>();
             services.AddTransient<MovimientosPage>();
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<LoginPage>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

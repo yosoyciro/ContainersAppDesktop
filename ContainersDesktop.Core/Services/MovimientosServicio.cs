@@ -20,7 +20,7 @@ public class MovimientosServicio : IMovimientosServicio
                 ("SELECT MOVIM_ID_REG, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, MOVIM_PESO_LISTA, MOVIM_PESO, " +
                 "MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, MOVIM_CAMION_ID, " +
                 "MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, " +
-                "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION " +
+                "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_ID_DISPOSITIVO " +
                 "FROM MOVIM WHERE MOVIM_ID_OBJETO = @MOVIM_ID_OBJETO", db);
 
             selectCommand.Parameters.AddWithValue("@MOVIM_ID_OBJETO", idObjeto);
@@ -57,6 +57,7 @@ public class MovimientosServicio : IMovimientosServicio
                         MOVIM_ALMACEN = query.GetInt32(21),
                         MOVIM_PDF = query.GetString(22),
                         MOVIM_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(23)),
+                        MOVIM_ID_DISPOSITIVO = query.GetInt32(24),
                     };
                     movimLista.Add(movimObjeto);
                 }

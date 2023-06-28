@@ -18,6 +18,7 @@ public sealed partial class ShellPage : Page
     {
         get;
     }
+    public static ShellPage Current;
 
     public ShellPage(ShellViewModel viewModel)
     {
@@ -34,6 +35,7 @@ public sealed partial class ShellPage : Page
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
         AppTitleBarText.Text = "AppDisplayName".GetLocalized();
+        Current = this;
     }
 
     private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -84,5 +86,10 @@ public sealed partial class ShellPage : Page
         var result = navigationService.GoBack();
 
         args.Handled = result;
+    }
+
+    public void ShowPane()
+    {
+        NavigationViewControl.IsPaneVisible = true;
     }
 }

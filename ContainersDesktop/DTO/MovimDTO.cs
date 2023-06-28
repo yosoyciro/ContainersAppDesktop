@@ -7,6 +7,12 @@ public class MovimDTO
         set;
     }
 
+    public string MOVIM_MATRICULA_OBJ
+    {
+        get;
+        set;
+    }
+
     public string MOVIM_ID_ESTADO_REG
     {
         get;
