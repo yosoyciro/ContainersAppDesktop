@@ -1,18 +1,18 @@
 ﻿namespace ContainersDesktop.DTO;
-public class TiposDTO
+public class ObjetosDTO
 {
-    public int OBJ_TIPO
-    {
-        get;
-        set;
-    }
-    public string? DESCRIPCION
+    public int MOVIM_ID_OBJETO
     {
         get;
         set;
     }
 
-    public int LISTAS_ID_LISTA
+    public string SIGLAS_DESCRIPCION
+    {
+        get;
+        set;
+    }
+    public string? DESCRIPCION
     {
         get;
         set;

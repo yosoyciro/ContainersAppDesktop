@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ContainersDesktop.Core.Contracts.Services;
+﻿using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Models;
 using Microsoft.Data.Sqlite;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Windows.Storage;
 
 namespace ContainersDesktop.Core.Services;
@@ -91,8 +85,8 @@ public class ClaListServicio : IClaListServicio
 
             while (query.Read())
             {
-                if (query.GetString(1) == "A")
-                {
+                //if (query.GetString(1) == "A")
+                //{
                     var clasListObjeto = new ClaList()
                     {
                         CLALIST_ID_REG = query.GetInt32(0),
@@ -100,7 +94,7 @@ public class ClaListServicio : IClaListServicio
                         CLALIST_DESCRIP = query.GetString(2),                        
                     };
                     clasList.Add(clasListObjeto);
-                }
+                //}
             }
         }
 

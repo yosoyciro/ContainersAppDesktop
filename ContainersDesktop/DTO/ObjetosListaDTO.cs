@@ -1,24 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ContainersDesktop.Core.Models;
-public class Objetos
+﻿namespace ContainersDesktop.DTO;
+public class ObjetosListaDTO
 {
-    [Key]
     public int OBJ_ID_REG
     {
         get; set;
     }
-    public string OBJ_MATRICULA
+    public string? OBJ_MATRICULA
     {
         get; set;
     }
 
-    public string OBJ_ID_ESTADO_REG
+    public string? OBJ_ID_ESTADO_REG
     {
         get;
         set;
     }
-    public int OBJ_SIGLAS_LISTA
+    public string? OBJ_SIGLAS_DESCRIPCION
     {
         get; set;
     }
@@ -26,7 +23,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_MODELO_LISTA
+    public string? OBJ_MODELO_DESCRIPCION
     {
         get; set;
     }
@@ -40,7 +37,7 @@ public class Objetos
         get;
         set;
     }
-    public int OBJ_VARIANTE_LISTA
+    public string? OBJ_VARIANTE_DESCRIPCION
     {
         get; set;
     }
@@ -48,7 +45,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_TIPO_LISTA
+    public string? OBJ_TIPO_DESCRIPCION
     {
         get; set;
     }
@@ -60,7 +57,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_PROPIETARIO_LISTA
+    public string? OBJ_PROPIETARIO_DESCRIPCION
     {
         get; set;
     }
@@ -68,7 +65,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_TARA_LISTA
+    public string? OBJ_TARA_DESCRIPCION
     {
         get; set;
     }
@@ -76,7 +73,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_PMP_LISTA
+    public string? OBJ_PMP_DESCRIPCION
     {
         get;
         set;
@@ -89,7 +86,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_ALTURA_EXTERIOR_LISTA
+    public string? OBJ_ALTURA_EXTERIOR_DESCRIPCION
     {
         get; set;
     }
@@ -97,7 +94,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_CUELLO_CISNE_LISTA
+    public string? OBJ_CUELLO_CISNE_DESCRIPCION
     {
         get; set;
     }
@@ -105,7 +102,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_BARRAS_LISTA
+    public string? OBJ_BARRAS_DESCRIPCION
     {
         get; set;
     }
@@ -113,7 +110,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_CABLES_LISTA
+    public string? OBJ_CABLES_DESCRIPCION
     {
         get; set;
     }
@@ -121,7 +118,7 @@ public class Objetos
     {
         get; set;
     }
-    public int OBJ_LINEA_VIDA_LISTA
+    public string? OBJ_LINEA_VIDA_DESCRIPCION
     {
         get; set;
     }

@@ -15,40 +15,69 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <CommandBar Background="Transparent"
+            <Grid HorizontalAlignment="Stretch"              
+              Margin="0,0,0,16"
+              CornerRadius="4"
+              Height="52"
+              Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,0,16"
+                    CornerRadius="4"
+                    Height="52">
+
+                    <AutoSuggestBox x:Name="SearchBox"
+                                QuerySubmitted="SearchBox_QuerySubmitted"
+                                TextChanged="SearchBox_TextChanged"
+                                QueryIcon="Find"
+                                Width="240"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Margin="8,0,0,0" />
+                    <CommandBar Background="Transparent"
                         DefaultLabelPosition="Right"
                         Grid.Column="1">
-                <AppBarButton Command="{x:Bind NuevoCommand, Mode=OneWay}"
+                        <AppBarButton Command="{x:Bind NuevoCommand, Mode=OneWay}"
                               Icon="Add"
                               Label="Agregar" />
-                <AppBarButton Command="{x:Bind BorrarCommand}"
+                        <AppBarButton Command="{x:Bind BorrarCommand}"
                               CommandParameter="{x:Bind ViewModel.SelectedDispositivo, Mode=OneWay}"
                               IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
                               Icon="Delete"
                               Label="Borrar"/>
-                <AppBarButton Command="{x:Bind SincronizarCommand}"
+                        <AppBarButton Command="{x:Bind SincronizarCommand}"
                               Icon="Sync"
                               Label="Sincronizar"/>
-            </CommandBar>
+                    </CommandBar>
+                    <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
+                            Checked="chkMostrarTodos_Checked"
+                            Unchecked="chkMostrarTodos_Unchecked"
+                          />
+                </StackPanel>
+            </Grid>
+            
             
             <controls:DataGrid
                 Name="DispositivosGrid"
                 Grid.Row="1"
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"
-                SelectedItem="{Binding SelectedDispositivo}"
+                SelectedItem="{x:Bind ViewModel.SelectedDispositivo, Mode=TwoWay}"
                 ItemsSource="{x:Bind ViewModel.Source}"
                 RowEditEnding="DispositivosGrid_RowEditEnding"
                 SelectionMode="Single"
-                SelectionChanged="DispositivosGrid_SelectionChanged"
                 AlternatingRowBackground="DarkSlateGray">
                 <controls:DataGrid.Resources>
                     <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                 </controls:DataGrid.Resources>
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_ID_REG}" Header="ID" Visibility="Collapsed" />
-                    <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_DESCRIP}" Header="Descripción" />
-                    <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_CONTAINER}" Header="Cloud Container" />
+                    <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_ID_REG}" Header="ID" Tag="Id" Visibility="Visible" />
+                    <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_DESCRIP}" Header="Descripción" Tag="Descripcion" />
+                    <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_CONTAINER}" Header="Cloud Container" Tag="Container" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
 

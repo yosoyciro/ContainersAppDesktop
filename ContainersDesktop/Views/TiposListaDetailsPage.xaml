@@ -14,43 +14,44 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="MasterColumn" Width="320" />
-            <ColumnDefinition x:Name="DetailColumn" Width="*" />
-        </Grid.ColumnDefinitions>
-
+        
         <Grid HorizontalAlignment="Stretch"              
-              Margin="0 0 0 16"
+              Margin="0,0,0,16"
               CornerRadius="4"
               Height="52"
               Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
-            <AutoSuggestBox QuerySubmitted="SearchBox_QuerySubmitted"
-                            TextChanged="AutoSuggestBox_TextChanged"                            
-                            QueryIcon="Find"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,0,16"
+                    CornerRadius="4"
+                    Height="52">
 
-            <CommandBar Background="Transparent"
+                <AutoSuggestBox x:Name="SearchBox"
+                                QuerySubmitted="SearchBox_QuerySubmitted"
+                                TextChanged="AutoSuggestBox_TextChanged"
+                                QueryIcon="Find"
+                                Width="240"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Margin="8,0,0,0" />
+
+                <CommandBar Background="Transparent"
                         DefaultLabelPosition="Right"
                         Grid.Column="1">
-                <AppBarButton Command="{x:Bind NuevoCommand, Mode=OneWay}"
-                              Icon="Add"
-                              Label="Agregar" />
-                <AppBarButton Command="{x:Bind BorrarCommand}"
-                              CommandParameter="{x:Bind ViewModel.SelectedClaList, Mode=OneWay}"
-                              IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                              Icon="Delete"
-                              Label="Borrar"/>
-                <AppBarButton Command="{x:Bind DetalleCommand, Mode=OneWay}"
+                    <AppBarButton Command="{x:Bind DetalleCommand, Mode=OneWay}"
                               IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
                               Icon="Library"
                               Label="Detalle" />
-            </CommandBar>
+                    <AppBarButton
+                            IsEnabled="True" 
+                              Icon="Document"
+                              Label="Exportar" />
+                </CommandBar>
+            </StackPanel>
         </Grid>
 
         <ListView x:Name="ClaListListView"                

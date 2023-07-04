@@ -1,7 +1,7 @@
 ﻿namespace ContainersDesktop.DTO;
-public class TiposDTO
+public class ChoferesDTO
 {
-    public int OBJ_TIPO
+    public int MOVIM_CHOFER
     {
         get;
         set;

@@ -10,34 +10,37 @@ public class ListasServicio : IListasServicio
     public async Task<bool> CrearLista(Listas lista)
     {
         var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
-
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            db.Open();
+
+            SqliteCommand insertCommand = new SqliteCommand();
+            insertCommand.Connection = db;
+
+            try
             {
-                db.Open();
-
-                SqliteCommand insertCommand = new SqliteCommand();
-                insertCommand.Connection = db;
-
                 // Use parameterized query to prevent SQL injection attacks
                 insertCommand.CommandText = "INSERT INTO LISTAS (LISTAS_ID_ESTADO_REG, LISTAS_ID_LISTA, LISTAS_ID_LISTA_ORDEN, LISTAS_ID_LISTA_DESCRIP, LISTAS_FECHA_ACTUALIZACION)" +
                     "VALUES (@LISTAS_ID_ESTADO_REG, @LISTAS_ID_LISTA, @LISTAS_ID_LISTA_ORDEN, @LISTAS_ID_LISTA_DESCRIP, @LISTAS_FECHA_ACTUALIZACION);";
-                insertCommand.Parameters.AddWithValue("@LISTAS_ID_ESTADO_REG", "A");
+                insertCommand.Parameters.AddWithValue("@LISTAS_ID_ESTADO_REG", lista.LISTAS_ID_ESTADO_REG);
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA", lista.LISTAS_ID_LISTA);
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_ORDEN", lista.LISTAS_ID_LISTA_ORDEN);
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_DESCRIP", lista.LISTAS_ID_LISTA_DESCRIP);
-                insertCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
+                insertCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", lista.LISTAS_FECHA_ACTUALIZACION);
 
                 await insertCommand.ExecuteReaderAsync();
 
                 return true;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                db.Close();
+            }
+        }        
     }
 
     public async Task<List<Listas>> ObtenerListas()
@@ -56,8 +59,8 @@ public class ListasServicio : IListasServicio
 
             while (query.Read())
             {
-                if (query.GetString(1) == "A")
-                {
+                //if (query.GetString(1) == "A")
+                //{
                     var nuevaLista = new Listas()
                     {                        
                         LISTAS_ID_REG = query.GetInt32(0),
@@ -68,10 +71,11 @@ public class ListasServicio : IListasServicio
                         LISTAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(5)),
                     };
                     listas.Add(nuevaLista);
-                }
+                //}
             }
+            db.Close();
         }
-
+        
         return listas;
     }
 
@@ -96,7 +100,7 @@ public class ListasServicio : IListasServicio
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA", lista.LISTAS_ID_LISTA);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_ORDEN", lista.LISTAS_ID_LISTA_ORDEN);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_DESCRIP", lista.LISTAS_ID_LISTA_DESCRIP);
-                updateCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
+                updateCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", lista.LISTAS_FECHA_ACTUALIZACION);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_REG", lista.LISTAS_ID_REG);
 
                 await updateCommand.ExecuteReaderAsync();

@@ -5,6 +5,8 @@ using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Xaml;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
+using ContainersDesktop.Core.Helpers;
+using System.Security.Cryptography;
 
 namespace ContainersDesktop.Views;
 
@@ -19,29 +21,24 @@ public sealed partial class ListaPorTipoPage : Page
     {
         ViewModel = App.GetService<ListaPorTipoViewModel>();
         this.InitializeComponent();
+        this.Loaded += ListaPorTipoPage_Loaded;
     }
 
-    private void btnAgregar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void ListaPorTipoPage_Loaded(object sender, RoutedEventArgs e)
     {
-        var nuevoRegistro = new Listas()
-        {
-            LISTAS_ID_ESTADO_REG = "A",
-            LISTAS_ID_LISTA = 1,
-            LISTAS_ID_LISTA_ORDEN = 1,
-            LISTAS_ID_LISTA_DESCRIP = "INGRESE VALOR"
-        };
-        ViewModel.Source.Add(nuevoRegistro);
+        ListaGrid.ItemsSource = ViewModel.AplicarFiltro(null, false);
     }
-    
-    private async void ListaGrid_RowEditEnding(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridRowEditEndingEventArgs e)
+
+    private async void ListaGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
     {
         Console.WriteLine(e.Row.DataContext);
         try
         {
-            await ViewModel.ActualizarLista(ListaGrid!.SelectedItem as Listas);
+            var lista = ListaGrid!.SelectedItem as Listas;
+            lista.LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
+            await ViewModel.ActualizarLista(lista);
 
-            //var previousSortedColumn = ViewModel.CachedSortedColumn;
-            //ListaGrid.ItemsSource = ViewModel.SortData(previousSortedColumn, );
+            //ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
         }
         catch (Exception ex)
         {
@@ -69,7 +66,12 @@ public sealed partial class ListaPorTipoPage : Page
         AgregarDialog.Title = "Nueva entrada de lista";
         AgregarDialog.PrimaryButtonText = "Agregar";
         AgregarDialog.PrimaryButtonCommand = AgregarCommand;
-        AgregarDialog.DataContext = new Listas();
+        AgregarDialog.DataContext = new Listas() 
+        { 
+            LISTAS_ID_ESTADO_REG = "A",
+            LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now), 
+            LISTAS_ID_LISTA_ORDEN = ViewModel.Source.OrderByDescending(x => x.LISTAS_ID_LISTA_ORDEN).FirstOrDefault().LISTAS_ID_LISTA_ORDEN + 1 
+        };
         await AgregarDialog.ShowAsync();
     }
 
@@ -78,6 +80,8 @@ public sealed partial class ListaPorTipoPage : Page
         try
         {
             await ViewModel.BorrarLista();
+            ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+            LimpiarIndicadorOden();
         }
         catch (Exception ex)
         {
@@ -97,21 +101,68 @@ public sealed partial class ListaPorTipoPage : Page
 
     private async Task AgregarRegistro()
     {
-        await ViewModel.AgregarLista(AgregarDialog.DataContext as Listas);
-    }
+        var lista = AgregarDialog.DataContext as Listas;
+        await ViewModel.AgregarLista(lista);
 
-    private async Task ActualizarRegistro()
-    {
-        await ViewModel.ActualizarLista(AgregarDialog.DataContext as Listas);
+        ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+        LimpiarIndicadorOden();
     }
-
+   
     private void Volver()
     {
         Frame.GoBack();
     }
-
-    private void ListaGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    
+    private void chkMostrarTodos_Checked(object sender, RoutedEventArgs e)
     {
-        ViewModel.SelectedLista = ListaGrid!.SelectedItem as Listas;
+        ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+        LimpiarIndicadorOden();
+    }
+
+    private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+    {
+        if (args.QueryText != "")
+        {
+            ListaGrid.ItemsSource = ViewModel.AplicarFiltro(args.QueryText, chkMostrarTodos.IsChecked ?? false);
+            LimpiarIndicadorOden();
+        }        
+    }
+
+    private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+        {
+            if (sender.Text == "")
+            {
+                ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+                LimpiarIndicadorOden();
+            }
+        }
+    }
+
+    private void ListaGrid_Sorting(object sender, DataGridColumnEventArgs e)
+    {
+        // Add sorting indicator, and sort
+        var isAscending = e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending;
+        ListaGrid.ItemsSource = ViewModel.SortData(e.Column.Tag.ToString(), isAscending);
+        e.Column.SortDirection = isAscending
+            ? DataGridSortDirection.Ascending
+            : DataGridSortDirection.Descending;
+
+        foreach (var column in ListaGrid.Columns)
+        {
+            if (column.Tag != null && column.Tag.ToString() != e.Column.Tag.ToString())
+            {
+                column.SortDirection = null;
+            }
+        }               
+    }
+
+    private void LimpiarIndicadorOden()
+    {
+        foreach (var column in ListaGrid.Columns)
+        {          
+            column.SortDirection = null;
+        }
     }
 }

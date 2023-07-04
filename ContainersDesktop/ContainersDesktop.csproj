@@ -19,7 +19,9 @@
     <None Remove="Views\DispositivosPage.xaml" />
     <None Remove="Views\ListaPorTipoPage.xaml" />
     <None Remove="Views\LoginPage.xaml" />
+    <None Remove="Views\MovimientosContainerPage.xaml" />
     <None Remove="Views\MovimientosPage.xaml" />
+    <None Remove="Views\SincronizacionesPage.xaml" />
     <None Remove="Views\TiposListaDetailsPage.xaml" />
   </ItemGroup>
 
@@ -43,6 +45,12 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\SincronizacionesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\MovimientosContainerPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\LoginPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

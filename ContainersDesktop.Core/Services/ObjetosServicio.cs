@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using ContainersDesktop.Core.Contracts.Services;
+using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Core.Persistencia;
 using Microsoft.Data.Sqlite;
 using Windows.Storage;
 
@@ -28,7 +30,7 @@ public class ObjetosServicio : IObjetosServicio
                     "OBJ_PMP_LISTA = @OBJ_PMP_LISTA, OBJ_PMP = @OBJ_PMP, OBJ_CARGA_UTIL = @OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA = @OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR = @OBJ_ALTURA_EXTERIOR, " +
                     "OBJ_CUELLO_CISNE_LISTA = @OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE = @OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA = @OBJ_BARRAS_LISTA, OBJ_BARRAS = @OBJ_BARRAS, " +
                     "OBJ_CABLES_LISTA = @OBJ_CABLES_LISTA, OBJ_CABLES = @OBJ_CABLES, OBJ_LINEA_VIDA_LISTA = @OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA = @OBJ_LINEA_VIDA, OBJ_OBSERVACIONES = @OBJ_OBSERVACIONES, " +
-                    "OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION,  " +
+                    "OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION  " +
                     "WHERE OBJ_ID_REG = @OBJ_ID_REG";
 
                 updateCommand.Parameters.AddWithValue("@OBJ_ID_REG", objeto.OBJ_ID_REG);
@@ -62,7 +64,7 @@ public class ObjetosServicio : IObjetosServicio
                 updateCommand.Parameters.AddWithValue("@OBJ_LINEA_VIDA_LISTA", objeto.OBJ_LINEA_VIDA_LISTA);
                 updateCommand.Parameters.AddWithValue("@OBJ_LINEA_VIDA", objeto.OBJ_LINEA_VIDA);
                 updateCommand.Parameters.AddWithValue("@OBJ_OBSERVACIONES", objeto.OBJ_OBSERVACIONES);
-                updateCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                updateCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", objeto.OBJ_FECHA_ACTUALIZACION);
 
                 await updateCommand.ExecuteReaderAsync();
 
@@ -75,7 +77,7 @@ public class ObjetosServicio : IObjetosServicio
         }
     }
 
-    public async Task<bool> CrearObjeto(Objetos objeto)
+    public async Task<int> CrearObjeto(Objetos objeto)
     {
         var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
 
@@ -97,7 +99,7 @@ public class ObjetosServicio : IObjetosServicio
                     "@OBJ_MODELO, @OBJ_ID_OBJETO, @OBJ_VARIANTE_LISTA, @OBJ_VARIANTE, @OBJ_TIPO_LISTA, @OBJ_TIPO, @OBJ_INSPEC_CSC, " +
                     "@OBJ_TARA_LISTA, @OBJ_TARA, @OBJ_PMP_LISTA, @OBJ_PMP, @OBJ_CARGA_UTIL, @OBJ_ALTURA_EXTERIOR_LISTA, @OBJ_ALTURA_EXTERIOR, @OBJ_CUELLO_CISNE_LISTA, " +
                     "@OBJ_CUELLO_CISNE, @OBJ_BARRAS_LISTA, @OBJ_BARRAS, @OBJ_CABLES_LISTA, @OBJ_CABLES, @OBJ_LINEA_VIDA_LISTA, @OBJ_LINEA_VIDA, @OBJ_OBSERVACIONES, @OBJ_FECHA_ACTUALIZACION);";
-                insertCommand.Parameters.AddWithValue("@OBJ_ID_REG", objeto.OBJ_ID_REG);
+
                 insertCommand.Parameters.AddWithValue("@OBJ_MATRICULA", objeto.OBJ_MATRICULA);
                 insertCommand.Parameters.AddWithValue("@OBJ_ID_ESTADO_REG", objeto.OBJ_ID_ESTADO_REG);
                 insertCommand.Parameters.AddWithValue("@OBJ_SIGLAS_LISTA", objeto.OBJ_SIGLAS_LISTA);
@@ -128,11 +130,13 @@ public class ObjetosServicio : IObjetosServicio
                 insertCommand.Parameters.AddWithValue("@OBJ_LINEA_VIDA_LISTA", objeto.OBJ_LINEA_VIDA_LISTA);
                 insertCommand.Parameters.AddWithValue("@OBJ_LINEA_VIDA", objeto.OBJ_LINEA_VIDA);
                 insertCommand.Parameters.AddWithValue("@OBJ_OBSERVACIONES", objeto.OBJ_OBSERVACIONES);
-                insertCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                insertCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", objeto.OBJ_FECHA_ACTUALIZACION);
 
                 await insertCommand.ExecuteReaderAsync();
 
-                return true;
+                var identity = await OperacionesComunes.GetIdentity(db);
+
+                return identity;
             }
         }
         catch (Exception ex)
@@ -154,14 +158,14 @@ public class ObjetosServicio : IObjetosServicio
                 ("SELECT OBJ_ID_REG, OBJ_MATRICULA, OBJ_ID_ESTADO_REG, OBJ_SIGLAS_LISTA, OBJ_SIGLAS, OBJ_MODELO_LISTA, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, " +
                 "OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_TARA_LISTA, OBJ_TARA, OBJ_PMP_LISTA, OBJ_PMP, " +
                 "OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR, OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, " +
-                "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES FROM OBJETOS", db);
+                "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES, OBJ_FECHA_ACTUALIZACION FROM OBJETOS", db);
 
             SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
             
             while (query.Read())
             {
-                if (query.GetString(2) == "A")
-                {
+                //if (query.GetString(2) == "A")
+                //{
                     var nuevoObjeto = new Objetos()
                     {
                         OBJ_ID_REG = query.GetInt32(0),
@@ -176,7 +180,7 @@ public class ObjetosServicio : IObjetosServicio
                         OBJ_VARIANTE = query.GetInt32(9),
                         OBJ_TIPO_LISTA = query.GetInt32(10),
                         OBJ_TIPO = query.GetInt32(11),
-                        OBJ_INSPEC_CSC = query.GetString(12),
+                        OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(query.GetString(12)),
                         OBJ_PROPIETARIO_LISTA = query.GetInt32(13),
                         OBJ_PROPIETARIO = query.GetInt32(14),
                         OBJ_TARA_LISTA = query.GetInt32(15),
@@ -195,9 +199,10 @@ public class ObjetosServicio : IObjetosServicio
                         OBJ_LINEA_VIDA_LISTA = query.GetInt32(28),
                         OBJ_LINEA_VIDA = query.GetInt32(29),
                         OBJ_OBSERVACIONES = query.GetString(30),
+                        OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(31)),
                     };
                     objetos.Add(nuevoObjeto);
-                }                
+                //}                
             }
         }
 

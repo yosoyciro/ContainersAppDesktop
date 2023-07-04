@@ -1,7 +1,7 @@
 ﻿namespace ContainersDesktop.DTO;
-public class TiposDTO
+public class EntradaSalidaDTO
 {
-    public int OBJ_TIPO
+    public int MOVIM_ENTRADA_SALIDA
     {
         get;
         set;

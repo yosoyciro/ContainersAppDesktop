@@ -11,4 +11,10 @@ public class BarrasDTO
         get;
         set;
     }
+
+    public int LISTAS_ID_LISTA
+    {
+        get;
+        set;
+    }
 }

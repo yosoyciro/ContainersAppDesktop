@@ -4,6 +4,7 @@ using ContainersDesktop.Core.Models;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using ContainersDesktop.Core.Helpers;
 
 namespace ContainersDesktop.Views;
 public sealed partial class DispositivosPage : Page
@@ -16,46 +17,52 @@ public sealed partial class DispositivosPage : Page
     {
         ViewModel = App.GetService<DispositivosViewModel>();
         InitializeComponent();
+        Loaded += DispositivosPage_Loaded;
     }
 
-    private void btnAgregar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void DispositivosPage_Loaded(object sender, RoutedEventArgs e)
     {
-        //ViewModel.CrearNuevoObjeto();
-        var nuevoRegistro = new Dispositivos()
-        {
-            DISPOSITIVOS_ID_ESTADO_REG = "A",
-            DISPOSITIVOS_DESCRIP = "DESCRIPCION",
-            DISPOSITIVOS_CONTAINER = "AZURE CONTAINER"
-        };
-        ViewModel.Source.Add(nuevoRegistro);
+        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, false);
     }
 
-    private async void btnBorrar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        try
-        {
-            if (DispositivosGrid!.SelectedItem != null)
-            {
-                ViewModel.SelectedDispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
-                ViewModel.BorrarDispositivo();
-            }
-        }
-        catch (Exception ex)
-        {
-            ContentDialog dialog = new ContentDialog();
+    //private void btnAgregar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    //{
+    //    //ViewModel.CrearNuevoObjeto();
+    //    var nuevoRegistro = new Dispositivos()
+    //    {
+    //        DISPOSITIVOS_ID_ESTADO_REG = "A",
+    //        DISPOSITIVOS_DESCRIP = "DESCRIPCION",
+    //        DISPOSITIVOS_CONTAINER = "AZURE CONTAINER"
+    //    };
+    //    ViewModel.Source.Add(nuevoRegistro);
+    //}
 
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Error";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = ex.Message;
+    //private async void btnBorrar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    //{
+    //    try
+    //    {
+    //        if (DispositivosGrid!.SelectedItem != null)
+    //        {
+    //            ViewModel.SelectedDispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
+    //            ViewModel.BorrarDispositivo();
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        ContentDialog dialog = new ContentDialog();
 
-            await dialog.ShowAsync();
-        }
-    }   
-    
+    //        // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+    //        dialog.XamlRoot = this.XamlRoot;
+    //        dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+    //        dialog.Title = "Error";
+    //        dialog.CloseButtonText = "Cerrar";
+    //        dialog.DefaultButton = ContentDialogButton.Close;
+    //        dialog.Content = ex.Message;
+
+    //        await dialog.ShowAsync();
+    //    }
+    //}   
+
     private async Task SincronizarDatos()
     {
         try
@@ -90,7 +97,11 @@ public sealed partial class DispositivosPage : Page
         AgregarDialog.Title = "Nuevo dispositivo";
         AgregarDialog.PrimaryButtonText = "Agregar";
         AgregarDialog.PrimaryButtonCommand = AgregarCommand;
-        AgregarDialog.DataContext = new Dispositivos();
+        AgregarDialog.DataContext = new Dispositivos()
+        {
+            DISPOSITIVOS_ID_ESTADO_REG = "A",
+            DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
+        };
         await AgregarDialog.ShowAsync();
     }
 
@@ -118,14 +129,17 @@ public sealed partial class DispositivosPage : Page
 
     private async Task AgregarDispositivo()
     {
-        await ViewModel.CrearDispositivo(AgregarDialog.DataContext as Dispositivos);
+        var dispositivo = AgregarDialog.DataContext as Dispositivos;
+        await ViewModel.CrearDispositivo(dispositivo);
     }
 
     private async void DispositivosGrid_RowEditEnding(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridRowEditEndingEventArgs e)
     {
         try
         {
-            await ViewModel.ActualizarDispositivo(DispositivosGrid!.SelectedItem as Dispositivos);
+            var dispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
+            dispositivo.DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
+            await ViewModel.ActualizarDispositivo(dispositivo);
         }
         catch (Exception ex)
         {
@@ -142,9 +156,33 @@ public sealed partial class DispositivosPage : Page
             await dialog.ShowAsync();
         }
     }
-
-    private void DispositivosGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    
+    private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
-        ViewModel.SelectedDispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
+        if (args.QueryText != "")
+        {
+            DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(args.QueryText, chkMostrarTodos.IsChecked ?? false);
+        }
+    }
+
+    private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+        {
+            if (sender.Text == "")
+            {
+                DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(sender.Text, chkMostrarTodos.IsChecked ?? false);
+            }
+        }
+    }
+
+    private void chkMostrarTodos_Checked(object sender, RoutedEventArgs e)
+    {
+        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, true);
+    }
+
+    private void chkMostrarTodos_Unchecked(object sender, RoutedEventArgs e)
+    {
+        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, false);
     }
 }

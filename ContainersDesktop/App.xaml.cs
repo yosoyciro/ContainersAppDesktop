@@ -48,7 +48,7 @@ public partial class App : Application
         InitializeComponent();
 
         //Inicio Database
-        DataAccess.InicializarBase();
+        InicializarDB.InicializarBase();
 
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
@@ -77,15 +77,12 @@ public partial class App : Application
             services.AddTransient<IClaListServicio, ClaListServicio>();
             services.AddTransient<IDispositivosServicio, DispositivosServicio>();
             services.AddTransient<IMovimientosServicio, MovimientosServicio>();
+            services.AddTransient<ISincronizacionServicio, SincronizacionServicio>();
             services.AddTransient<AzureStorageManagement>();
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
-            services.AddTransient<SettingsPage>();
-            services.AddTransient<TiposListasGridViewModel>();
-            services.AddTransient<TiposListasGridPage>();
-            services.AddTransient<ListasGridViewModel>();
-            services.AddTransient<ListasGridPage>();
+            services.AddTransient<SettingsPage>();            
             services.AddTransient<ContainersGridViewModel>();
             services.AddTransient<ContainersGridPage>();
             services.AddTransient<MainViewModel>();
@@ -100,8 +97,11 @@ public partial class App : Application
             services.AddTransient<ListaPorTipoPage>();
             services.AddTransient<MovimientosViewModel>();
             services.AddTransient<MovimientosPage>();
+            services.AddTransient<MovimientosContainerPage>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<LoginPage>();
+            services.AddTransient<SincronizacionesViewModel>();
+            services.AddTransient<SincronizacionesPage>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

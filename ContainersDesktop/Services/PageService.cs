@@ -15,14 +15,13 @@ public class PageService : IPageService
     public PageService()
     {
         Configure<MainViewModel, MainPage>();
-        Configure<ContainersGridViewModel, ContainersGridPage>();
-        Configure<ListasGridViewModel, ListasGridPage>();
-        Configure<TiposListasGridViewModel, TiposListasGridPage>();
+        Configure<ContainersGridViewModel, ContainersGridPage>();        
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DispositivosViewModel, DispositivosPage>();
         Configure<TiposListaDetailsViewModel, TiposListaDetailsPage>();
-        Configure<MovimientosViewModel, MovimientosPage>();
+        Configure<MovimientosViewModel, MovimientosPage>();        
         Configure<LoginViewModel, LoginPage>();
+        Configure<SincronizacionesViewModel, SincronizacionesPage>();
     }
 
     public Type GetPageType(string key)

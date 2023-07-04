@@ -1,7 +1,7 @@
 ﻿namespace ContainersDesktop.DTO;
-public class TiposDTO
+public class DispositivosDTO
 {
-    public int OBJ_TIPO
+    public int MOVIM_ID_DISPOSITIVO
     {
         get;
         set;

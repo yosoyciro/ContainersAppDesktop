@@ -40,15 +40,17 @@ public partial class TiposListaDetailsViewModel : ObservableRecipient, INavigati
         // TODO: Replace with real data.
         var data = await _claListServicio.ObtenerClaListas();
 
-        foreach (var item in data.OrderBy(x => x.CLALIST_DESCRIP))
+        foreach (var item in data.OrderBy(x => x.CLALIST_DESCRIP).Where(x => x.CLALIST_ID_ESTADO_REG == "A" && !string.IsNullOrEmpty(x.CLALIST_DESCRIP)))
         {
             Items.Add(item);
         }
     }
 
-    public ObservableCollection<ClaList> ApplyFilter(string filter)
+    public ObservableCollection<ClaList> AplicarFiltro(string? filter)
     {
-        return new ObservableCollection<ClaList>(Items.Where(x => x.CLALIST_DESCRIP.ToLower().Contains(filter.ToLower())));
+        return new ObservableCollection<ClaList>(Items.Where(x => 
+            (string.IsNullOrEmpty(filter) || x.CLALIST_DESCRIP.Contains(filter, StringComparison.OrdinalIgnoreCase))
+        ));
     }
 
     public async Task BorrarLista()

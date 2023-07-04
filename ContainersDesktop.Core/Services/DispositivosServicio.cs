@@ -27,7 +27,7 @@ public class DispositivosServicio : IDispositivosServicio
 
                 updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_DESCRIP", dispositivo.DISPOSITIVOS_DESCRIP);
                 updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_CONTAINER", dispositivo.DISPOSITIVOS_CONTAINER);
-                updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", dispositivo.DISPOSITIVOS_FECHA_ACTUALIZACION);
                 updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_REG", dispositivo.DISPOSITIVOS_ID_REG);
 
 
@@ -87,10 +87,10 @@ public class DispositivosServicio : IDispositivosServicio
                 insertCommand.CommandText = "INSERT INTO DISPOSITIVOS(DISPOSITIVOS_ID_ESTADO_REG, DISPOSITIVOS_DESCRIP, DISPOSITIVOS_CONTAINER, DISPOSITIVOS_FECHA_ACTUALIZACION)" +
                     "VALUES(@DISPOSITIVOS_ID_ESTADO_REG, @DISPOSITIVOS_DESCRIP, @DISPOSITIVOS_CONTAINER, @DISPOSITIVOS_FECHA_ACTUALIZACION)";
 
-                insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_ESTADO_REG", "A");
+                insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_ESTADO_REG", dispositivo.DISPOSITIVOS_ID_ESTADO_REG);
                 insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_DESCRIP", dispositivo.DISPOSITIVOS_DESCRIP);
                 insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_CONTAINER", dispositivo.DISPOSITIVOS_CONTAINER);
-                insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", dispositivo.DISPOSITIVOS_FECHA_ACTUALIZACION);
 
                 await insertCommand.ExecuteReaderAsync();
 
@@ -119,8 +119,8 @@ public class DispositivosServicio : IDispositivosServicio
 
             while (query.Read())
             {
-                if (query.GetString(1) == "A")
-                {
+                //if (query.GetString(1) == "A")
+                //{
                     var dispositivoObjeto = new Dispositivos()
                     {
                         DISPOSITIVOS_ID_REG = query.GetInt32(0),
@@ -129,7 +129,7 @@ public class DispositivosServicio : IDispositivosServicio
                         DISPOSITIVOS_CONTAINER = query.GetString(3),
                     };
                     dispositivosList.Add(dispositivoObjeto);
-                }
+                //}
             }
 
             selectCommand.Dispose();
