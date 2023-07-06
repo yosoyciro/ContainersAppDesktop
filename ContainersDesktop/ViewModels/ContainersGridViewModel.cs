@@ -34,6 +34,7 @@ public partial class ContainersGridViewModel : ObservableValidator, INavigationA
     }
     public bool HasCurrent => current is not null;
 
+    #region Observable collections
     public ObservableCollection<ObjetosListaDTO> Source
     {
         get;
@@ -66,6 +67,7 @@ public partial class ContainersGridViewModel : ObservableValidator, INavigationA
     public ObservableCollection<LineasVidaDTO> LstLineasVida { get; } = new ObservableCollection<LineasVidaDTO>();
     public ObservableCollection<LineasVidaDTO> LstLineasVidaActivos { get; } = new ObservableCollection<LineasVidaDTO>();
 
+    #endregion
     public ContainersGridViewModel(IObjetosServicio objetosServicio, IListasServicio listasServicio, IMovimientosServicio movimientosServicio)
     {
         _objetosServicio = objetosServicio;
@@ -294,10 +296,7 @@ public partial class ContainersGridViewModel : ObservableValidator, INavigationA
         await _objetosServicio.ActualizarObjeto(GenerarObjeto(objetoDTO));        
         var i = Source.IndexOf(objetoDTO);
         objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objetoDTO.OBJ_INSPEC_CSC);
-        Source[i] = objetoDTO;
-        //Source.RemoveAt(i);
-        //Source.Add(objetoDTO);
-        
+        Source[i] = objetoDTO;        
     }
 
     public async Task BorrarObjeto()

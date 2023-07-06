@@ -7,11 +7,6 @@ public class ObjetosDTO
         set;
     }
 
-    public string SIGLAS_DESCRIPCION
-    {
-        get;
-        set;
-    }
     public string? DESCRIPCION
     {
         get;

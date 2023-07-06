@@ -2,6 +2,7 @@
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Core.Persistencia;
 using Microsoft.Data.Sqlite;
 using Windows.Storage;
 
@@ -31,8 +32,8 @@ public class MovimientosServicio : IMovimientosServicio
 
             while (query.Read())
             {
-                if (query.GetString(1) == "A")
-                {
+                //if (query.GetString(1) == "A")
+                //{
                     var movimObjeto = new Movim()
                     {
                         MOVIM_ID_REG = query.GetInt32(0),
@@ -62,7 +63,7 @@ public class MovimientosServicio : IMovimientosServicio
                         MOVIM_ID_DISPOSITIVO = query.GetInt32(24),
                     };
                     movimLista.Add(movimObjeto);
-                }
+                //}
             }
         }
 
@@ -90,8 +91,8 @@ public class MovimientosServicio : IMovimientosServicio
 
             while (query.Read())
             {
-                if (query.GetString(1) == "A")
-                {
+                //if (query.GetString(1) == "A")
+                //{
                     var movimObjeto = new Movim()
                     {
                         MOVIM_ID_REG = query.GetInt32(0),
@@ -121,7 +122,7 @@ public class MovimientosServicio : IMovimientosServicio
                         MOVIM_ID_DISPOSITIVO = query.GetInt32(24),
                     };
                     movimLista.Add(movimObjeto);
-                }
+                //}
             }
         }
 
@@ -342,7 +343,7 @@ public class MovimientosServicio : IMovimientosServicio
     #endregion
 
     #region CrearMovimiento
-    public async Task<bool> CrearMovimiento(Movim movim)
+    public async Task<int> CrearMovimiento(Movim movim)
     {
         var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
 
@@ -364,9 +365,9 @@ public class MovimientosServicio : IMovimientosServicio
                     "@MOVIM_PESO_LISTA, @MOVIM_PESO, @MOVIM_TRANSPORTISTA_LISTA, @MOVIM_TRANSPORTISTA, @MOVIM_CLIENTE_LISTA, @MOVIM_CLIENTE, @MOVIM_CHOFER_LISTA, @MOVIM_CHOFER, " +
                     "@MOVIM_CAMION_ID, @MOVIM_REMOLQUE_ID, @MOVIM_ALBARAN_ID, @MOVIM_OBSERVACIONES, @MOVIM_ENTRADA_SALIDA_LISTA, @MOVIM_ENTRADA_SALIDA, @MOVIM_ALMACEN_LISTA, @MOVIM_ALMACEN, " +
                     "@MOVIM_PDF, @MOVIM_FECHA_ACTUALIZACION);";
-                insertCommand.Parameters.AddWithValue("@MOVIM_ID_REG_MOBILE", 0);
-                insertCommand.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", "A");
-                insertCommand.Parameters.AddWithValue("@MOVIM_ID_DISPOSITIVO", 0);
+                insertCommand.Parameters.AddWithValue("@MOVIM_ID_REG_MOBILE", movim.MOVIM_ID_REG_MOBILE);
+                insertCommand.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", movim.MOVIM_ID_ESTADO_REG);
+                insertCommand.Parameters.AddWithValue("@MOVIM_ID_DISPOSITIVO", movim.MOVIM_ID_DISPOSITIVO);
                 insertCommand.Parameters.AddWithValue("@MOVIM_FECHA", movim.MOVIM_FECHA);
                 insertCommand.Parameters.AddWithValue("@MOVIM_ID_OBJETO", movim.MOVIM_ID_OBJETO);
                 insertCommand.Parameters.AddWithValue("@MOVIM_TIPO_MOVIM_LISTA", movim.MOVIM_TIPO_MOVIM_LISTA);
@@ -388,11 +389,12 @@ public class MovimientosServicio : IMovimientosServicio
                 insertCommand.Parameters.AddWithValue("@MOVIM_ALMACEN_LISTA", movim.MOVIM_ALMACEN_LISTA);
                 insertCommand.Parameters.AddWithValue("@MOVIM_ALMACEN", movim.MOVIM_ALMACEN);
                 insertCommand.Parameters.AddWithValue("@MOVIM_PDF", movim.MOVIM_PDF);
-                insertCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar());
+                insertCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", movim.MOVIM_FECHA_ACTUALIZACION);
 
                 await insertCommand.ExecuteReaderAsync();
 
-                return true;
+                var identity = await OperacionesComunes.GetIdentity(db);
+                return identity;
             }
         }
         catch (Exception ex)
@@ -417,15 +419,16 @@ public class MovimientosServicio : IMovimientosServicio
                 updateCommand.Connection = db;
 
                 // Use parameterized query to prevent SQL injection attacks
-                updateCommand.CommandText = "UPDATE MOVIM SET MOVIM_ID_REG_MOBILE=0, MOVIM_ID_DISPOSITIVO=0, MOVIM_ID_ESTADO_REG=@MOVIM_ID_ESTADO_REG, " +
+                updateCommand.CommandText = "UPDATE MOVIM SET MOVIM_ID_REG_MOBILE=0, MOVIM_ID_DISPOSITIVO=@MOVIM_ID_DISPOSITIVO, MOVIM_ID_ESTADO_REG=@MOVIM_ID_ESTADO_REG, " +
                     "MOVIM_FECHA=@MOVIM_FECHA, MOVIM_ID_OBJETO=@MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA=@MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM=@MOVIM_TIPO_MOVIM, " +
                     "MOVIM_PESO_LISTA=@MOVIM_PESO_LISTA, MOVIM_PESO=@MOVIM_PESO, MOVIM_TRANSPORTISTA_LISTA=@MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA=@MOVIM_TRANSPORTISTA, " +
                     "MOVIM_CLIENTE_LISTA=@MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE=@MOVIM_CLIENTE, MOVIM_CHOFER_LISTA=@MOVIM_CHOFER_LISTA, MOVIM_CHOFER=@MOVIM_CHOFER, " +
                     "MOVIM_CAMION_ID=@MOVIM_CAMION_ID, MOVIM_REMOLQUE_ID=@MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID=@MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES=@MOVIM_OBSERVACIONES, " +
                     "MOVIM_ENTRADA_SALIDA_LISTA=@MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA=@MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA=@MOVIM_ALMACEN_LISTA, " +
-                    "MOVIM_ALMACEN=@MOVIM_ALMACEN, MOVIM_PDF=@MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION=@MOVIM_FECHA_ACTUALIZACION) " +
+                    "MOVIM_ALMACEN=@MOVIM_ALMACEN, MOVIM_PDF=@MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION=@MOVIM_FECHA_ACTUALIZACION " +
                     "WHERE MOVIM_ID_REG=@MOVIM_ID_REG;";
                 updateCommand.Parameters.AddWithValue("@MOVIM_ID_REG", movim.MOVIM_ID_REG);
+                updateCommand.Parameters.AddWithValue("@MOVIM_ID_DISPOSITIVO", movim.MOVIM_ID_DISPOSITIVO);
                 updateCommand.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", movim.MOVIM_ID_ESTADO_REG);
                 updateCommand.Parameters.AddWithValue("@MOVIM_FECHA", movim.MOVIM_FECHA);
                 updateCommand.Parameters.AddWithValue("@MOVIM_ID_OBJETO", movim.MOVIM_ID_OBJETO);

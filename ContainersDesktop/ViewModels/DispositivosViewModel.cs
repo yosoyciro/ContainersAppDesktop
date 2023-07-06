@@ -105,7 +105,7 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
         {
             var dispositivos = await _dispositivosServicio.ObtenerDispositivos();
 
-            foreach (var item in dispositivos.Where(x => x.DISPOSITIVOS_ID_ESTADO_REG == "A"))
+            foreach (var item in dispositivos.Where(x => x.DISPOSITIVOS_ID_ESTADO_REG == "A" && !string.IsNullOrEmpty(x.DISPOSITIVOS_CONTAINER)))
             {
                 idDispositivo = item.DISPOSITIVOS_ID_REG;
                 fechaHoraInicio = DateTime.Now;

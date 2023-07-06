@@ -7,12 +7,8 @@ using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using System.Reflection;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.DTO;
-using System.Data.Common;
-using Windows.System;
-using System.Text.RegularExpressions;
 
 namespace ContainersDesktop.Views;
 

@@ -7,6 +7,12 @@ public class MovimDTO
         set;
     }
 
+    public int MOVIM_ID_REG_MOBILE
+    {
+        get;
+        set;
+    }
+
     public string MOVIM_MATRICULA_OBJ
     {
         get;
@@ -193,7 +199,13 @@ public class MovimDTO
         set;
     }
 
-    public string MOVIM_ID_DISPOSITIVO
+    public int MOVIM_ID_DISPOSITIVO
+    {
+        get;
+        set;
+    }
+
+    public string? MOVIM_DISPOSITIVO_DESCRIPCION
     {
         get;
         set;

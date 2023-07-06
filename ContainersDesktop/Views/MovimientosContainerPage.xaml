@@ -39,51 +39,189 @@
                         <AppBarButton Command="{x:Bind VolverCommand, Mode=OneWay}"
                               Icon="Back"
                               Label="Volver" />
-                        <AppBarButton
-                              Icon="View"
-                              Label="Ver" />
+                        <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
+                              Icon="Add"
+                              Label="Agregar" />
+                        <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
+                                IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                              Icon="Edit"
+                              Label="Modificar" />
+                        <AppBarButton Command="{x:Bind BorrarCommand, Mode=OneWay}"
+                                IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                              Icon="Delete"
+                              Label="Borrar" />
                         <AppBarButton
                               Icon="Filter"
                               Label="Filtrar" />
                     </CommandBar>
                     <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
                           Checked="chkMostrarTodos_Checked"
+                              Unchecked="chkMostrarTodos_Unchecked"                              
                           />
                 </StackPanel>
             </Grid>
             
             <Grid Grid.Row="1">
-                <controls:DataGrid x:Name="MovimientosGrid" ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" AutoGenerateColumns="False">
+                <controls:DataGrid x:Name="MovimientosGrid" 
+                                   ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" 
+                                   SelectedItem="{x:Bind ViewModel.Current, Mode=TwoWay}" 
+                                   AutoGenerateColumns="False"
+                                   HorizontalScrollBarVisibility="Visible"
+                                   AlternatingRowBackground="DarkSlateGray"
+                                    CanUserReorderColumns="True"
+                                    Sorting="MovimientosGrid_Sorting"
+                                   IsReadOnly="True"
+                                   >
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Header="ID" Binding="{Binding MOVIM_ID_REG}" Width="60"/>
-                        <controls:DataGridTextColumn Header="Container" Binding="{Binding MOVIM_MATRICULA_OBJ}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Dispositivo" Binding="{Binding MOVIM_ID_DISPOSITIVO}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Fecha" Binding="{Binding MOVIM_FECHA}" Width="90"/>
-                        <controls:DataGridTextColumn Header="Tipo Movimiento" Binding="{Binding MOVIM_TIPO_MOVIM_DESCRIPCION}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Peso" Binding="{Binding MOVIM_PESO_DESCRIPCION}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Transportista" Binding="{Binding MOVIM_TRANSPORTISTA_DESCRIPCION}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Cliente" Binding="{Binding MOVIM_CLIENTE_DESCRIPCION}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Chofer" Binding="{Binding MOVIM_CHOFER_DESCRIPCION}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Camión" Binding="{Binding MOVIM_CAMION_ID}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Remolque" Binding="{Binding MOVIM_REMOLQUE_ID}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Albarán" Binding="{Binding MOVIM_ALBARAN_ID}" Width="150"/>
+                        <controls:DataGridTextColumn Header="ID" Tag="Id" Binding="{Binding MOVIM_ID_REG}" Width="60"/>
+                        <controls:DataGridTextColumn Header="Container" Tag="Container" Binding="{Binding MOVIM_MATRICULA_OBJ}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Dispositivo" Tag="Dispositivo" Binding="{Binding MOVIM_DISPOSITIVO_DESCRIPCION}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Fecha" Tag="Fecha" Binding="{Binding MOVIM_FECHA}" Width="90"/>
+                        <controls:DataGridTextColumn Header="Tipo Movimiento" Tag="TipoMovimiento" Binding="{Binding MOVIM_TIPO_MOVIM_DESCRIPCION}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Peso" Tag="Peso" Binding="{Binding MOVIM_PESO_DESCRIPCION}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Transportista" Tag="Transportista" Binding="{Binding MOVIM_TRANSPORTISTA_DESCRIPCION}" Width="300"/>
+                        <controls:DataGridTextColumn Header="Cliente" Tag="Cliente" Binding="{Binding MOVIM_CLIENTE_DESCRIPCION}" Width="300"/>
+                        <controls:DataGridTextColumn Header="Chofer" Tag="Chofer" Binding="{Binding MOVIM_CHOFER_DESCRIPCION}" Width="300"/>
+                        <controls:DataGridTextColumn Header="Camión" Tag="Camion" Binding="{Binding MOVIM_CAMION_ID}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Remolque" Tag="Remolque" Binding="{Binding MOVIM_REMOLQUE_ID}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Albarán" Tag="Albaran" Binding="{Binding MOVIM_ALBARAN_ID}" Width="150"/>
                         <controls:DataGridTextColumn Header="Observaciones" Binding="{Binding MOVIM_OBSERVACIONES}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Entrada/Salida" Binding="{Binding MOVIM_ENTRADA_SALIDA_DESCRIPCION}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Almacen" Binding="{Binding MOVIM_ALMACEN_DESCRIPCION}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Estado" Binding="{Binding MOVIM_ALMACEN_DESCRIPCION}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Entrada/Salida" Tag="EntradaSalida" Binding="{Binding MOVIM_ENTRADA_SALIDA_DESCRIPCION}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Almacen" Tag="Almacen" Binding="{Binding MOVIM_ALMACEN_DESCRIPCION}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Estado" Binding="{Binding MOVIM_ID_REG_ESTADO}" Width="150"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>
 
-            <ContentDialog x:Name="VerDialog"
-                       CloseButtonText="Cerrar">
+            <ContentDialog x:Name="Dialog"
+                            PrimaryButtonText="Aceptar" 
+                            CloseButtonText="Cerrar"
+                            Width="1200"
+                            >
                 <RelativePanel HorizontalAlignment="Stretch">
-                    <TextBox x:Name="Descripcion"
-                         Header="Fecha"
-                         HorizontalAlignment="Stretch"
-                         Text="{Binding MOVIM_FECHA, Mode=TwoWay}"
-                         Margin="4" 
-                         Width="300"/>
+                    <CalendarDatePicker x:Name="TxtFecha"
+                                Date="{Binding MOVIM_FECHA, Mode=OneWay}"
+                                Header="Fecha"      
+                                PlaceholderText="Elija una fecha"                              
+                                Width="240"
+                                Margin="4"
+                    />
+                    <ComboBox x:Name="ComboObjetos"
+                                Header="Container"
+                                ItemsSource="{x:Bind ViewModel.LstObjetos, Mode=OneWay}"
+                                SelectedItem="{Binding MOVIM_ID_OBJETO}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.RightOf="TxtFecha"
+                                Width="240"
+                                Margin="4"
+                    />
+
+                    <ComboBox x:Name="ComboTiposMovimiento"
+                                Header="Tipo Movimiento"
+                                ItemsSource="{x:Bind ViewModel.LstTiposMovimientoActivos, Mode=OneWay}"
+                                SelectedItem="{Binding MOVIM_TIPO_MOVIM}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="TxtFecha"
+                                Width="240"
+                                Margin="4"
+                    />
+
+                    <ComboBox x:Name="ComboPesos"
+                                Header="Peso"
+                                ItemsSource="{x:Bind ViewModel.LstPesosActivos, Mode=OneWay}"
+                                SelectedItem="{Binding MOVIM_PESO}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboObjetos"
+                              RelativePanel.RightOf="ComboTiposMovimiento"
+                                Width="240"
+                                Margin="4"
+                    />
+
+                    <ComboBox x:Name="ComboTransportistas"
+                                Header="Transportista"
+                                ItemsSource="{x:Bind ViewModel.LstTransportistasActivos, Mode=OneWay}"
+                                SelectedItem="{Binding MOVIM_TRANSPORTISTA}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboTiposMovimiento"
+                                Width="240"
+                                Margin="4"
+                    />
+
+                    <ComboBox x:Name="ComboClientes"
+                                Header="Cliente"
+                                ItemsSource="{x:Bind ViewModel.LstClientesActivos, Mode=OneWay}"
+                                SelectedItem="{Binding MOVIM_CLIENTE}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboPesos"
+                                RelativePanel.RightOf="ComboTransportistas"
+                                Width="240"
+                                Margin="4"
+                    />
+
+                    <ComboBox x:Name="ComboChoferes"
+                                Header="Transportista"
+                                ItemsSource="{x:Bind ViewModel.LstChoferesActivos, Mode=OneWay}"
+                                SelectedItem="{Binding MOVIM_CHOFER}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="ComboTransportistas"
+                                Width="240"
+                                Margin="4"
+                    />
+
+                    <TextBox x:Name="TxtCamion"
+                                Header="Camion"                        
+                                Text="{Binding MOVIM_CAMION_ID, Mode=TwoWay}"
+                                Width="240"
+                                Margin="4"
+                                RelativePanel.Below="ComboClientes"
+                                RelativePanel.RightOf="ComboChoferes"
+                    />
+
+                    <TextBox x:Name="TxtRemolque"
+                                Header="Remolque"                        
+                                Text="{Binding MOVIM_REMOLQUE_ID, Mode=TwoWay}"
+                                Width="240"
+                                Margin="4"
+                                RelativePanel.Below="ComboChoferes"
+                    />
+
+                    <TextBox x:Name="TxtAlbaran"
+                                Header="Albarán"                        
+                                Text="{Binding MOVIM_ALBARAN_ID, Mode=TwoWay}"
+                                Width="240"
+                                Margin="4"
+                                RelativePanel.Below="TxtCamion"
+                                RelativePanel.RightOf="TxtRemolque"
+                    />
+
+                    <ComboBox x:Name="ComboEntradaSalida"
+                                Header="Entrada/Salida"
+                                ItemsSource="{x:Bind ViewModel.LstEntradaSalidaActivos, Mode=OneWay}"
+                                SelectedItem="{Binding MOVIM_ENTRADA_SALIDA}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="TxtRemolque"
+                                Width="240"
+                                Margin="4"
+                    />
+
+                    <ComboBox x:Name="ComboAlmacenes"
+                                Header="Almacen"
+                                ItemsSource="{x:Bind ViewModel.LstAlmacenesActivos, Mode=OneWay}"
+                                SelectedItem="{Binding MOVIM_ALMACEN}"
+                                DisplayMemberPath="DESCRIPCION"
+                                RelativePanel.Below="TxtAlbaran"
+                                RelativePanel.RightOf="ComboEntradaSalida"
+                                Width="240"
+                                Margin="4"
+                    />
+
+                    <TextBox x:Name="TxtObservaciones"
+                                Header="Observaciones"
+                                Text="{Binding MOVIM_OBSERVACIONES, Mode=TwoWay}"
+                                TextWrapping="Wrap"
+                                RelativePanel.Below="ComboEntradaSalida"
+                                Width="500"
+                                Height="100"/>
                 </RelativePanel>
             </ContentDialog>
         </Grid>
