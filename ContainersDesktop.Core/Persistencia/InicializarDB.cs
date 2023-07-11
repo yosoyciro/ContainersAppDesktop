@@ -14,8 +14,8 @@ public static class InicializarDB
 
     public static async void InicializarBase()
     {
-        await ApplicationData.Current.LocalFolder.CreateFileAsync("Containers.db", CreationCollisionOption.OpenIfExists);
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        //await ApplicationData.Current.LocalFolder.CreateFileAsync("Containers.db", CreationCollisionOption.OpenIfExists);
+        var dbpath = Path.Combine(@"G:\Desarrollo\Bases", "Containers.db");
         using SqliteConnection db = new SqliteConnection($"Filename={dbpath}");
         await db.OpenAsync();
 

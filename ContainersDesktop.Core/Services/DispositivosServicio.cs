@@ -1,15 +1,24 @@
 ﻿using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Core.Models.Storage;
+using ContainersDesktop.Core.Persistencia;
 using Microsoft.Data.Sqlite;
-using Windows.Media.Playlists;
-using Windows.Storage;
+using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
 public class DispositivosServicio : IDispositivosServicio
 {
+    private readonly Settings _settings;
+    private readonly string _dbPath;
+    public DispositivosServicio(IOptions<Settings> settings)
+    {
+        _settings = settings.Value;
+        _dbPath = settings.Value.DBPath;
+    }
+
     public async Task<bool> ActualizarDispositivo(Dispositivos dispositivo)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
 
         try
         {
@@ -31,7 +40,7 @@ public class DispositivosServicio : IDispositivosServicio
                 updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_REG", dispositivo.DISPOSITIVOS_ID_REG);
 
 
-                await updateCommand.ExecuteReaderAsync();
+                await updateCommand.ExecuteReaderAsync();                
 
                 return true;
             }
@@ -46,7 +55,7 @@ public class DispositivosServicio : IDispositivosServicio
     {
         try
         {
-            string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+            string dbpath = Path.Combine(_dbPath, "Containers.db");
             using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
             {
                 db.Open();
@@ -70,9 +79,9 @@ public class DispositivosServicio : IDispositivosServicio
         }
     }
 
-    public async Task<bool> CrearDispositivo(Dispositivos dispositivo)
+    public async Task<int> CrearDispositivo(Dispositivos dispositivo)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
 
         try
         {
@@ -93,8 +102,9 @@ public class DispositivosServicio : IDispositivosServicio
                 insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", dispositivo.DISPOSITIVOS_FECHA_ACTUALIZACION);
 
                 await insertCommand.ExecuteReaderAsync();
+                var identity = await OperacionesComunes.GetIdentity(db);
 
-                return true;
+                return identity;
             }
         }
         catch (Exception ex)
@@ -107,7 +117,7 @@ public class DispositivosServicio : IDispositivosServicio
     {
         List<Dispositivos> dispositivosList = new();
 
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
         using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
         {
             await db.OpenAsync();

@@ -2,16 +2,26 @@
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Core.Persistencia;
 using Microsoft.Data.Sqlite;
-using Windows.Storage;
+using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
 public class ObjetosServicio : IObjetosServicio
 {
+    private readonly Settings _settings;
+    private readonly string _dbPath;
+
+    public ObjetosServicio(IOptions<Settings> settings)
+    {
+        _settings = settings.Value;
+        _dbPath = settings.Value.DBPath;
+    }
+
     public async Task<bool> ActualizarObjeto(Objetos objeto)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
 
         try
         {
@@ -79,7 +89,7 @@ public class ObjetosServicio : IObjetosServicio
 
     public async Task<int> CrearObjeto(Objetos objeto)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
 
         try
         {
@@ -149,7 +159,7 @@ public class ObjetosServicio : IObjetosServicio
     {
         List<Objetos> objetos = new List<Objetos>();
 
-        string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        string dbpath = Path.Combine(_dbPath, "Containers.db");
         using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
         {
             db.Open();
@@ -212,7 +222,7 @@ public class ObjetosServicio : IObjetosServicio
     public async Task<Objetos> ObtenerObjetoPorId(int id)
     {     
         var objeto = new Objetos();
-        string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        string dbpath = Path.Combine(_dbPath, "Containers.db");
         using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
         {
             db.Open();
@@ -270,7 +280,7 @@ public class ObjetosServicio : IObjetosServicio
     {
         try
         {
-            string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+            string dbpath = Path.Combine(_dbPath, "Containers.db");
             using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
             {
                 db.Open();

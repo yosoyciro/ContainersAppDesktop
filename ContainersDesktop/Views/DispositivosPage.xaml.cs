@@ -24,45 +24,7 @@ public sealed partial class DispositivosPage : Page
     {
         DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, false);
     }
-
-    //private void btnAgregar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    //{
-    //    //ViewModel.CrearNuevoObjeto();
-    //    var nuevoRegistro = new Dispositivos()
-    //    {
-    //        DISPOSITIVOS_ID_ESTADO_REG = "A",
-    //        DISPOSITIVOS_DESCRIP = "DESCRIPCION",
-    //        DISPOSITIVOS_CONTAINER = "AZURE CONTAINER"
-    //    };
-    //    ViewModel.Source.Add(nuevoRegistro);
-    //}
-
-    //private async void btnBorrar_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    //{
-    //    try
-    //    {
-    //        if (DispositivosGrid!.SelectedItem != null)
-    //        {
-    //            ViewModel.SelectedDispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
-    //            ViewModel.BorrarDispositivo();
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        ContentDialog dialog = new ContentDialog();
-
-    //        // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-    //        dialog.XamlRoot = this.XamlRoot;
-    //        dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-    //        dialog.Title = "Error";
-    //        dialog.CloseButtonText = "Cerrar";
-    //        dialog.DefaultButton = ContentDialogButton.Close;
-    //        dialog.Content = ex.Message;
-
-    //        await dialog.ShowAsync();
-    //    }
-    //}   
-
+    
     private async Task SincronizarDatos()
     {
         try
@@ -131,6 +93,7 @@ public sealed partial class DispositivosPage : Page
     {
         var dispositivo = AgregarDialog.DataContext as Dispositivos;
         await ViewModel.CrearDispositivo(dispositivo);
+
     }
 
     private async void DispositivosGrid_RowEditEnding(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridRowEditEndingEventArgs e)

@@ -70,7 +70,7 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
     {
         lista.LISTAS_ID_LISTA = claLista.CLALIST_ID_REG;
         var result = await _listasServicio.CrearLista(lista);
-        if (result)
+        if (result > 0)
         {
             await CargarSource();
         }

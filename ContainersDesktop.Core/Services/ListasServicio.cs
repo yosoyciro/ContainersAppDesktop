@@ -1,16 +1,26 @@
 ﻿using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Core.Models.Storage;
+using ContainersDesktop.Core.Persistencia;
 using Microsoft.Data.Sqlite;
-using Windows.Storage;
+using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
 public class ListasServicio : IListasServicio
 {
-    public async Task<bool> CrearLista(Listas lista)
+    private readonly Settings _settings;
+    private readonly string _dbPath = string.Empty;
+    public ListasServicio(IOptions<Settings> settings)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+        _settings = settings.Value;
+        _dbPath = Path.Combine(settings.Value.DBPath, "Containers.db");
+    }
+
+    public async Task<int> CrearLista(Listas lista)
+    {
+        //var dbpath = Path.Combine(_settings.DBPath, "Containers.db"); //Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbPath}"))
         {
             db.Open();
 
@@ -30,7 +40,9 @@ public class ListasServicio : IListasServicio
 
                 await insertCommand.ExecuteReaderAsync();
 
-                return true;
+                int identity = await OperacionesComunes.GetIdentity(db);
+
+                return identity;
             }
             catch (Exception ex)
             {
@@ -47,8 +59,8 @@ public class ListasServicio : IListasServicio
     {
         List<Listas> listas = new List<Listas>();
 
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+        //var dbpath = Path.Combine(_settings.DBPath, "Containers.db");  //Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbPath}"))
         {
             db.Open();
 
@@ -81,11 +93,11 @@ public class ListasServicio : IListasServicio
 
     public async Task<bool> ActualizarLista(Listas lista)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        //var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
 
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbPath}"))
             {
                 db.Open();
 
@@ -118,8 +130,8 @@ public class ListasServicio : IListasServicio
     {
         try
         {
-            string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            //string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbPath}"))
             {
                 db.Open();
 

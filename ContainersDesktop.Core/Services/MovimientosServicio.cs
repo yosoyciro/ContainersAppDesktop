@@ -2,19 +2,29 @@
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Core.Persistencia;
 using Microsoft.Data.Sqlite;
-using Windows.Storage;
+using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
 public class MovimientosServicio : IMovimientosServicio
 {
+    private readonly Settings _settings;
+    private readonly string _dbPath;
+
+    public MovimientosServicio(IOptions<Settings> settings)
+    {
+        _settings = settings.Value;
+        _dbPath = settings.Value.DBPath;
+    }
+
     #region ObtenerMovimientosObjeto
     public async Task<List<Movim>> ObtenerMovimientosObjeto(int idObjeto)
     {
         List<Movim> movimLista = new();
 
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
         using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
         {
             db.Open();
@@ -76,7 +86,7 @@ public class MovimientosServicio : IMovimientosServicio
     {
         List<Movim> movimLista = new();
 
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
         using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
         {
             db.Open();
@@ -199,7 +209,7 @@ public class MovimientosServicio : IMovimientosServicio
             }
         }
 
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");        
+        var dbpath = Path.Combine(_dbPath, "Containers.db");        
         using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
         {
             try
@@ -275,7 +285,7 @@ public class MovimientosServicio : IMovimientosServicio
 
     public async Task<bool> ActualizarObjeto(Objetos objeto)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
 
         try
         {
@@ -345,7 +355,7 @@ public class MovimientosServicio : IMovimientosServicio
     #region CrearMovimiento
     public async Task<int> CrearMovimiento(Movim movim)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
 
         try
         {
@@ -407,7 +417,7 @@ public class MovimientosServicio : IMovimientosServicio
     #region ActualizarMovimiento
     public async Task<bool> ActualizarMovimiento(Movim movim)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
 
         try
         {
@@ -451,7 +461,7 @@ public class MovimientosServicio : IMovimientosServicio
                 updateCommand.Parameters.AddWithValue("@MOVIM_ALMACEN_LISTA", movim.MOVIM_ALMACEN_LISTA);
                 updateCommand.Parameters.AddWithValue("@MOVIM_ALMACEN", movim.MOVIM_ALMACEN);
                 updateCommand.Parameters.AddWithValue("@MOVIM_PDF", movim.MOVIM_PDF);
-                updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar());
+                updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", movim.MOVIM_FECHA_ACTUALIZACION);
 
                 await updateCommand.ExecuteReaderAsync();
 
@@ -468,7 +478,7 @@ public class MovimientosServicio : IMovimientosServicio
     #region BajaMovimiento
     public async Task<bool> BorrarMovimiento(int id)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
 
         try
         {

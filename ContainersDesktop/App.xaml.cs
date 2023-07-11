@@ -1,6 +1,7 @@
 ﻿using ContainersDesktop.Activation;
 using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Core.Contracts.Services;
+using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Core.Persistencia;
 using ContainersDesktop.Core.Services;
 using ContainersDesktop.Helpers;
@@ -8,7 +9,7 @@ using ContainersDesktop.Models;
 using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
-
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -70,7 +71,6 @@ public partial class App : Application
             services.AddSingleton<INavigationService, NavigationService>();
 
             // Core Services
-            services.AddSingleton<ISampleDataService, SampleDataService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddTransient<IObjetosServicio, ObjetosServicio>();
             services.AddTransient<IListasServicio, ListasServicio>();
@@ -105,6 +105,7 @@ public partial class App : Application
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+            services.Configure<Settings>(options => context.Configuration.GetSection("Settings").Bind(options));
         }).
         Build();
 

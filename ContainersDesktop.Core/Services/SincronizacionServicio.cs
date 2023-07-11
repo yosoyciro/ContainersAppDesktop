@@ -1,14 +1,24 @@
 ﻿using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Core.Models.Storage;
 using Microsoft.Data.Sqlite;
-using Windows.Storage;
+using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
 public class SincronizacionServicio : ISincronizacionServicio
 {
+    private readonly Settings _settings;
+    private readonly string _dbPath;
+
+    public SincronizacionServicio(IOptions<Settings> settings)
+    {
+        _settings = settings.Value;
+        _dbPath = settings.Value.DBPath;
+    }
+
     public async Task<bool> CrearSincronizacion(Sincronizaciones sincronizacion)
     {
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
         using (SqliteConnection db = new SqliteConnection($"Filename={dbpath};Pooling=false"))
         {            
             await db.OpenAsync();
@@ -52,7 +62,7 @@ public class SincronizacionServicio : ISincronizacionServicio
     {
         List<Sincronizaciones> sincronizacionList = new();
 
-        var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
+        var dbpath = Path.Combine(_dbPath, "Containers.db");
         using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
         {
             await db.OpenAsync();
