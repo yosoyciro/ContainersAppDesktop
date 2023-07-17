@@ -29,8 +29,8 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
 
             SqliteCommand selectCommand = new SqliteCommand
                 ("SELECT TAREAS_PROGRAMADAS_ID_REG, TAREAS_PROGRAMADAS_OBJETO_ID_REG, TAREAS_PROGRAMADAS_FECHA_PROGRAMADA, TAREAS_PROGRAMADAS_FECHA_COMPLETADA, " +
-                "TAREAS_PROGRAMADAS_UBICACION_ORIGEN, TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG " +
-                "FROM TAREAS_PROGRAMADAS WHERE TAREAS_PROGRAMADAS_OBJETO_ID_REG = @TAREAS_PROGRAMADAS_OBJETO_ID_REG", db);
+                "TAREAS_PROGRAMADAS_UBICACION_ORIGEN, TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG, " +
+                "TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION FROM TAREAS_PROGRAMADAS WHERE TAREAS_PROGRAMADAS_OBJETO_ID_REG = @TAREAS_PROGRAMADAS_OBJETO_ID_REG", db);
 
             selectCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_OBJETO_ID_REG", idObjeto);
 
@@ -47,7 +47,8 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                     TAREAS_PROGRAMADAS_UBICACION_ORIGEN = query.GetInt32(4),
                     TAREAS_PROGRAMADAS_UBICACION_DESTINO = query.GetInt32(5),
                     TAREAS_PROGRAMADAS_ORDENADO = query.GetString(6),
-                    TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = query.GetInt32(7),                    
+                    TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = query.GetInt32(7),
+                    TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(8)),
                 };
                 movimLista.Add(movimObjeto);
             }
@@ -69,8 +70,8 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
 
             SqliteCommand selectCommand = new SqliteCommand
                 ("SELECT TAREAS_PROGRAMADAS_ID_REG, TAREAS_PROGRAMADAS_OBJETO_ID_REG, TAREAS_PROGRAMADAS_FECHA_PROGRAMADA, TAREAS_PROGRAMADAS_FECHA_COMPLETADA, " +
-                "TAREAS_PROGRAMADAS_UBICACION_ORIGEN, TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG " +
-                "FROM TAREAS_PROGRAMADAS", db);
+                "TAREAS_PROGRAMADAS_UBICACION_ORIGEN, TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG, " +
+                "TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION FROM TAREAS_PROGRAMADAS", db);
 
             SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
 
@@ -86,6 +87,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                     TAREAS_PROGRAMADAS_UBICACION_DESTINO = query.GetInt32(5),
                     TAREAS_PROGRAMADAS_ORDENADO = query.GetString(6),
                     TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = query.GetInt32(7),
+                    TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(8)),
                 };
                 movimLista.Add(movimObjeto);
             }
@@ -299,15 +301,16 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                 // Use parameterized query to prevent SQL injection attacks
                 updateCommand.CommandText = "UPDATE TAREAS_PROGRAMADAS SET TAREAS_PROGRAMADAS_OBJETO_ID_REG=@TAREAS_PROGRAMADAS_OBJETO_ID_REG, TAREAS_PROGRAMADAS_FECHA_PROGRAMADA=@TAREAS_PROGRAMADAS_FECHA_PROGRAMADA " +
                     "TAREAS_PROGRAMADAS_FECHA_COMPLETADA=@TAREAS_PROGRAMADAS_FECHA_COMPLETADA, TAREAS_PROGRAMADAS_UBICACION_ORIGEN=@TAREAS_PROGRAMADAS_UBICACION_ORIGEN " +
-                    "TAREAS_PROGRAMADAS_UBICACION_DESTINO=@TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO=@TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG=@TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG " + 
-                    "WHERE TAREAS_PROGRAMADAS_ID_REG=@TAREAS_PROGRAMADAS_ID_REG;";
+                    "TAREAS_PROGRAMADAS_UBICACION_DESTINO=@TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO=@TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG=@TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG " +
+                    "TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION=@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION WHERE TAREAS_PROGRAMADAS_ID_REG=@TAREAS_PROGRAMADAS_ID_REG;";
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", tareaProgramada.TAREAS_PROGRAMADAS_ID_REG);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_PROGRAMADA", tareaProgramada.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_COMPLETADA", tareaProgramada.TAREAS_PROGRAMADAS_FECHA_COMPLETADA);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_UBICACION_ORIGEN", tareaProgramada.TAREAS_PROGRAMADAS_UBICACION_ORIGEN);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_UBICACION_DESTINO", tareaProgramada.TAREAS_PROGRAMADAS_UBICACION_DESTINO);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ORDENADO", tareaProgramada.TAREAS_PROGRAMADAS_ORDENADO);
-                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG", tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG);                
+                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG", tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG);
+                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION", tareaProgramada.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION);
 
                 await updateCommand.ExecuteReaderAsync();
 
@@ -336,10 +339,12 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                 updateCommand.Connection = db;
 
                 // Use parameterized query to prevent SQL injection attacks
-                updateCommand.CommandText = "UPDATE TAREAS_PROGRAMADAS SET TAREAS_PROGRAMADAS_ID_ESTADO_REG=@TAREAS_PROGRAMADAS_ID_ESTADO_REG " +
+                updateCommand.CommandText = "UPDATE TAREAS_PROGRAMADAS SET TAREAS_PROGRAMADAS_ID_ESTADO_REG=@TAREAS_PROGRAMADAS_ID_ESTADO_REG, " +
+                    " TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION=@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION " +
                     " WHERE TAREAS_PROGRAMADAS_ID_REG=@TAREAS_PROGRAMADAS_ID_REG;";
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", id);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_ESTADO_REG", "B");
+                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 await updateCommand.ExecuteReaderAsync();
 
