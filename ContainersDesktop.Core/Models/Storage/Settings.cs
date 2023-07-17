@@ -6,4 +6,19 @@ public class Settings
         get;
         set;
     }
+    public string DBName
+    {
+        get;
+        set;
+    }
+    public string DBNameDescarga
+    {
+        get;
+        set;
+    }
+    public string DBNameSubida
+    {
+        get;
+        set;
+    }
 }

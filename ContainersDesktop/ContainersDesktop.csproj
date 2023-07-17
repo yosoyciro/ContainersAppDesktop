@@ -22,6 +22,7 @@
     <None Remove="Views\MovimientosContainerPage.xaml" />
     <None Remove="Views\MovimientosPage.xaml" />
     <None Remove="Views\SincronizacionesPage.xaml" />
+    <None Remove="Views\TareasProgramadasPage.xaml" />
     <None Remove="Views\TiposListaDetailsPage.xaml" />
   </ItemGroup>
 
@@ -45,6 +46,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\TareasProgramadasPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\SincronizacionesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

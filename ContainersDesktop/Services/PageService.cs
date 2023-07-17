@@ -22,6 +22,7 @@ public class PageService : IPageService
         Configure<MovimientosViewModel, MovimientosPage>();        
         Configure<LoginViewModel, LoginPage>();
         Configure<SincronizacionesViewModel, SincronizacionesPage>();
+        Configure<TareasProgramadasViewModel, TareasProgramadasPage>();
     }
 
     public Type GetPageType(string key)

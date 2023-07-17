@@ -6,6 +6,7 @@ using ContainersDesktop.Core.Persistencia;
 using ContainersDesktop.Core.Services;
 using ContainersDesktop.Helpers;
 using ContainersDesktop.Models;
+using ContainersDesktop.Models.Storage;
 using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
@@ -78,6 +79,7 @@ public partial class App : Application
             services.AddTransient<IDispositivosServicio, DispositivosServicio>();
             services.AddTransient<IMovimientosServicio, MovimientosServicio>();
             services.AddTransient<ISincronizacionServicio, SincronizacionServicio>();
+            services.AddTransient<ITareasProgramadasServicio, TareasProgramadasServicio>();
             services.AddTransient<AzureStorageManagement>();
 
             // Views and ViewModels
@@ -102,10 +104,13 @@ public partial class App : Application
             services.AddTransient<LoginPage>();
             services.AddTransient<SincronizacionesViewModel>();
             services.AddTransient<SincronizacionesPage>();
+            services.AddTransient<TareasProgramadasViewModel>();
+            services.AddTransient<TareasProgramadasPage>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
             services.Configure<Settings>(options => context.Configuration.GetSection("Settings").Bind(options));
+            services.Configure<AzureStorageConfig>(options => context.Configuration.GetSection("AzureStorageConfig").Bind(options));
         }).
         Build();
 

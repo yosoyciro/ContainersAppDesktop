@@ -1,0 +1,77 @@
+<Page
+    x:Class="ContainersDesktop.Views.TareasProgramadasPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ContainersDesktop.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Border>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid HorizontalAlignment="Stretch"              
+              Margin="0,0,0,16"
+              CornerRadius="4"
+              Height="52"
+              Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,0,16"
+                    CornerRadius="4"
+                    Height="52">
+
+                    <CommandBar Background="Transparent"
+                        DefaultLabelPosition="Right"
+                        Grid.Column="1"
+                        Grid.Row="0">
+                        <AppBarButton 
+                                    IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}"
+                                  Icon="Edit"
+                                  Label="Modificar" />
+                        <AppBarButton 
+                                  IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                                  Icon="Delete"
+                                  Label="Borrar"/>
+                        <AppBarButton Icon="Filter" 
+                                  Label="Filtrar" />
+                        <AppBarButton Icon="Document" 
+                                  Label="Exportar" />
+                    </CommandBar>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <controls:DataGrid x:Name="TareasProgramadasGrid" 
+                                   ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" 
+                                   SelectedItem="{x:Bind ViewModel.Current, Mode=TwoWay}" 
+                                   AutoGenerateColumns="False"
+                                   HorizontalScrollBarVisibility="Visible"
+                                   AlternatingRowBackground="DarkSlateGray"
+                                    CanUserReorderColumns="True"
+                                    Sorting="TareasProgramadasGrid_Sorting"
+                                   IsReadOnly="True">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="ID" Tag="Id" Binding="{Binding TAREAS_PROGRAMADAS_ID_REG}" Width="60"/>
+                        <controls:DataGridTextColumn Header="Container" Tag="Container" Binding="{Binding TAREAS_PROGRAMADAS_OBJETO_MATRICULA}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Fecha Programada" Tag="FechaProgramada" Binding="{Binding TAREAS_PROGRAMADAS_FECHA_PROGRAMADA}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Fecha Completada" Tag="FechaCompletada" Binding="{Binding TAREAS_PROGRAMADAS_FECHA_COMPLETADA}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Ubicación Origen" Tag="UbicacionOrigen" Binding="{Binding TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Ubicación Destino" Tag="UbicacionDestino" Binding="{Binding TAREAS_PROGRAMADAS_UBICACION_DESTINO_DESCRIPCION}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Dispositivo" Tag="Dispositivo" Binding="{Binding TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION}" Width="200"/>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </Grid>
+        </Grid>
+    </Border>
+</Page>

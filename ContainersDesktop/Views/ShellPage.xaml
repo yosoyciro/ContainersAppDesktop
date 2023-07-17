@@ -74,6 +74,11 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80a;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem x:Uid="Shell_TareasProgramadas" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.TareasProgramadasViewModel">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80a;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.HeaderTemplate>
                 <DataTemplate>
