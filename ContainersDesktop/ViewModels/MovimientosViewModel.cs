@@ -9,6 +9,9 @@ using ContainersDesktop.DTO;
 namespace ContainersDesktop.ViewModels;
 public partial class MovimientosViewModel : ObservableRecipient, INavigationAware
 {
+    private MovimientosFormViewModel _formViewModel = new();
+    public MovimientosFormViewModel FormViewModel => _formViewModel;
+
     private readonly IMovimientosServicio _movimientosServicio;
     private readonly IListasServicio _listasServicio;
     private readonly IDispositivosServicio _dispositivosServicio;

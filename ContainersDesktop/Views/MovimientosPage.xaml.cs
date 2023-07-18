@@ -76,11 +76,10 @@ public sealed partial class MovimientosPage : Page
             MOVIM_OBSERVACIONES = string.Empty,
             MOVIM_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
             MOVIM_PDF = string.Empty,
-    };
-        ComboObjetos.IsEnabled = false;
+        };
 
         //valores x defecto para los combo
-        TxtFecha.Date = DateTime.Now.Date;
+        ViewModel.FormViewModel.Fecha = DateTime.Now.Date;
         ComboObjetos.SelectedItem = ViewModel.LstObjetosActivos.FirstOrDefault();
         ComboTiposMovimiento.SelectedItem = ViewModel.LstTiposMovimientoActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstTiposMovimientoActivos.FirstOrDefault();
         ComboPesos.SelectedItem = ViewModel.LstPesosActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstPesosActivos.FirstOrDefault();
@@ -113,6 +112,7 @@ public sealed partial class MovimientosPage : Page
         nuevoMovimiento.MOVIM_ID_DISPOSITIVO = dispositivo.MOVIM_ID_DISPOSITIVO;
         nuevoMovimiento.MOVIM_DISPOSITIVO_DESCRIPCION = dispositivo.DESCRIPCION;
         nuevoMovimiento.MOVIM_ID_REG_MOBILE = 0;
+        nuevoMovimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(ViewModel.FormViewModel.Fecha.Value.Date);
         nuevoMovimiento.MOVIM_ID_OBJETO = objeto.MOVIM_ID_OBJETO;
         nuevoMovimiento.MOVIM_MATRICULA_OBJ = objeto.DESCRIPCION;
         nuevoMovimiento.MOVIM_TIPO_MOVIM = tipoMovimiento.MOVIM_TIPO_MOVIM;
@@ -162,6 +162,7 @@ public sealed partial class MovimientosPage : Page
         movimiento.MOVIM_ID_DISPOSITIVO = dispositivo.MOVIM_ID_DISPOSITIVO;
         movimiento.MOVIM_DISPOSITIVO_DESCRIPCION = dispositivo.DESCRIPCION;
         movimiento.MOVIM_ID_REG_MOBILE = 0;
+        movimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(ViewModel.FormViewModel.Fecha.Value.Date);
         movimiento.MOVIM_ID_OBJETO = objeto.MOVIM_ID_OBJETO;
         movimiento.MOVIM_MATRICULA_OBJ = objeto.DESCRIPCION;
         movimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(TxtFecha.Date.Value.Date);

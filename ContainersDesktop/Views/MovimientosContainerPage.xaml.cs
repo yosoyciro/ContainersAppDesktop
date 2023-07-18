@@ -110,6 +110,7 @@ public sealed partial class MovimientosContainerPage : Page
         nuevoMovimiento.MOVIM_ID_DISPOSITIVO = dispositivo.MOVIM_ID_DISPOSITIVO;
         nuevoMovimiento.MOVIM_DISPOSITIVO_DESCRIPCION = dispositivo.DESCRIPCION;
         nuevoMovimiento.MOVIM_ID_REG_MOBILE = 0;
+        nuevoMovimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(ViewModel.FormViewModel.Fecha.Value.Date);
         nuevoMovimiento.MOVIM_ID_OBJETO = objeto.MOVIM_ID_OBJETO;
         nuevoMovimiento.MOVIM_MATRICULA_OBJ = objeto.DESCRIPCION;
         nuevoMovimiento.MOVIM_TIPO_MOVIM = tipoMovimiento.MOVIM_TIPO_MOVIM;
@@ -161,7 +162,7 @@ public sealed partial class MovimientosContainerPage : Page
         movimiento.MOVIM_ID_REG_MOBILE = 0;
         movimiento.MOVIM_ID_OBJETO = objeto.MOVIM_ID_OBJETO;
         movimiento.MOVIM_MATRICULA_OBJ = objeto.DESCRIPCION;
-        movimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(TxtFecha.Date.Value.Date);
+        movimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(ViewModel.FormViewModel.Fecha.Value.Date);
         movimiento.MOVIM_TIPO_MOVIM = tipoMovimiento.MOVIM_TIPO_MOVIM;
         movimiento.MOVIM_TIPO_MOVIM_LISTA = tipoMovimiento.LISTAS_ID_LISTA;
         movimiento.MOVIM_TIPO_MOVIM_DESCRIPCION = tipoMovimiento.DESCRIPCION;

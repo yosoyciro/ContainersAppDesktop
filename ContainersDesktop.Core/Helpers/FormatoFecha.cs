@@ -1,10 +1,13 @@
-﻿namespace ContainersDesktop.Core.Helpers;
+﻿using System.Globalization;
+
+namespace ContainersDesktop.Core.Helpers;
 public static class FormatoFecha
 {
     public static string ConvertirAFechaCorta(string fechaEstandar)
     {
+        CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
         var fecha = Convert.ToDateTime(fechaEstandar);
-        return fecha.Date.ToShortDateString();
+        return fecha.Date.ToString(currentCulture.DateTimeFormat.ShortDatePattern);
     }
 
     public static string FechaEstandar(DateTime fecha = new DateTime())

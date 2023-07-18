@@ -100,7 +100,8 @@
                             >
                 <RelativePanel HorizontalAlignment="Stretch">
                     <CalendarDatePicker x:Name="TxtFecha"
-                                Date="{Binding MOVIM_FECHA, Mode=OneWay}"
+                                Date="{x:Bind ViewModel.FormViewModel.Fecha, Mode=TwoWay}"
+                                DateFormat="{}{day.integer}/{month.integer}/{year.full}"
                                 Header="Fecha"      
                                 PlaceholderText="Elija una fecha"                              
                                 Width="240"
