@@ -49,29 +49,49 @@ public sealed partial class DispositivosPage : Page
         }
     }
 
-    public ICommand NuevoCommand => new AsyncRelayCommand(OpenNewDialog);
-    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarDispositivo);
-    public ICommand AgregarCommand => new AsyncRelayCommand(AgregarDispositivo);
+    public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);
+    public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistro);
+    public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
+    public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
+    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);   
     public ICommand SincronizarCommand => new AsyncRelayCommand(SincronizarDatos);
 
-    private async Task OpenNewDialog()
+    private async Task OpenAgregarDialog()
     {
-        AgregarDialog.Title = "Nuevo dispositivo";
-        AgregarDialog.PrimaryButtonText = "Agregar";
-        AgregarDialog.PrimaryButtonCommand = AgregarCommand;
+        AgregarDialog.Title = "Agregar dispositivo";
+        AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
         AgregarDialog.DataContext = new Dispositivos()
         {
             DISPOSITIVOS_ID_ESTADO_REG = "A",
             DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
         };
+
+        //Valores por defecto de los campos
+        ViewModel.FormViewModel.Descripcion = string.Empty;
+        ViewModel.FormViewModel.Container = string.Empty;
         await AgregarDialog.ShowAsync();
     }
 
-    private async Task BorrarDispositivo()
+    private async Task OpenModificarDialog()
+    {
+        AgregarDialog.Title = "Modificar dispositivo";
+        AgregarDialog.PrimaryButtonCommand = ModificarRegistroCommand;
+        AgregarDialog.DataContext = ViewModel.SelectedDispositivo;
+
+        //Valores por defecto de los campos
+        ViewModel.FormViewModel.Descripcion = ViewModel.SelectedDispositivo.DISPOSITIVOS_DESCRIP;
+        ViewModel.FormViewModel.Container = ViewModel.SelectedDispositivo.DISPOSITIVOS_CONTAINER;
+        await AgregarDialog.ShowAsync();
+    }
+
+    #region CRUD
+    private async Task BorrarRegistro()
     {
         try
         {
             await ViewModel.BorrarDispositivo();
+
+            DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
         }
         catch (Exception ex)
         {
@@ -89,37 +109,29 @@ public sealed partial class DispositivosPage : Page
         }
     }
 
-    private async Task AgregarDispositivo()
+    private async Task AgregarRegistro()
     {
         var dispositivo = AgregarDialog.DataContext as Dispositivos;
+        dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
+        dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
         await ViewModel.CrearDispositivo(dispositivo);
 
+        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
     }
 
-    private async void DispositivosGrid_RowEditEnding(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridRowEditEndingEventArgs e)
+    private async Task ModificarRegistro()
     {
-        try
-        {
-            var dispositivo = DispositivosGrid!.SelectedItem as Dispositivos;
-            dispositivo.DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
-            await ViewModel.ActualizarDispositivo(dispositivo);
-        }
-        catch (Exception ex)
-        {
-            ContentDialog dialog = new ContentDialog();
+        var dispositivo = AgregarDialog.DataContext as Dispositivos;
+        dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
+        dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
+        await ViewModel.ActualizarDispositivo(dispositivo);
 
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Error";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = ex.Message;
-
-            await dialog.ShowAsync();
-        }
+        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
     }
-    
+
+    #endregion
+
+    #region Handlers eventos de controles
     private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
         if (args.QueryText != "")
@@ -148,4 +160,15 @@ public sealed partial class DispositivosPage : Page
     {
         DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, false);
     }
+
+    private void txtDispositivo_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+    {
+        ViewModel.FormViewModel.Descripcion = sender.Text;
+    }
+
+    private void txtCloudContainer_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+    {
+        ViewModel.FormViewModel.Container = sender.Text;
+    }
+    #endregion
 }

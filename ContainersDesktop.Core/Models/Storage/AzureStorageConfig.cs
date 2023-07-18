@@ -1,10 +1,8 @@
-﻿namespace ContainersDesktop.Models.Storage
+﻿namespace ContainersDesktop.Models.Storage;
+
+public class AzureStorageConfig
 {
-    public class AzureStorageConfig
-    {
-        public string Cuenta { get; set; }
-        public string Clave { get; set; }
-        public string ConnectionString { get; set; }
-        //public string Contenedor { get; set; }
-    }
+    public string Cuenta { get; set; }
+    public string Clave { get; set; }
+    public string ConnectionString { get; set; }
 }

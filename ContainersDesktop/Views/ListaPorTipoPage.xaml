@@ -45,7 +45,7 @@
                         <AppBarButton Command="{x:Bind VolverCommand, Mode=OneWay}"
                               Icon="Back"
                               Label="Volver" />
-                        <AppBarButton Command="{x:Bind NuevoCommand, Mode=OneWay}"
+                        <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
                               Icon="Add"
                               Label="Agregar" />
                         <AppBarButton Command="{x:Bind BorrarCommand}"
@@ -68,8 +68,7 @@
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"
                 SelectedItem="{x:Bind ViewModel.SelectedLista, Mode=TwoWay}"
-                ItemsSource="{x:Bind ViewModel.Source}"
-                RowEditEnding="ListaGrid_RowEditEnding" 
+                ItemsSource="{x:Bind ViewModel.Source}"                
                 SelectionMode="Single"
                 AlternatingRowBackground="DarkSlateGray"
                 CanUserSortColumns="True"
@@ -83,25 +82,40 @@
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_LISTA_ORDEN}" Header="Orden" Tag="Orden" />
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_LISTA_DESCRIP}" Header="Descripción" Tag="Descripcion" />
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_ESTADO_REG, Mode=TwoWay}" Header="Estado Reg" Tag="Estado" />
-                    <controls:DataGridTextColumn Binding="{Binding LISTAS_FECHA_ACTUALIZACION, Mode=TwoWay}" Header="Fecha Actualización" Tag="FechaActualizacion" />
+                    <controls:DataGridTextColumn Binding="{Binding LISTAS_FECHA_ACTUALIZACION, Mode=TwoWay}" Header="Fecha Actualización" Tag="FechaActualizacion" Visibility="Collapsed" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
             <ContentDialog x:Name="AgregarDialog"
-                       PrimaryButtonText="Aceptar"
-                       CloseButtonText="Cancelar">
+                        PrimaryButtonText="Aceptar"
+                        CloseButtonText="Cancelar"
+                        IsPrimaryButtonEnabled="{x:Bind ViewModel.FormViewModel.IsValid, Mode=OneWay}">
                 <RelativePanel HorizontalAlignment="Stretch">
-                    <NumberBox x:Name="Orden"
+                    <NumberBox x:Name="txtOrden"
+                               IsEnabled="False"
                             Header="Orden"
                             HorizontalAlignment="Stretch"
                             Width="200"
                             Text="{Binding LISTAS_ID_LISTA_ORDEN, Mode=TwoWay}"
                             Margin="4,0,0,0" />
-                    <TextBox x:Name="Descripcion"
+                    
+                    <TextBox x:Name="txtDescripcion"
                              Header="Descripción"
                              HorizontalAlignment="Stretch"
                              Width="500"
-                             Text="{Binding LISTAS_ID_LISTA_DESCRIP, Mode=TwoWay}"
+                             Text="{x:Bind ViewModel.FormViewModel.Descripcion, Mode=TwoWay}"
+                             TextChanging="txtDescripcion_TextChanging"
                              Margin="4,80,0,0" />
+
+                    <Grid RelativePanel.Below="txtDescripcion">
+                        <SymbolIcon Symbol="ReportHacked"
+                            Foreground="Red"
+                            Visibility="{x:Bind ViewModel.FormViewModel.HasErrors, Mode=OneWay}">
+                            <ToolTipService.ToolTip>
+                                <TextBlock Text="{x:Bind ViewModel.FormViewModel.Errors, Mode=OneWay}"
+                                Foreground="Red" />
+                            </ToolTipService.ToolTip>
+                        </SymbolIcon>
+                    </Grid>
                 </RelativePanel>
             </ContentDialog>
         </Grid>

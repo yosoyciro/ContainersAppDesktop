@@ -5,10 +5,14 @@ using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Services;
+using ContainersDesktop.DTO;
 
 namespace ContainersDesktop.ViewModels;
 public partial class DispositivosViewModel : ObservableRecipient, INavigationAware
 {
+    private DispositivosFormViewModel _formViewModel = new();
+    public DispositivosFormViewModel FormViewModel => _formViewModel;
+
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IMovimientosServicio _movimientosServicio;
     private readonly ISincronizacionServicio _sincronizacionServicio;
@@ -60,21 +64,24 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
     public async Task CrearDispositivo(Dispositivos dispositivo)
     {
         
-        await _dispositivosServicio.CrearDispositivo(dispositivo);
-
-        await CargarSource();
+        dispositivo.DISPOSITIVOS_ID_REG = await _dispositivosServicio.CrearDispositivo(dispositivo);
+        if (dispositivo.DISPOSITIVOS_ID_REG > 0)
+        {
+            Source.Add(dispositivo);
+        }        
     }
 
     public async Task ActualizarDispositivo(Dispositivos dispositivo)
     {
         await _dispositivosServicio.ActualizarDispositivo(dispositivo);
-        //await CargarSource();
+        var i = Source.IndexOf(dispositivo);        
+        Source[i] = dispositivo;
     }
 
     public async Task BorrarDispositivo()
     {
         await _dispositivosServicio.BorrarDispositivo(SelectedDispositivo.DISPOSITIVOS_ID_REG);
-        await CargarSource();
+        Source.Remove(SelectedDispositivo);
     }
     #endregion
 

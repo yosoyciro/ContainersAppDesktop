@@ -4,12 +4,14 @@ using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
-using ContainersDesktop.Core.Services;
+using ContainersDesktop.DTO;
 
 namespace ContainersDesktop.ViewModels;
 
 public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAware
 {
+    private ListasPorTipoFormViewModel _formViewModel = new();
+    public ListasPorTipoFormViewModel FormViewModel => _formViewModel;
     public ObservableCollection<Listas> Source {
         get;
     } = new();
@@ -63,24 +65,24 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
     public async Task BorrarLista()
     {
         await _listasServicio.BorrarLista(SelectedLista.LISTAS_ID_REG);
-        await CargarSource();
+        Source.Remove(SelectedLista);
     }
 
     public async Task AgregarLista(Listas lista)
     {
         lista.LISTAS_ID_LISTA = claLista.CLALIST_ID_REG;
-        var result = await _listasServicio.CrearLista(lista);
-        if (result > 0)
+        lista.LISTAS_ID_REG = await _listasServicio.CrearLista(lista);
+        if (lista.LISTAS_ID_REG > 0)
         {
-            await CargarSource();
+            Source.Add(lista);
         }
-
     }
 
     public async Task ActualizarLista(Listas lista)
     {
         await _listasServicio.ActualizarLista(lista);
-        await CargarSource();
+        var i = Source.IndexOf(lista);
+        Source[i] = lista;
     }
 
     #region Filtros y ordenamiento

@@ -28,50 +28,26 @@ public sealed partial class ListaPorTipoPage : Page
     {
         ListaGrid.ItemsSource = ViewModel.AplicarFiltro(null, false);
     }
-
-    private async void ListaGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-    {
-        Console.WriteLine(e.Row.DataContext);
-        try
-        {
-            var lista = ListaGrid!.SelectedItem as Listas;
-            lista.LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
-            await ViewModel.ActualizarLista(lista);
-
-            //ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
-        }
-        catch (Exception ex)
-        {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Error";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = ex.Message;
-
-            await dialog.ShowAsync();
-        }
-    }
-
-    public ICommand NuevoCommand => new AsyncRelayCommand(OpenNewDialog);
-    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);
-    public ICommand AgregarCommand => new AsyncRelayCommand(AgregarRegistro);
+    
+    public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);
+    public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistro);
+    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);    
     public ICommand VolverCommand => new RelayCommand(Volver);
 
-    private async Task OpenNewDialog()
+    private async Task OpenAgregarDialog()
     {
         AgregarDialog.Title = "Nueva entrada de lista";
         AgregarDialog.PrimaryButtonText = "Agregar";
-        AgregarDialog.PrimaryButtonCommand = AgregarCommand;
+        AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
+        AgregarDialog.IsPrimaryButtonEnabled = false;
         AgregarDialog.DataContext = new Listas() 
         { 
             LISTAS_ID_ESTADO_REG = "A",
             LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now), 
             LISTAS_ID_LISTA_ORDEN = ViewModel.Source.OrderByDescending(x => x.LISTAS_ID_LISTA_ORDEN).FirstOrDefault().LISTAS_ID_LISTA_ORDEN + 1 
         };
+
+        ViewModel.FormViewModel.Descripcion = string.Empty;
         await AgregarDialog.ShowAsync();
     }
 
@@ -102,6 +78,7 @@ public sealed partial class ListaPorTipoPage : Page
     private async Task AgregarRegistro()
     {
         var lista = AgregarDialog.DataContext as Listas;
+        lista.LISTAS_ID_LISTA_DESCRIP = ViewModel.FormViewModel.Descripcion;
         await ViewModel.AgregarLista(lista);
 
         ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
@@ -164,5 +141,11 @@ public sealed partial class ListaPorTipoPage : Page
         {          
             column.SortDirection = null;
         }
+    }    
+
+    private void txtDescripcion_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+    {
+        ViewModel.FormViewModel.Descripcion = sender.Text;
+
     }
 }
