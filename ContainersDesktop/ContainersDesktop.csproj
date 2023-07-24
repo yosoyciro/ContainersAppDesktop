@@ -16,6 +16,7 @@
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Views\Data2MoviePage.xaml" />
     <None Remove="Views\DispositivosPage.xaml" />
     <None Remove="Views\ListaPorTipoPage.xaml" />
     <None Remove="Views\LoginPage.xaml" />
@@ -46,6 +47,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\Data2MoviePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\TareasProgramadasPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -23,6 +23,7 @@ public class PageService : IPageService
         Configure<LoginViewModel, LoginPage>();
         Configure<SincronizacionesViewModel, SincronizacionesPage>();
         Configure<TareasProgramadasViewModel, TareasProgramadasPage>();
+        Configure<Data2MovieViewModel, Data2MoviePage>();
     }
 
     public Type GetPageType(string key)

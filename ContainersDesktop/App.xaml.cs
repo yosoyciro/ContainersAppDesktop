@@ -81,6 +81,8 @@ public partial class App : Application
             services.AddTransient<ISincronizacionServicio, SincronizacionServicio>();
             services.AddTransient<ITareasProgramadasServicio, TareasProgramadasServicio>();
             services.AddTransient<AzureStorageManagement>();
+            services.AddTransient<IPlayFabServicio, PlayFabServicio>();
+            services.AddTransient<ILocalSettingsServicio, LocalSettingsServicio>();
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
@@ -106,6 +108,8 @@ public partial class App : Application
             services.AddTransient<SincronizacionesPage>();
             services.AddTransient<TareasProgramadasViewModel>();
             services.AddTransient<TareasProgramadasPage>();
+            services.AddTransient<Data2MovieViewModel>();
+            services.AddTransient<Data2MoviePage>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

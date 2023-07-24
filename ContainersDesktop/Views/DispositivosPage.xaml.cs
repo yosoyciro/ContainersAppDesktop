@@ -22,7 +22,7 @@ public sealed partial class DispositivosPage : Page
 
     private void DispositivosPage_Loaded(object sender, RoutedEventArgs e)
     {
-        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, false);
+        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, false);        
     }
     
     private async Task SincronizarDatos()

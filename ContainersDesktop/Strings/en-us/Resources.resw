@@ -180,4 +180,7 @@
   <data name="Shell_TareasProgramadas.Content" xml:space="preserve">
     <value>Tareas Programadas</value>
   </data>
+  <data name="Shell_Data2Movie.Content" xml:space="preserve">
+    <value>d2m</value>
+  </data>
 </root>

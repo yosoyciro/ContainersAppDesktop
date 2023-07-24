@@ -21,4 +21,9 @@ public class Settings
         get;
         set;
     }
+    public string Data2MovieProyecto
+    {
+        get;
+        set;
+    }
 }
