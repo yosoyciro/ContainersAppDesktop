@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
@@ -10,13 +11,11 @@ using Microsoft.Extensions.Options;
 namespace ContainersDesktop.Core.Services;
 public class MovimientosServicio : IMovimientosServicio
 {
-    private readonly Settings _settings;
-    private readonly string _dbPath;
+    private readonly string _dbFile;
 
     public MovimientosServicio(IOptions<Settings> settings)
     {
-        _settings = settings.Value;
-        _dbPath = settings.Value.DBPath;
+        _dbFile = Path.Combine(settings.Value.DBPath, settings.Value.DBName);
     }
 
     #region ObtenerMovimientosObjeto
@@ -24,8 +23,7 @@ public class MovimientosServicio : IMovimientosServicio
     {
         List<Movim> movimLista = new();
 
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
         {
             db.Open();
 
@@ -86,8 +84,7 @@ public class MovimientosServicio : IMovimientosServicio
     {
         List<Movim> movimLista = new();
 
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
         {
             db.Open();
 
@@ -154,47 +151,47 @@ public class MovimientosServicio : IMovimientosServicio
                     ("SELECT MOVIM_ID_REG, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, MOVIM_PESO_LISTA, MOVIM_PESO, " +
                     "MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, MOVIM_CAMION_ID, " +
                     "MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, " +
-                    "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION " +
+                    "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_TAREA_PROGRAMADA_ID_REG, MOVIM_DISPOSITIVO_LATITUD, MOVIM_DISPOSITIVO_LONGITUD " +
                     "FROM Movim", descargaDb);
 
                 SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
 
                 while (query.Read())
-                {
-                    if (query.GetString(1) == "A")
+                {                   
+                    var movimObjeto = new Movim()
                     {
-                        var movimObjeto = new Movim()
-                        {
-                            MOVIM_ID_REG = query.GetInt32(0),
-                            MOVIM_ID_ESTADO_REG = query.GetString(1),
-                            MOVIM_FECHA = query.GetString(2),
-                            MOVIM_ID_OBJETO = query.GetInt32(3),
-                            MOVIM_TIPO_MOVIM_LISTA = query.GetInt32(4),
-                            MOVIM_TIPO_MOVIM = query.GetInt32(5),
-                            MOVIM_PESO_LISTA = query.GetInt32(6),
-                            MOVIM_PESO = query.GetInt32(7),
-                            MOVIM_TRANSPORTISTA_LISTA = query.GetInt32(8),
-                            MOVIM_TRANSPORTISTA = query.GetInt32(9),
-                            MOVIM_CLIENTE_LISTA = query.GetInt32(10),
-                            MOVIM_CLIENTE = query.GetInt32(11),
-                            MOVIM_CHOFER_LISTA = query.GetInt32(12),
-                            MOVIM_CHOFER = query.GetInt32(13),
-                            MOVIM_CAMION_ID = query.GetString(14),
-                            MOVIM_REMOLQUE_ID = query.GetString(15),
-                            MOVIM_ALBARAN_ID = query.GetString(16),
-                            MOVIM_OBSERVACIONES = query.GetString(17),
-                            MOVIM_ENTRADA_SALIDA_LISTA = query.GetInt32(18),
-                            MOVIM_ENTRADA_SALIDA = query.GetInt32(19),
-                            MOVIM_ALMACEN_LISTA = query.GetInt32(20),
-                            MOVIM_ALMACEN = query.GetInt32(21),
-                            MOVIM_PDF = query.GetString(22),
-                            MOVIM_FECHA_ACTUALIZACION = query.GetString(23),
-                        };
+                        MOVIM_ID_REG = query.GetInt32(0),
+                        MOVIM_ID_ESTADO_REG = query.GetString(1),
+                        MOVIM_FECHA = query.GetString(2),
+                        MOVIM_ID_OBJETO = query.GetInt32(3),
+                        MOVIM_TIPO_MOVIM_LISTA = query.GetInt32(4),
+                        MOVIM_TIPO_MOVIM = query.GetInt32(5),
+                        MOVIM_PESO_LISTA = query.GetInt32(6),
+                        MOVIM_PESO = query.GetInt32(7),
+                        MOVIM_TRANSPORTISTA_LISTA = query.GetInt32(8),
+                        MOVIM_TRANSPORTISTA = query.GetInt32(9),
+                        MOVIM_CLIENTE_LISTA = query.GetInt32(10),
+                        MOVIM_CLIENTE = query.GetInt32(11),
+                        MOVIM_CHOFER_LISTA = query.GetInt32(12),
+                        MOVIM_CHOFER = query.GetInt32(13),
+                        MOVIM_CAMION_ID = query.GetString(14),
+                        MOVIM_REMOLQUE_ID = query.GetString(15),
+                        MOVIM_ALBARAN_ID = query.GetString(16),
+                        MOVIM_OBSERVACIONES = query.GetString(17),
+                        MOVIM_ENTRADA_SALIDA_LISTA = query.GetInt32(18),
+                        MOVIM_ENTRADA_SALIDA = query.GetInt32(19),
+                        MOVIM_ALMACEN_LISTA = query.GetInt32(20),
+                        MOVIM_ALMACEN = query.GetInt32(21),
+                        MOVIM_PDF = query.GetString(22),
+                        MOVIM_FECHA_ACTUALIZACION = query.GetString(23),
+                        MOVIM_TAREA_PROGRAMADA_ID_REG = query.GetInt32(24),
+                        MOVIM_DISPOSITIVO_LATITUD = query.GetDouble(25),
+                        MOVIM_DISPOSITIVO_LONGITUD = query.GetDouble(26),
+                    };
 
-                        movimLista.Add(movimObjeto);
-                    }
+                    movimLista.Add(movimObjeto);
                 }
-
+               
                 await query.CloseAsync();
                 await selectCommand.DisposeAsync();
             }
@@ -208,9 +205,8 @@ public class MovimientosServicio : IMovimientosServicio
                 await descargaDb.DisposeAsync();
             }
         }
-
-        var dbpath = Path.Combine(_dbPath, "Containers.db");        
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+   
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
         {
             try
             {
@@ -220,11 +216,11 @@ public class MovimientosServicio : IMovimientosServicio
                 var insertCommand = "INSERT INTO MOVIM (MOVIM_ID_REG_MOBILE, MOVIM_ID_DISPOSITIVO, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, " +
                     "MOVIM_PESO_LISTA, MOVIM_PESO, MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, " +
                     "MOVIM_CAMION_ID, MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, MOVIM_ALMACEN, " +
-                    "MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION)" +
+                    "MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_TAREA_PROGRAMADA_ID_REG, MOVIM_DISPOSITIVO_LATITUD, MOVIM_DISPOSITIVO_LONGITUD)" +
                     "VALUES (@MOVIM_ID_REG_MOBILE, @MOVIM_ID_DISPOSITIVO, @MOVIM_ID_ESTADO_REG, @MOVIM_FECHA, @MOVIM_ID_OBJETO, @MOVIM_TIPO_MOVIM_LISTA, @MOVIM_TIPO_MOVIM, " +
                     "@MOVIM_PESO_LISTA, @MOVIM_PESO, @MOVIM_TRANSPORTISTA_LISTA, @MOVIM_TRANSPORTISTA, @MOVIM_CLIENTE_LISTA, @MOVIM_CLIENTE, @MOVIM_CHOFER_LISTA, @MOVIM_CHOFER, " +
                     "@MOVIM_CAMION_ID, @MOVIM_REMOLQUE_ID, @MOVIM_ALBARAN_ID, @MOVIM_OBSERVACIONES, @MOVIM_ENTRADA_SALIDA_LISTA, @MOVIM_ENTRADA_SALIDA, @MOVIM_ALMACEN_LISTA, @MOVIM_ALMACEN, " +
-                    "@MOVIM_PDF, @MOVIM_FECHA_ACTUALIZACION);";
+                    "@MOVIM_PDF, @MOVIM_FECHA_ACTUALIZACION, @MOVIM_TAREA_PROGRAMADA_ID_REG, @MOVIM_DISPOSITIVO_LATITUD, @MOVIM_DISPOSITIVO_LONGITUD);";
 
                 foreach (Movim movim in movimLista)
                 {
@@ -264,6 +260,9 @@ public class MovimientosServicio : IMovimientosServicio
                             cmd.Parameters.AddWithValue("@MOVIM_ALMACEN", movim.MOVIM_ALMACEN);
                             cmd.Parameters.AddWithValue("@MOVIM_PDF", movim.MOVIM_PDF);
                             cmd.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", movim.MOVIM_FECHA_ACTUALIZACION);
+                            cmd.Parameters.AddWithValue("@MOVIM_TAREA_PROGRAMADA_ID_REG", movim.MOVIM_TAREA_PROGRAMADA_ID_REG);
+                            cmd.Parameters.AddWithValue("@MOVIM_DISPOSITIVO_LATITUD", movim.MOVIM_DISPOSITIVO_LATITUD);
+                            cmd.Parameters.AddWithValue("@MOVIM_DISPOSITIVO_LONGITUD", movim.MOVIM_DISPOSITIVO_LONGITUD);
                             await cmd.ExecuteNonQueryAsync();
                         }
                     }
@@ -285,11 +284,9 @@ public class MovimientosServicio : IMovimientosServicio
 
     public async Task<bool> ActualizarObjeto(Objetos objeto)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 await db.OpenAsync();
 
@@ -304,7 +301,7 @@ public class MovimientosServicio : IMovimientosServicio
                     "OBJ_PMP_LISTA = @OBJ_PMP_LISTA, OBJ_PMP = @OBJ_PMP, OBJ_CARGA_UTIL = @OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA = @OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR = @OBJ_ALTURA_EXTERIOR, " +
                     "OBJ_CUELLO_CISNE_LISTA = @OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE = @OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA = @OBJ_BARRAS_LISTA, OBJ_BARRAS = @OBJ_BARRAS, " +
                     "OBJ_CABLES_LISTA = @OBJ_CABLES_LISTA, OBJ_CABLES = @OBJ_CABLES, OBJ_LINEA_VIDA_LISTA = @OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA = @OBJ_LINEA_VIDA, OBJ_OBSERVACIONES = @OBJ_OBSERVACIONES, " +
-                    "OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION,  " +
+                    "OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION  " +
                     "WHERE OBJ_ID_REG = @OBJ_ID_REG";
 
                 updateCommand.Parameters.AddWithValue("@OBJ_ID_REG", objeto.OBJ_ID_REG);
@@ -355,11 +352,9 @@ public class MovimientosServicio : IMovimientosServicio
     #region CrearMovimiento
     public async Task<int> CrearMovimiento(Movim movim)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 db.Open();
 
@@ -370,7 +365,7 @@ public class MovimientosServicio : IMovimientosServicio
                 insertCommand.CommandText = "INSERT INTO MOVIM(MOVIM_ID_REG_MOBILE, MOVIM_ID_DISPOSITIVO, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, " +
                     "MOVIM_PESO_LISTA, MOVIM_PESO, MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, " +
                     "MOVIM_CAMION_ID, MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, MOVIM_ALMACEN, " +
-                    "MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION)" +
+                    "MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION) " +
                     "VALUES (@MOVIM_ID_REG_MOBILE, @MOVIM_ID_DISPOSITIVO, @MOVIM_ID_ESTADO_REG, @MOVIM_FECHA, @MOVIM_ID_OBJETO, @MOVIM_TIPO_MOVIM_LISTA, @MOVIM_TIPO_MOVIM, " +
                     "@MOVIM_PESO_LISTA, @MOVIM_PESO, @MOVIM_TRANSPORTISTA_LISTA, @MOVIM_TRANSPORTISTA, @MOVIM_CLIENTE_LISTA, @MOVIM_CLIENTE, @MOVIM_CHOFER_LISTA, @MOVIM_CHOFER, " +
                     "@MOVIM_CAMION_ID, @MOVIM_REMOLQUE_ID, @MOVIM_ALBARAN_ID, @MOVIM_OBSERVACIONES, @MOVIM_ENTRADA_SALIDA_LISTA, @MOVIM_ENTRADA_SALIDA, @MOVIM_ALMACEN_LISTA, @MOVIM_ALMACEN, " +
@@ -417,11 +412,9 @@ public class MovimientosServicio : IMovimientosServicio
     #region ActualizarMovimiento
     public async Task<bool> ActualizarMovimiento(Movim movim)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 db.Open();
 
@@ -478,11 +471,9 @@ public class MovimientosServicio : IMovimientosServicio
     #region BajaMovimiento
     public async Task<bool> BorrarMovimiento(int id)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 db.Open();
 

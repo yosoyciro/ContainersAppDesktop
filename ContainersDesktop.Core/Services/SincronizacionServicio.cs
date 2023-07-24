@@ -7,19 +7,16 @@ using Microsoft.Extensions.Options;
 namespace ContainersDesktop.Core.Services;
 public class SincronizacionServicio : ISincronizacionServicio
 {
-    private readonly Settings _settings;
-    private readonly string _dbPath;
+    private readonly string _dbFile;
 
     public SincronizacionServicio(IOptions<Settings> settings)
     {
-        _settings = settings.Value;
-        _dbPath = settings.Value.DBPath;
+        _dbFile = Path.Combine(settings.Value.DBPath, settings.Value.DBName);
     }
 
     public async Task<bool> CrearSincronizacion(Sincronizaciones sincronizacion)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath};Pooling=false"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile};Pooling=false"))
         {            
             await db.OpenAsync();
 
@@ -27,9 +24,6 @@ public class SincronizacionServicio : ISincronizacionServicio
             insertCommand.Connection = db;
             try
             {
-                
-
-                // Use parameterized query to prevent SQL injection attacks
                 insertCommand.CommandText = "INSERT INTO SINCRONIZACIONES(SINCRONIZACIONES_FECHA_HORA_INICIO, SINCRONIZACIONES_FECHA_HORA_FIN, SINCRONIZACIONES_DISPOSITIVO_ORIGEN, SINCRONIZACIONES_RESULTADO)" +
                     "VALUES(@SINCRONIZACIONES_FECHA_HORA_INICIO, @SINCRONIZACIONES_FECHA_HORA_FIN, @SINCRONIZACIONES_DISPOSITIVO_ORIGEN, @SINCRONIZACIONES_RESULTADO)";
 
@@ -51,19 +45,17 @@ public class SincronizacionServicio : ISincronizacionServicio
                 await db.CloseAsync();
                 await insertCommand.DisposeAsync();
                 await db.DisposeAsync();
-                //SqliteConnection.ClearAllPools();
-                //GC.Collect();
+
+                SqliteConnection.ClearAllPools();
             }
         }
-        
     }
 
     public async Task<List<Sincronizaciones>> ObtenerSincronizaciones()
     {
         List<Sincronizaciones> sincronizacionList = new();
 
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
         {
             await db.OpenAsync();
 

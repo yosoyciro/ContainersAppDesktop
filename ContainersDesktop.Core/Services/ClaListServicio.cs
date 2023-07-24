@@ -7,20 +7,17 @@ using Microsoft.Extensions.Options;
 namespace ContainersDesktop.Core.Services;
 public class ClaListServicio : IClaListServicio
 {
-    private readonly Settings _settings;
-    private readonly string _dbPath;
+    private readonly string _dbFile;
+
     public ClaListServicio(IOptions<Settings> settings)
     {
-        _settings = settings.Value;
-        _dbPath = settings.Value.DBPath;
+        _dbFile = Path.Combine(settings.Value.DBPath, settings.Value.DBName);
     }
     public async Task<bool> ActualizarClaLista(ClaList claList)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 db.Open();
 
@@ -47,11 +44,9 @@ public class ClaListServicio : IClaListServicio
 
     public async Task<bool> CrearClaLista(ClaList claList)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 db.Open();
 
@@ -81,8 +76,7 @@ public class ClaListServicio : IClaListServicio
     {
         List<ClaList> clasList = new();
 
-        string dbpath = Path.Combine(_dbPath, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
         {
             db.Open();
 
@@ -113,8 +107,7 @@ public class ClaListServicio : IClaListServicio
     {
         try
         {
-            string dbpath = Path.Combine(_dbPath, "Containers.db");
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 db.Open();
 

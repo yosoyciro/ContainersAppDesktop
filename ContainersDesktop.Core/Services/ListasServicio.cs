@@ -9,12 +9,10 @@ using Microsoft.Extensions.Options;
 namespace ContainersDesktop.Core.Services;
 public class ListasServicio : IListasServicio
 {
-    private readonly Settings _settings;
     private readonly string _dbPath = string.Empty;
     public ListasServicio(IOptions<Settings> settings)
     {
-        _settings = settings.Value;
-        _dbPath = Path.Combine(settings.Value.DBPath, "Containers.db");
+        _dbPath = Path.Combine(settings.Value.DBPath, settings.Value.DBName);
     }
 
     public async Task<int> CrearLista(Listas lista)

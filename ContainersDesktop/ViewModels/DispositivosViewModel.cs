@@ -147,7 +147,7 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
                 await _sincronizacionServicio.CrearSincronizacion(sincronizacion);
             }
         }
-        catch (Exception ex)
+        catch (SystemException ex)
         {
             //Grabo sincronizacion
             var sincronizacion = new Sincronizaciones()

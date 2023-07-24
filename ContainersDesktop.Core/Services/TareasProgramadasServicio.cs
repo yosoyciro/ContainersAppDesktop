@@ -8,13 +8,11 @@ using Microsoft.Extensions.Options;
 namespace ContainersDesktop.Core.Services;
 public class TareasProgramadasServicio : ITareasProgramadasServicio
 {
-    private readonly Settings _settings;
-    private readonly string _dbPath;
+    private readonly string _dbFile;
 
     public TareasProgramadasServicio(IOptions<Settings> settings)
     {
-        _settings = settings.Value;
-        _dbPath = settings.Value.DBPath;
+        _dbFile = Path.Combine(settings.Value.DBPath, settings.Value.DBName);
     }
 
     #region ObtenerPorObjeto
@@ -22,8 +20,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     {
         List<TareaProgramada> movimLista = new();
 
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
         {
             db.Open();
 
@@ -62,9 +59,8 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     public async Task<List<TareaProgramada>> ObtenerTodos()
     {
         List<TareaProgramada> movimLista = new();
-
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+        
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
         {
             db.Open();
 
@@ -145,8 +141,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
             }
         }
 
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
         {
             try
             {
@@ -217,11 +212,9 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
 
     public async Task<bool> ActualizarObjeto(Objetos objeto)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 await db.OpenAsync();
 
@@ -287,11 +280,9 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     #region Modificar
     public async Task<bool> Modificar(TareaProgramada tareaProgramada)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 db.Open();
 
@@ -327,11 +318,9 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     #region Borrar
     public async Task<bool> Borrar(int id)
     {
-        var dbpath = Path.Combine(_dbPath, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={dbpath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
             {
                 db.Open();
 

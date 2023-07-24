@@ -159,4 +159,22 @@ public class Movim
         get;
         set;
     }
+
+    public int MOVIM_TAREA_PROGRAMADA_ID_REG
+    {
+        get;
+        set;
+    }
+
+    public double MOVIM_DISPOSITIVO_LATITUD
+    {
+        get;
+        set;
+    }
+
+    public double MOVIM_DISPOSITIVO_LONGITUD
+    {
+        get;
+        set;
+    }
 }

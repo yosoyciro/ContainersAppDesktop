@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Models.Storage;
 using Microsoft.Extensions.Configuration;
@@ -22,22 +23,24 @@ public class AzureStorageManagement
     {
         _azureStorageConfig = azureStorageConfig.Value;
         _settings = settings.Value;
-        _connectionString = _azureStorageConfig.ConnectionString; //configuration.GetSection("AzureStorageConfig").GetRequiredSection("ConnectionString").Value;
-        _cuenta = _azureStorageConfig.Cuenta; //configuration.GetSection("AzureStorageConfig").GetRequiredSection("Cuenta").Value;
-        _dbNameDescarga = _settings.DBNameDescarga; //configuration.GetSection("Settings").GetRequiredSection("DBNameDescarga").Value;
-        _dbNameSubida = _settings.DBNameSubida; //configuration.GetSection("Settings").GetRequiredSection("DBNameSubida").Value;
-        _dbName = _settings.DBName; //.GetSection("Settings").GetRequiredSection("DBName").Value;
-        _dbPath = Path.Combine(_settings.DBPath, _settings.DBName);
+        _connectionString = _azureStorageConfig.ConnectionString;
+        _cuenta = _azureStorageConfig.Cuenta;
+        _dbNameDescarga = _settings.DBNameDescarga;
+        _dbNameSubida = _settings.DBNameSubida;
+        _dbName = _settings.DBName;
+        _dbPath = _settings.DBPath;
     }
 
     public async Task<string> DownloadFile(string contenedor)
     {
-        _dbPathTemp = Path.Combine(_dbPath, _dbNameDescarga + contenedor + DateTime.Now.Ticks + ".db");
+        ArchivosCarpetas.VerificarCarpeta($"{_dbPath}\\{contenedor}");
+        _dbPathTemp = Path.Combine($"{_dbPath}\\{contenedor}", $"{_dbName.Substring(0, _dbName.Length-3)}{DateTime.Now.Ticks}.db");
         blobClient = new BlobClient(_connectionString, contenedor, _dbNameDescarga + ".db");
         try
         {
             if (await blobClient.ExistsAsync())
             {
+                
                 File.Delete(_dbPathTemp);
 
                 using (var stream = File.OpenWrite(_dbPathTemp))
@@ -51,7 +54,7 @@ public class AzureStorageManagement
 
             return string.Empty;
         }
-        catch (Exception ex)
+        catch (SystemException ex)
         {
             throw new Exception(ex.Message);
         }
@@ -59,7 +62,7 @@ public class AzureStorageManagement
 
     public async Task<bool> UploadFile(string contenedor)
     {
-        //dbPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, _dbName);
+        var dbFileName = Path.Combine(_dbPath, _dbName);
         blobClient = new BlobClient(_connectionString, contenedor, _dbNameSubida);
         try
         {
@@ -69,13 +72,13 @@ public class AzureStorageManagement
                 await blobClient.DeleteAsync();
             }
 
-            using (FileStream source = File.Open(_dbPath, FileMode.OpenOrCreate))
+            using (FileStream source = File.Open(dbFileName, FileMode.OpenOrCreate))
             {
                 var result = await blobClient.UploadAsync(source);
             }
             return true;
         }
-        catch (Exception ex)
+        catch (SystemException ex)
         {
             throw new Exception(ex.Message);
         }
