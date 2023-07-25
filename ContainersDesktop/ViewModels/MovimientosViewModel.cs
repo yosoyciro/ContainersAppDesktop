@@ -301,7 +301,9 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
             MOVIM_FECHA_ACTUALIZACION = item.MOVIM_FECHA_ACTUALIZACION,
             MOVIM_ID_DISPOSITIVO = dispositivo.MOVIM_ID_DISPOSITIVO,
             MOVIM_DISPOSITIVO_DESCRIPCION = dispositivo.DESCRIPCION,
-            
+            MOVIM_TAREA_PROGRAMADA_ID_REG = item.MOVIM_TAREA_PROGRAMADA_ID_REG,
+            MOVIM_DISPOSITIVO_LATITUD = item.MOVIM_DISPOSITIVO_LATITUD,
+            MOVIM_DISPOSITIVO_LONGITUD = item.MOVIM_DISPOSITIVO_LONGITUD,
         };
     }
 

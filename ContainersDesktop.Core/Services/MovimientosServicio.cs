@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using ContainersDesktop.Core.Contracts.Services;
+﻿using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Models.Storage;
@@ -31,7 +29,7 @@ public class MovimientosServicio : IMovimientosServicio
                 ("SELECT MOVIM_ID_REG, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, MOVIM_PESO_LISTA, MOVIM_PESO, " +
                 "MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, MOVIM_CAMION_ID, " +
                 "MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, " +
-                "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_ID_DISPOSITIVO " +
+                "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_ID_DISPOSITIVO, MOVIM_TAREA_PROGRAMADA_ID_REG, MOVIM_DISPOSITIVO_LATITUD, MOVIM_DISPOSITIVO_LONGITUD " +
                 "FROM MOVIM WHERE MOVIM_ID_OBJETO = @MOVIM_ID_OBJETO", db);
 
             selectCommand.Parameters.AddWithValue("@MOVIM_ID_OBJETO", idObjeto);
@@ -69,6 +67,9 @@ public class MovimientosServicio : IMovimientosServicio
                         MOVIM_PDF = query.GetString(22),
                         MOVIM_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(23)),
                         MOVIM_ID_DISPOSITIVO = query.GetInt32(24),
+                        MOVIM_TAREA_PROGRAMADA_ID_REG = query.GetInt32(25),
+                        MOVIM_DISPOSITIVO_LATITUD = query.GetDouble(26),
+                        MOVIM_DISPOSITIVO_LONGITUD = query.GetDouble(27),
                     };
                     movimLista.Add(movimObjeto);
                 //}
@@ -92,7 +93,8 @@ public class MovimientosServicio : IMovimientosServicio
                 ("SELECT MOVIM_ID_REG, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, MOVIM_PESO_LISTA, MOVIM_PESO, " +
                 "MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, MOVIM_CAMION_ID, " +
                 "MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, " +
-                "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_ID_DISPOSITIVO FROM MOVIM", db);
+                "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_ID_DISPOSITIVO, MOVIM_TAREA_PROGRAMADA_ID_REG, MOVIM_DISPOSITIVO_LATITUD, MOVIM_DISPOSITIVO_LONGITUD " +
+                "FROM MOVIM", db);
 
             SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
 
@@ -127,6 +129,9 @@ public class MovimientosServicio : IMovimientosServicio
                         MOVIM_PDF = query.GetString(22),
                         MOVIM_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(23)),
                         MOVIM_ID_DISPOSITIVO = query.GetInt32(24),
+                        MOVIM_TAREA_PROGRAMADA_ID_REG = query.GetInt32(25),
+                        MOVIM_DISPOSITIVO_LATITUD = query.GetDouble(26),
+                        MOVIM_DISPOSITIVO_LONGITUD = query.GetDouble(27),
                     };
                     movimLista.Add(movimObjeto);
                 //}

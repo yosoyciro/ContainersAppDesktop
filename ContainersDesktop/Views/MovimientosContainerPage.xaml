@@ -88,7 +88,10 @@
                         <controls:DataGridTextColumn Header="Observaciones" Binding="{Binding MOVIM_OBSERVACIONES}" Width="150"/>
                         <controls:DataGridTextColumn Header="Entrada/Salida" Tag="EntradaSalida" Binding="{Binding MOVIM_ENTRADA_SALIDA_DESCRIPCION}" Width="150"/>
                         <controls:DataGridTextColumn Header="Almacen" Tag="Almacen" Binding="{Binding MOVIM_ALMACEN_DESCRIPCION}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Estado" Binding="{Binding MOVIM_ID_REG_ESTADO}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Estado" Binding="{Binding MOVIM_ID_ESTADO_REG}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Latitud" Binding="{Binding MOVIM_DISPOSITIVO_LATITUD}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Longitud" Binding="{Binding MOVIM_DISPOSITIVO_LONGITUD}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Observaciones" Binding="{Binding MOVIM_OBSERVACIONES}" Width="400"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>

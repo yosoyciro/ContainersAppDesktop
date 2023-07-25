@@ -15,6 +15,7 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
 
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IMovimientosServicio _movimientosServicio;
+    private readonly ITareasProgramadasServicio _tareasProgramadasServicio;
     private readonly ISincronizacionServicio _sincronizacionServicio;
     private readonly AzureStorageManagement _azureStorageManagement;
     private Dispositivos current;
@@ -32,12 +33,13 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
     public ObservableCollection<Dispositivos> Source { get; } = new();
     private string _cachedSortedColumn = string.Empty;
 
-    public DispositivosViewModel(IDispositivosServicio dispositivosServicio, AzureStorageManagement azureStorageManagement, IMovimientosServicio movimientosServicio, ISincronizacionServicio sincronizacionServicio)
+    public DispositivosViewModel(IDispositivosServicio dispositivosServicio, AzureStorageManagement azureStorageManagement, IMovimientosServicio movimientosServicio, ISincronizacionServicio sincronizacionServicio, ITareasProgramadasServicio tareasProgramadasServicio)
     {
         _dispositivosServicio = dispositivosServicio;
         _azureStorageManagement = azureStorageManagement;
         _movimientosServicio = movimientosServicio;
         _sincronizacionServicio = sincronizacionServicio;
+        _tareasProgramadasServicio = tareasProgramadasServicio;
     }
 
     public void OnNavigatedFrom()
@@ -127,6 +129,7 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
                 {
                     //TODO - Proceso e incorporo los movimientos
                     await _movimientosServicio.SincronizarMovimientos(dbDescarga, item.DISPOSITIVOS_ID_REG);
+                    await _tareasProgramadasServicio.Sincronizar(dbDescarga, item.DISPOSITIVOS_ID_REG);
 
                     if (File.Exists(dbDescarga))
                     {

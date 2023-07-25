@@ -7,7 +7,7 @@ public class TareaProgramada
     public int TAREAS_PROGRAMADAS_ID_REG
     {
         get; set;
-    }
+    }   
     public int TAREAS_PROGRAMADAS_OBJETO_ID_REG
     {
         get; set;
@@ -39,5 +39,15 @@ public class TareaProgramada
     public string TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
     {
         get; set;
+    }
+    public double TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD
+    {
+        get;
+        set;
+    }
+    public double TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD
+    {
+        get;
+        set;
     }
 }

@@ -36,24 +36,24 @@
                         Grid.Column="1"
                         Grid.Row="0">
                         <AppBarButton Command="{x:Bind VolverCommand, Mode=OneWay}"
-                              Icon="Back"
-                              Label="Volver" />
+                                    Icon="Back"
+                                    Label="Volver" />
                         <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
-                                  Icon="Add"
-                                  Label="Agregar" />
+                                    Icon="Add"
+                                    Label="Agregar" />
                         <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
                                     IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}"
-                                  Icon="Edit"
-                                  Label="Modificar" />
+                                    Icon="Edit"
+                                    Label="Modificar" />
                         <AppBarButton Command="{x:Bind BorrarCommand}"
-                                  CommandParameter="{x:Bind ViewModel.Current, Mode=OneWay}"
-                                  IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                                  Icon="Delete"
-                                  Label="Borrar"/>
+                                    CommandParameter="{x:Bind ViewModel.Current, Mode=OneWay}"
+                                    IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                                    Icon="Delete"
+                                    Label="Borrar"/>
                         <AppBarButton Icon="Filter" 
-                                  Label="Filtrar" />
+                                    Label="Filtrar" />
                         <AppBarButton Icon="Document" 
-                                  Label="Exportar" />
+                                    Label="Exportar" />
                     </CommandBar>
                     <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
                           Checked="chkMostrarTodos_Checked"
@@ -87,7 +87,9 @@
                         <controls:DataGridTextColumn Header="Albarán" Tag="Albaran" Binding="{Binding MOVIM_ALBARAN_ID}" Width="150"/>
                         <controls:DataGridTextColumn Header="Entrada/Salida" Tag="EntradaSalida" Binding="{Binding MOVIM_ENTRADA_SALIDA_DESCRIPCION}" Width="150"/>
                         <controls:DataGridTextColumn Header="Almacen" Tag="Almacen" Binding="{Binding MOVIM_ALMACEN_DESCRIPCION}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Estado" Binding="{Binding MOVIM_ID_REG_ESTADO}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Estado" Binding="{Binding MOVIM_ID_ESTADO_REG}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Latitud" Binding="{Binding MOVIM_DISPOSITIVO_LATITUD}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Longitud" Binding="{Binding MOVIM_DISPOSITIVO_LONGITUD}" Width="150"/>
                         <controls:DataGridTextColumn Header="Observaciones" Binding="{Binding MOVIM_OBSERVACIONES}" Width="400"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
