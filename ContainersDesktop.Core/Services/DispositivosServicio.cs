@@ -1,4 +1,5 @@
 ﻿using ContainersDesktop.Core.Contracts.Services;
+using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Core.Persistencia;
@@ -9,17 +10,19 @@ namespace ContainersDesktop.Core.Services;
 public class DispositivosServicio : IDispositivosServicio
 {
     private readonly string _dbFile;
+    private readonly string _dbFullPath;
 
     public DispositivosServicio(IOptions<Settings> settings)
     {
-        _dbFile = Path.Combine(settings.Value.DBPath, settings.Value.DBName);
+        _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
+        _dbFullPath = $"{ArchivosCarpetas.GetFullPath()}{_dbFile}";
     }
 
     public async Task<bool> ActualizarDispositivo(Dispositivos dispositivo)
     {
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 db.Open();
 
@@ -52,7 +55,7 @@ public class DispositivosServicio : IDispositivosServicio
     {
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 db.Open();
 
@@ -79,7 +82,7 @@ public class DispositivosServicio : IDispositivosServicio
     {
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 db.Open();
 
@@ -111,7 +114,7 @@ public class DispositivosServicio : IDispositivosServicio
     {
         List<Dispositivos> dispositivosList = new();
 
-        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
             await db.OpenAsync();
 

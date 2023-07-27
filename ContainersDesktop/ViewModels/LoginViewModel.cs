@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
 
@@ -6,15 +8,15 @@ namespace ContainersDesktop.ViewModels;
 public partial class LoginViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IPlayFabServicio _playFabServicio;
-    private readonly ILocalSettingsServicio _localSettingsServicio;
+    private readonly ILocalSettingsService _localSettingsService;
     public bool isLoggedIn
     {
         get; private set;
     }
-    public LoginViewModel(IPlayFabServicio playFabServicio, ILocalSettingsServicio localSettingsServicio)
+    public LoginViewModel(IPlayFabServicio playFabServicio, ILocalSettingsService localSettingsService)
     {
         _playFabServicio = playFabServicio;
-        _localSettingsServicio = localSettingsServicio;
+        _localSettingsService = localSettingsService;
     }
 
     public void OnNavigatedFrom()
@@ -30,8 +32,8 @@ public partial class LoginViewModel : ObservableRecipient, INavigationAware
         isLoggedIn = await _playFabServicio.Login(usuario, password);        
         if (isLoggedIn)
         {
-            _localSettingsServicio.GuardarElemento("Usuario", usuario);
-            _localSettingsServicio.GuardarElemento("Password", password);
+            await _localSettingsService.SaveSettingAsync("Login", new { usuario, password });
+            //_localSettingsServicio.GuardarElemento("Password", password);
         }
         return isLoggedIn;
     }

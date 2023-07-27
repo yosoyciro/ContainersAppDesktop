@@ -9,16 +9,17 @@ using Microsoft.Extensions.Options;
 namespace ContainersDesktop.Core.Services;
 public class ListasServicio : IListasServicio
 {
-    private readonly string _dbPath = string.Empty;
+    private readonly string _dbFile = string.Empty;
+    private readonly string _dbFullPath = string.Empty;
     public ListasServicio(IOptions<Settings> settings)
     {
-        _dbPath = Path.Combine(settings.Value.DBPath, settings.Value.DBName);
+        _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
+        _dbFullPath = $"{ArchivosCarpetas.GetFullPath()}{_dbFile}";
     }
 
     public async Task<int> CrearLista(Listas lista)
     {
-        //var dbpath = Path.Combine(_settings.DBPath, "Containers.db"); //Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={_dbPath}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
             db.Open();
 
@@ -56,9 +57,8 @@ public class ListasServicio : IListasServicio
     public async Task<List<Listas>> ObtenerListas()
     {
         List<Listas> listas = new List<Listas>();
-
-        //var dbpath = Path.Combine(_settings.DBPath, "Containers.db");  //Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
-        using (SqliteConnection db = new SqliteConnection($"Filename={_dbPath}"))
+        
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
             db.Open();
 
@@ -91,11 +91,9 @@ public class ListasServicio : IListasServicio
 
     public async Task<bool> ActualizarLista(Listas lista)
     {
-        //var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
-
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbPath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 db.Open();
 
@@ -128,8 +126,7 @@ public class ListasServicio : IListasServicio
     {
         try
         {
-            //string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "Containers.db");
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbPath}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 db.Open();
 

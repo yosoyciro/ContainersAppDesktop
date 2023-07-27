@@ -1,14 +1,16 @@
-﻿using System.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using CommunityToolkit.WinUI.UI.Controls;
-using ContainersDesktop.Core.Models;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.DTO;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
 
 namespace ContainersDesktop.Views;
 
@@ -301,23 +303,4 @@ public sealed partial class ContainersGridPage : Page
     {
         ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, false);
     }
-
-    //private void TxtIdModelo_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
-    //{
-    //    var currentPosition = TxtIdModelo.SelectionStart - 1;
-    //    var text = ((TextBox)sender).Text;
-
-    //    var regex = new Regex("^[0-9]*$");
-
-    //    if (!regex.IsMatch(text))
-    //    {
-    //        var foundChar = Regex.Match(TxtIdModelo.Text, @"[^0-9]");
-    //        if (foundChar.Success)
-    //        {
-    //            TxtIdModelo.Text = TxtIdModelo.Text.Remove(foundChar.Index, 1);
-    //        }
-
-    //        TxtIdModelo.Select(currentPosition, 0);
-    //    }
-    //}
 }

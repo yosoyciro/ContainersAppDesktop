@@ -9,10 +9,12 @@ namespace ContainersDesktop.Core.Services;
 public class TareasProgramadasServicio : ITareasProgramadasServicio
 {
     private readonly string _dbFile;
+    private readonly string _dbFullPath;
 
     public TareasProgramadasServicio(IOptions<Settings> settings)
     {
-        _dbFile = Path.Combine(settings.Value.DBPath, settings.Value.DBName);
+        _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
+        _dbFullPath = $"{ArchivosCarpetas.GetFullPath()}{_dbFile}";
     }
 
     #region ObtenerPorObjeto
@@ -20,7 +22,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     {
         List<TareaProgramada> movimLista = new();
 
-        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
             db.Open();
 
@@ -60,7 +62,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     {
         List<TareaProgramada> movimLista = new();
         
-        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
             db.Open();
 
@@ -147,7 +149,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
             }
         }
 
-        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
             try
             {
@@ -203,7 +205,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     {
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 await db.OpenAsync();
 
@@ -244,7 +246,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     {
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 await db.OpenAsync();
 

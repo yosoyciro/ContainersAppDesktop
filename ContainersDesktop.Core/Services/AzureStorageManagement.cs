@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure;
+using Azure.Storage.Blobs;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Models.Storage;
@@ -28,16 +29,18 @@ public class AzureStorageManagement
         _dbNameDescarga = _settings.DBNameDescarga;
         _dbNameSubida = _settings.DBNameSubida;
         _dbName = _settings.DBName;
-        _dbPath = _settings.DBPath;
+        _dbPath = _settings.DBFolder;
     }
 
     public async Task<string> DownloadFile(string contenedor)
     {
         ArchivosCarpetas.VerificarCarpeta($"{_dbPath}\\{contenedor}");
         _dbPathTemp = Path.Combine($"{_dbPath}\\{contenedor}", $"{_dbName.Substring(0, _dbName.Length-3)}{DateTime.Now.Ticks}.db");
-        blobClient = new BlobClient(_connectionString, contenedor, _dbNameDescarga + ".db");
+        
         try
         {
+            blobClient = new BlobClient(_connectionString, contenedor, _dbNameDescarga + ".db");
+
             if (await blobClient.ExistsAsync())
             {
                 
@@ -63,9 +66,11 @@ public class AzureStorageManagement
     public async Task<bool> UploadFile(string contenedor)
     {
         var dbFileName = Path.Combine(_dbPath, _dbName);
-        blobClient = new BlobClient(_connectionString, contenedor, _dbNameSubida);
+
         try
         {
+            blobClient = new BlobClient(_connectionString, contenedor, _dbNameSubida);
+
             //Borrar antes de subir
             if (await blobClient.ExistsAsync())
             {
@@ -78,9 +83,13 @@ public class AzureStorageManagement
             }
             return true;
         }
-        catch (SystemException ex)
+        catch (RequestFailedException)
         {
-            throw new Exception(ex.Message);
+            throw;
+        }
+        catch (SystemException)
+        {
+            throw;
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ContainersDesktop.Core.Persistencia;
 public static class OperacionesComunes
-{
+{    
     public static async Task<int> GetIdentity(SqliteConnection db)
     {
         SqliteCommand selectCommand = new SqliteCommand

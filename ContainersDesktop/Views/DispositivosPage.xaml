@@ -63,8 +63,9 @@
                           />
                 </StackPanel>
             </Grid>
-            
-            
+
+            <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" Width="32"/>
+
             <controls:DataGrid
                 Name="DispositivosGrid"
                 Grid.Row="1"

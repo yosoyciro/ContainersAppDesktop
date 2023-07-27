@@ -1,4 +1,6 @@
-﻿namespace ContainersDesktop.Core.Helpers;
+﻿using ContainersDesktop.Core.Models.Storage;
+
+namespace ContainersDesktop.Core.Helpers;
 public static class ArchivosCarpetas
 {
     public static bool VerificarCarpeta(string folder)
@@ -10,5 +12,10 @@ public static class ArchivosCarpetas
         }
 
         return true;
+    }
+
+    public static DirectoryInfo? GetFullPath()
+    {
+        return Directory.GetParent(Path.GetDirectoryName(typeof(Settings).Assembly.Location));
     }
 }

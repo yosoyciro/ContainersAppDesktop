@@ -1,4 +1,5 @@
-﻿using ContainersDesktop.Activation;
+﻿using System;
+using ContainersDesktop.Activation;
 using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Models.Storage;
@@ -82,11 +83,11 @@ public partial class App : Application
             services.AddTransient<ITareasProgramadasServicio, TareasProgramadasServicio>();
             services.AddTransient<AzureStorageManagement>();
             services.AddTransient<IPlayFabServicio, PlayFabServicio>();
-            services.AddTransient<ILocalSettingsServicio, LocalSettingsServicio>();
+            //services.AddSingleton<ILocalSettingsServicio, LocalSettingsServicio>();
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
-            services.AddTransient<SettingsPage>();            
+            services.AddTransient<SettingsPage>();
             services.AddTransient<ContainersGridViewModel>();
             services.AddTransient<ContainersGridPage>();
             services.AddTransient<MainViewModel>();
@@ -132,5 +133,7 @@ public partial class App : Application
         base.OnLaunched(args);
 
         await App.GetService<IActivationService>().ActivateAsync(args);
+
+        MainWindow.Maximize();
     }
 }

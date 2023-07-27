@@ -1,4 +1,5 @@
 ﻿using ContainersDesktop.Core.Contracts.Services;
+using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Models.Storage;
 using Microsoft.Data.Sqlite;
@@ -8,16 +9,18 @@ namespace ContainersDesktop.Core.Services;
 public class ClaListServicio : IClaListServicio
 {
     private readonly string _dbFile;
+    private readonly string _dbFullPath;
 
     public ClaListServicio(IOptions<Settings> settings)
     {
-        _dbFile = Path.Combine(settings.Value.DBPath, settings.Value.DBName);
+        _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
+        _dbFullPath = $"{ArchivosCarpetas.GetFullPath()}{_dbFile}";
     }
     public async Task<bool> ActualizarClaLista(ClaList claList)
     {
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 db.Open();
 
@@ -46,7 +49,7 @@ public class ClaListServicio : IClaListServicio
     {
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 db.Open();
 
@@ -76,7 +79,7 @@ public class ClaListServicio : IClaListServicio
     {
         List<ClaList> clasList = new();
 
-        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
             db.Open();
 
@@ -107,7 +110,7 @@ public class ClaListServicio : IClaListServicio
     {
         try
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFile}"))
+            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
             {
                 db.Open();
 

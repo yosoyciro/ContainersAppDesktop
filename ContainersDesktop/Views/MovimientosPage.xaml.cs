@@ -7,6 +7,9 @@ using Microsoft.UI.Xaml;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.DTO;
 using CommunityToolkit.WinUI.UI.Controls;
+using System.Threading.Tasks;
+using System.Linq;
+using System;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.

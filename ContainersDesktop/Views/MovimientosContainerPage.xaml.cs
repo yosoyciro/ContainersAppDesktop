@@ -9,6 +9,9 @@ using ContainersDesktop.Core.Helpers;
 using Windows.Networking.Proximity;
 using Windows.ApplicationModel.Appointments;
 using CommunityToolkit.WinUI.UI.Controls;
+using System.Threading.Tasks;
+using System.Linq;
+using System;
 
 namespace ContainersDesktop.Views;
 

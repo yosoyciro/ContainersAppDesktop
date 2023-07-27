@@ -1,7 +1,9 @@
-﻿using ContainersDesktop.Activation;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ContainersDesktop.Activation;
 using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Views;
-
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 

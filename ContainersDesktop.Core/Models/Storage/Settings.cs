@@ -1,7 +1,7 @@
 ﻿namespace ContainersDesktop.Core.Models.Storage;
 public class Settings
 {
-    public string DBPath
+    public string DBFolder
     {
         get;
         set;

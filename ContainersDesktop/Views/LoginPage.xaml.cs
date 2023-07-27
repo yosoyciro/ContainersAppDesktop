@@ -1,3 +1,4 @@
+using System;
 using System.Net.Mail;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
@@ -36,6 +37,8 @@ public sealed partial class LoginPage : Page
         {
             ErrorMessage.Text = "Usuario/password incorrecto";
         }
+        //ShellPage.Current.ShowPane();
+        //Frame.Navigate(typeof(MainPage));
     }
 
     private void RegisterButtonTextBlock_OnPointerPressed(object sender, PointerRoutedEventArgs e)

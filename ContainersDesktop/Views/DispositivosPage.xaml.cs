@@ -1,3 +1,4 @@
+using System;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using ContainersDesktop.Core.Models;
@@ -5,6 +6,8 @@ using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using ContainersDesktop.Core.Helpers;
+using Azure;
+using System.Threading.Tasks;
 
 namespace ContainersDesktop.Views;
 public sealed partial class DispositivosPage : Page
@@ -43,9 +46,33 @@ public sealed partial class DispositivosPage : Page
 
             await dialog.ShowAsync();
         }
-        catch (Exception ex)
+        catch (RequestFailedException ex)
         {
-            throw;
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Sincronización";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = "Error en la Sincronización: " + ex.Message;
+
+            await dialog.ShowAsync();
+        }
+        catch (SystemException ex)
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Sincronización";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = "Error en la Sincronización: " + ex.Message;
+
+            await dialog.ShowAsync();
         }
     }
 

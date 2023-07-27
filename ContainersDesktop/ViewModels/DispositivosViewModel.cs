@@ -1,4 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
@@ -31,6 +36,9 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
     public bool HasCurrent => current is not null;
 
     public ObservableCollection<Dispositivos> Source { get; } = new();
+    [ObservableProperty]
+    public bool isBusy = false;
+    
     private string _cachedSortedColumn = string.Empty;
 
     public DispositivosViewModel(IDispositivosServicio dispositivosServicio, AzureStorageManagement azureStorageManagement, IMovimientosServicio movimientosServicio, ISincronizacionServicio sincronizacionServicio, ITareasProgramadasServicio tareasProgramadasServicio)
@@ -92,15 +100,23 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
     {
         try
         {
+            IsBusy = true;
             await Sincronizar();
 
             return true;
         }
-        catch (Exception)
+        catch (RequestFailedException)
         {
             throw;
         }
-        
+        catch (SystemException)
+        {
+            throw;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async Task Sincronizar()
@@ -162,7 +178,7 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
             };
             await _sincronizacionServicio.CrearSincronizacion(sincronizacion);
 
-            throw new Exception("Error", ex);
+            throw;
         }        
     }    
     #endregion

@@ -1,10 +1,10 @@
-﻿{
-    "profiles": {
-      "ContainersDesktop (Package)": {
-        "commandName": "MsixPackage"
-      },
-      "ContainersDesktop (Unpackaged)": {
-        "commandName": "Project"
-      }
+{
+  "profiles": {
+    "ContainersDesktop (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ContainersDesktop (Unpackaged)": {
+      "commandName": "Project"
     }
+  }
 }

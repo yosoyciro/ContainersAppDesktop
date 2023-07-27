@@ -1,4 +1,6 @@
-﻿namespace ContainersDesktop.Activation;
+﻿using System.Threading.Tasks;
+
+namespace ContainersDesktop.Activation;
 
 public interface IActivationHandler
 {
