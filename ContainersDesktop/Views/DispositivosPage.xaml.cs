@@ -141,9 +141,46 @@ public sealed partial class DispositivosPage : Page
         var dispositivo = AgregarDialog.DataContext as Dispositivos;
         dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
         dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
-        await ViewModel.CrearDispositivo(dispositivo);
 
-        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+        //Verifico que el container ya no haya sido asignado a otro movil
+        if (await ViewModel.ExisteContainer(dispositivo, "local"))
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Validación";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = "El container ya está asignado a otro móvil";
+
+            await dialog.ShowAsync();
+        }
+        else
+        {
+            //Verifico si el Container existe en la plataforma
+            if (!await ViewModel.ExisteContainer(dispositivo, "cloud"))
+            {
+                ContentDialog dialog = new ContentDialog();
+
+                // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+                dialog.XamlRoot = this.XamlRoot;
+                dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+                dialog.Title = "Validación";
+                dialog.CloseButtonText = "Cerrar";
+                dialog.DefaultButton = ContentDialogButton.Close;
+                dialog.Content = "El container no existe en la plataforma";
+
+                await dialog.ShowAsync();
+            }
+            else
+            {
+                await ViewModel.CrearDispositivo(dispositivo);
+
+                DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+            }                
+        }
     }
 
     private async Task ModificarRegistro()

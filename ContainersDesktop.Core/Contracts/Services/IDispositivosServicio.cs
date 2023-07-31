@@ -7,4 +7,5 @@ public interface IDispositivosServicio
     Task<int> CrearDispositivo(Dispositivos dispositivo);
     Task<bool> ActualizarDispositivo(Dispositivos dispositivo);
     Task<bool> BorrarDispositivo(int id);
+    Task<bool> ExisteContainer(string cloudContainer);
 }

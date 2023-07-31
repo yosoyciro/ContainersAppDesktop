@@ -69,6 +69,7 @@
             <controls:DataGrid
                 Name="DispositivosGrid"
                 Grid.Row="1"
+                IsReadOnly="True"
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"
                 SelectedItem="{x:Bind ViewModel.SelectedDispositivo, Mode=TwoWay}"

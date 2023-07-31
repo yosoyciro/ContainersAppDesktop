@@ -16,7 +16,7 @@ public class ObjetosServicio : IObjetosServicio
     public ObjetosServicio(IOptions<Settings> settings)
     {
         _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
-        _dbFullPath = $"{ArchivosCarpetas.GetFullPath()}{_dbFile}";
+        _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
     }
 
     public async Task<bool> ActualizarObjeto(Objetos objeto)

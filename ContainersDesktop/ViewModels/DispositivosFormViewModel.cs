@@ -16,7 +16,7 @@ public class DispositivosFormViewModel : ObservableValidator
         ErrorsChanged += VMErrorsChanged;
         PropertyChanged += VMPropertyChanged;
     }
-
+       
     ~DispositivosFormViewModel()
     {
         ErrorsChanged -= VMErrorsChanged;
@@ -32,7 +32,7 @@ public class DispositivosFormViewModel : ObservableValidator
     }
 
     [Required(ErrorMessage = "El Container es requerido")]
-    [MinLength(6, ErrorMessage = "El container debe contener 6 caracteres")]
+    [MinLength(6, ErrorMessage = "El container debe contener 6 caracteres (3 letras y 3 números)")]
     public string Container
     {
         get => _container;

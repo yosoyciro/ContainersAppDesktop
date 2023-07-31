@@ -14,10 +14,11 @@ public class AzureStorageManagement
     private readonly string _connectionString = string.Empty;
     private readonly string _cuenta = string.Empty;
     private BlobClient blobClient;
-    private readonly string _dbName = string.Empty;
     private readonly string _dbNameDescarga = string.Empty;
     private readonly string _dbNameSubida = string.Empty;
-    private readonly string _dbPath = string.Empty;
+    private readonly string _dbFile = string.Empty;
+    private readonly string _dbFullPath = string.Empty;
+    private readonly string _dbFolder = string.Empty;
     private string _dbPathTemp = string.Empty;
 
     public AzureStorageManagement(IOptions<AzureStorageConfig> azureStorageConfig, IOptions<Settings> settings)
@@ -28,14 +29,15 @@ public class AzureStorageManagement
         _cuenta = _azureStorageConfig.Cuenta;
         _dbNameDescarga = _settings.DBNameDescarga;
         _dbNameSubida = _settings.DBNameSubida;
-        _dbName = _settings.DBName;
-        _dbPath = _settings.DBFolder;
+        _dbFolder = _settings.DBFolder;
+        _dbFile = settings.Value.DBName;
+        _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFolder}{_dbFile}";
     }
 
     public async Task<string> DownloadFile(string contenedor)
     {
-        ArchivosCarpetas.VerificarCarpeta($"{_dbPath}\\{contenedor}");
-        _dbPathTemp = Path.Combine($"{_dbPath}\\{contenedor}", $"{_dbName.Substring(0, _dbName.Length-3)}{DateTime.Now.Ticks}.db");
+        ArchivosCarpetas.VerificarCarpeta($"{ArchivosCarpetas.GetParentDirectory()}{_dbFolder}\\{contenedor}");
+        _dbPathTemp = Path.Combine($"{ArchivosCarpetas.GetParentDirectory()}{_dbFolder}\\{contenedor}\\", $"{_dbFile.Substring(0, _dbFile.Length-3)}{DateTime.Now.Ticks}.db");
         
         try
         {
@@ -64,9 +66,7 @@ public class AzureStorageManagement
     }
 
     public async Task<bool> UploadFile(string contenedor)
-    {
-        var dbFileName = Path.Combine(_dbPath, _dbName);
-
+    {        
         try
         {
             blobClient = new BlobClient(_connectionString, contenedor, _dbNameSubida);
@@ -77,7 +77,7 @@ public class AzureStorageManagement
                 await blobClient.DeleteAsync();
             }
 
-            using (FileStream source = File.Open(dbFileName, FileMode.OpenOrCreate))
+            using (FileStream source = File.Open(_dbFullPath, FileMode.OpenOrCreate))
             {
                 var result = await blobClient.UploadAsync(source);
             }
@@ -91,5 +91,14 @@ public class AzureStorageManagement
         {
             throw;
         }
+    }
+
+    public bool ExisteContainer(string contenedor)
+    {
+        BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);
+
+        var container = blobServiceClient.GetBlobContainerClient(contenedor);
+
+        return container.Exists();        
     }
 }

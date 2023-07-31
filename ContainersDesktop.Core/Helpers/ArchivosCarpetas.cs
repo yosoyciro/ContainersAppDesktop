@@ -14,7 +14,7 @@ public static class ArchivosCarpetas
         return true;
     }
 
-    public static DirectoryInfo? GetFullPath()
+    public static DirectoryInfo? GetParentDirectory()
     {
         return Directory.GetParent(Path.GetDirectoryName(typeof(Settings).Assembly.Location));
     }

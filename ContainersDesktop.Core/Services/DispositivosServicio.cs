@@ -15,7 +15,7 @@ public class DispositivosServicio : IDispositivosServicio
     public DispositivosServicio(IOptions<Settings> settings)
     {
         _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
-        _dbFullPath = $"{ArchivosCarpetas.GetFullPath()}{_dbFile}";
+        _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
     }
 
     public async Task<bool> ActualizarDispositivo(Dispositivos dispositivo)
@@ -150,5 +150,35 @@ public class DispositivosServicio : IDispositivosServicio
 
         
         return dispositivosList;
+    }
+
+    public async Task<bool> ExisteContainer(string cloudContainer)
+    {
+        Dispositivos dispositivo = new();
+        bool existe;
+
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+        {
+            await db.OpenAsync();
+
+            SqliteCommand selectCommand = new SqliteCommand
+                ("SELECT DISPOSITIVOS_ID_REG FROM DISPOSITIVOS WHERE DISPOSITIVOS_CONTAINER=@DISPOSITIVOS_CONTAINER", db);
+
+            selectCommand.Parameters.AddWithValue("@DISPOSITIVOS_CONTAINER", cloudContainer);
+            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+
+            existe = query.HasRows;
+
+            selectCommand.Dispose();
+            query.Close();
+            await query.DisposeAsync();
+            db.Close();
+            db.Dispose();
+            SqliteConnection.ClearAllPools();
+
+            GC.Collect();
+        }
+
+        return existe;
     }
 }

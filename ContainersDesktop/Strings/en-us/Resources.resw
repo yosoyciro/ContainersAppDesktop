@@ -162,11 +162,11 @@
   <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
     <value>https://YourPrivacyUrlGoesHere/</value>
   </data>
-  <data name="Settings.Content" xml:space="preserve">
-    <value>Ajustes</value>
+  <data name="Settings.Text" xml:space="preserve">
+    <value>Settings</value>
   </data>
   <data name="Shell_Dispositivos.Content" xml:space="preserve">
-    <value>Dispositivos</value>
+    <value>Devices</value>
   </data>
   <data name="Shell_TiposListaDetails.Content" xml:space="preserve">
     <value>Listas</value>

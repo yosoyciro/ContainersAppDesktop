@@ -68,7 +68,7 @@
                 SelectionMode="Single"
                 SelectedItem="{x:Bind ViewModel.SelectedObjeto, Mode=TwoWay}"
                 AlternatingRowBackground="DarkSlateGray"
-                HorizontalScrollBarVisibility="Visible"
+                HorizontalScrollBarVisibility="Visible"                
                 CanUserReorderColumns="True"
                 Sorting="ContainersDataGrid_Sorting"
             >                

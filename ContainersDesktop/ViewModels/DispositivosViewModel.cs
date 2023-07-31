@@ -10,12 +10,11 @@ using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Services;
-using ContainersDesktop.DTO;
 
 namespace ContainersDesktop.ViewModels;
 public partial class DispositivosViewModel : ObservableRecipient, INavigationAware
 {
-    private DispositivosFormViewModel _formViewModel = new();
+    private readonly DispositivosFormViewModel _formViewModel = new();
     public DispositivosFormViewModel FormViewModel => _formViewModel;
 
     private readonly IDispositivosServicio _dispositivosServicio;
@@ -93,6 +92,19 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
         await _dispositivosServicio.BorrarDispositivo(SelectedDispositivo.DISPOSITIVOS_ID_REG);
         Source.Remove(SelectedDispositivo);
     }
+
+    public async Task<bool> ExisteContainer(Dispositivos dispositivo, string plataforma)
+    {
+        if (plataforma == "local")
+        {
+            return await _dispositivosServicio.ExisteContainer(dispositivo.DISPOSITIVOS_CONTAINER);
+        }
+        else
+        {
+            return _azureStorageManagement.ExisteContainer(dispositivo.DISPOSITIVOS_CONTAINER);
+        }
+    }
+
     #endregion
 
     #region Sincronizacion

@@ -5,7 +5,6 @@ using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Core.Persistencia;
 using ContainersDesktop.Core.Services;
-using ContainersDesktop.Helpers;
 using ContainersDesktop.Models;
 using ContainersDesktop.Models.Storage;
 using ContainersDesktop.Services;
@@ -14,6 +13,7 @@ using ContainersDesktop.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 
 namespace ContainersDesktop;
@@ -83,7 +83,6 @@ public partial class App : Application
             services.AddTransient<ITareasProgramadasServicio, TareasProgramadasServicio>();
             services.AddTransient<AzureStorageManagement>();
             services.AddTransient<IPlayFabServicio, PlayFabServicio>();
-            //services.AddSingleton<ILocalSettingsServicio, LocalSettingsServicio>();
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
@@ -110,12 +109,28 @@ public partial class App : Application
             services.AddTransient<TareasProgramadasViewModel>();
             services.AddTransient<TareasProgramadasPage>();
             services.AddTransient<Data2MovieViewModel>();
-            services.AddTransient<Data2MoviePage>();
+            services.AddTransient<Data2MoviePage>();            
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
             services.Configure<Settings>(options => context.Configuration.GetSection("Settings").Bind(options));
             services.Configure<AzureStorageConfig>(options => context.Configuration.GetSection("AzureStorageConfig").Bind(options));
+
+            //HTTP client
+            //services.AddHttpClient();
+
+            //Logging            
+            services.AddLogging(builder =>
+            {
+                // Only Application Insights is registered as a logger provider
+                builder.AddApplicationInsights(
+                    configureTelemetryConfiguration: (config) => config.ConnectionString = "InstrumentationKey=49354931-44b9-4d92-906a-4967741d22d3;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/",
+                    configureApplicationInsightsLoggerOptions: (options) => { }
+                );
+            });
+
+            //Telemetría de la app
+            services.AddApplicationInsightsTelemetryWorkerService();
         }).
         Build();
 
@@ -135,5 +150,22 @@ public partial class App : Application
         await App.GetService<IActivationService>().ActivateAsync(args);
 
         MainWindow.Maximize();
+
+        //// Create IOC container and add logging feature to it.
+        //IServiceCollection services = new ServiceCollection();
+        //services.AddLogging(builder =>
+        //{
+        //    // Only Application Insights is registered as a logger provider
+        //    builder.AddApplicationInsights(
+        //        configureTelemetryConfiguration: (config) => config.ConnectionString = "InstrumentationKey=49354931-44b9-4d92-906a-4967741d22d3;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/",
+        //        configureApplicationInsightsLoggerOptions: (options) => { LogLevel.Information }
+        //    );
+        //});
+
+        //// Build provider to access the logging service.
+        //IServiceProvider provider = services.BuildServiceProvider();
+
+        //// Tell the logging service to use Serilog.File extension.
+        ////provider.GetService<ILoggerFactory>().addap
     }
 }

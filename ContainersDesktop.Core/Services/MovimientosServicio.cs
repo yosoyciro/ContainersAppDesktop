@@ -15,7 +15,7 @@ public class MovimientosServicio : IMovimientosServicio
     public MovimientosServicio(IOptions<Settings> settings)
     {
         _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
-        _dbFullPath = $"{ArchivosCarpetas.GetFullPath()}{_dbFile}";
+        _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
     }
 
     #region ObtenerMovimientosObjeto
