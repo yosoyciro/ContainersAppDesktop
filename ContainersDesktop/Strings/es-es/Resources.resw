@@ -48,4 +48,19 @@
   <data name="Shell_Dispositivos.Content" xml:space="preserve">
     <value>Dispositivos</value>
   </data>
+  <data name="Shell_Movimientos.Content" xml:space="preserve">
+    <value>Historial de tareas</value>
+  </data>
+  <data name="Shell_TareasProgramadas.Content" xml:space="preserve">
+    <value>Programar tareas</value>
+  </data>
+  <data name="Shell_Data2Movie.Content" xml:space="preserve">
+    <value>data2movie</value>
+  </data>
+  <data name="Settings_Personalization.Text" xml:space="preserve">
+    <value>Personalización</value>
+  </data>
+  <data name="Settings_Tables.Text" xml:space="preserve">
+    <value>Tablas</value>
+  </data>
 </root>

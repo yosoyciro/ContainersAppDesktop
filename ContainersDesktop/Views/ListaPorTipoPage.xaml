@@ -73,6 +73,7 @@
                 AlternatingRowBackground="DarkSlateGray"
                 CanUserSortColumns="True"
                 Sorting="ListaGrid_Sorting"
+                IsReadOnly="True"
                 >
                 <controls:DataGrid.Resources>
                     <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />

@@ -15,6 +15,29 @@
 	<EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\Font\Kanit-Black.ttf" />
+    <Content Remove="Assets\Font\Kanit-BlackItalic.ttf" />
+    <Content Remove="Assets\Font\Kanit-Bold.ttf" />
+    <Content Remove="Assets\Font\Kanit-BoldItalic.ttf" />
+    <Content Remove="Assets\Font\Kanit-ExtraBold.ttf" />
+    <Content Remove="Assets\Font\Kanit-ExtraBoldItalic.ttf" />
+    <Content Remove="Assets\Font\Kanit-ExtraLight.ttf" />
+    <Content Remove="Assets\Font\Kanit-ExtraLightItalic.ttf" />
+    <Content Remove="Assets\Font\Kanit-Italic.ttf" />
+    <Content Remove="Assets\Font\Kanit-Light.ttf" />
+    <Content Remove="Assets\Font\Kanit-LightItalic.ttf" />
+    <Content Remove="Assets\Font\Kanit-Medium.ttf" />
+    <Content Remove="Assets\Font\Kanit-MediumItalic.ttf" />
+    <Content Remove="Assets\Font\Kanit-Regular.ttf" />
+    <Content Remove="Assets\Font\Kanit-SemiBold.ttf" />
+    <Content Remove="Assets\Font\Kanit-SemiBoldItalic.ttf" />
+    <Content Remove="Assets\Font\Kanit-Thin.ttf" />
+    <Content Remove="Assets\Font\Kanit-ThinItalic.ttf" />
+    <Content Remove="Assets\Icons\logo-transporte.ico" />
+    <Content Remove="Assets\Images\1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Styles\FontFamily.xaml" />
     <None Remove="Views\Data2MoviePage.xaml" />
     <None Remove="Views\DispositivosPage.xaml" />
     <None Remove="Views\ListaPorTipoPage.xaml" />
@@ -47,6 +70,66 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\Font\Kanit-Black.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-BlackItalic.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-Bold.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-BoldItalic.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-ExtraBold.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-ExtraBoldItalic.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-ExtraLight.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-ExtraLightItalic.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-Italic.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-Light.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-LightItalic.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-Medium.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-MediumItalic.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-Regular.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-SemiBold.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-SemiBoldItalic.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-Thin.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Font\Kanit-ThinItalic.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Icons\logo-transporte.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Page Update="Styles\FontFamily.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\Data2MoviePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -87,5 +170,11 @@
   
   <ItemGroup>
     <Resource Remove="Views\MovimientosPage.xaml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="Assets\Images\1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -48,11 +48,14 @@
                                 IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
                                 Icon="Edit"
                                 Label="Modificar" />
-                        <AppBarButton Command="{x:Bind BorrarCommand}"
-                              CommandParameter="{x:Bind ViewModel.SelectedDispositivo, Mode=OneWay}"
-                              IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                              IsEnabled="{x:Bind ViewModel.EstadoActivo, Mode=OneWay}" 
                               Icon="Delete"
                               Label="Borrar"/>
+                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                              IsEnabled="{x:Bind ViewModel.EstadoBaja, Mode=OneWay}" 
+                              Icon="Up"
+                              Label="Recuperar"/>
                         <AppBarButton Command="{x:Bind SincronizarCommand}"
                               Icon="Sync"
                               Label="Sincronizar"/>

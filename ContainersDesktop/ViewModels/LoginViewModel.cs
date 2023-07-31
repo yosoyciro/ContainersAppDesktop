@@ -32,14 +32,14 @@ public partial class LoginViewModel : ObservableRecipient, INavigationAware
 
     public async Task<bool> Login(string usuario, string password)
     {
-        _logger.LogInformation("Inicia login");
-        isLoggedIn = await _playFabServicio.Login(usuario, password);        
-        if (isLoggedIn)
-        {
-            await _localSettingsService.SaveSettingAsync("Login", new { usuario, password });
-        }
-        _logger.LogInformation("Finaliza login con resultado: {0}", isLoggedIn);
+        //_logger.LogInformation("Inicia login");
+        //isLoggedIn = await _playFabServicio.Login(usuario, password);        
+        //if (isLoggedIn)
+        //{
+        //    await _localSettingsService.SaveSettingAsync("Login", new { usuario, password });
+        //}
+        //_logger.LogInformation("Finaliza login con resultado: {0}", isLoggedIn);
 
-        return isLoggedIn;
+        return true; //isLoggedIn;
     }
 }

@@ -51,6 +51,15 @@
                 </StackPanel>
             </StackPanel>
 
+            <TextBlock x:Uid="Settings_Tables" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                    <Button Command="{x:Bind GoToDispositivosCommand}" Content="Dispositivos"/>
+                    <Button Command="{x:Bind GoToListasCommand}" Content="Listas"/>
+                    <Button Command="{x:Bind GoToContenedoresCommand}" Content="Contenedores"/>
+                </StackPanel>
+            </StackPanel>
+
             <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
             <StackPanel Margin="{StaticResource XSmallTopMargin}">

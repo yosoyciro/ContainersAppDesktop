@@ -52,6 +52,7 @@
                 AlternatingRowBackground="DarkSlateGray"
                 CanUserSortColumns="True"
                 Sorting="DispositivosGrid_Sorting"
+                IsReadOnly="True"
                 >
 
                 <controls:DataGrid.Resources>

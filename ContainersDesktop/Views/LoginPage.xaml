@@ -9,20 +9,38 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="Login" FontSize="36" Margin="4" TextAlignment="Center"/>
-            <TextBlock x:Name="ErrorMessage" Text="" FontSize="20" Margin="4" Foreground="Red" TextAlignment="Center"/>
-            <TextBlock Text="Usuario" Margin="0,0,0,20"
-               TextWrapping="Wrap" Width="300"
-               TextAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
-            <TextBox x:Name="txtUsuario" Margin="4" Width="250" TextChanging="txtUsuario_TextChanging" />
-            <TextBlock Text="Password" Margin="0,0,0,20"
-               TextWrapping="Wrap" Width="300"
-               TextAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
-            <PasswordBox x:Name="txtPassword" Margin="4" Width="250" PasswordChar="*" PasswordChanging="txtPassword_PasswordChanging" />
-            <Button x:Name="btnLogin" Content="Login" Background="DodgerBlue" Foreground="White"
-                Click="PassportSignInButton_Click" Width="80" HorizontalAlignment="Center" Margin="0,20" IsEnabled="False"/>
+            <StackPanel.Background>
+                <ImageBrush ImageSource="/Assets/Images/1.png"/>
+            </StackPanel.Background>
+            <Grid>
+                <StackPanel 
+                    Width="500" 
+                    Height="300" 
+                    Background="DarkSlateGray" 
+                    BorderThickness="5" 
+                    BorderBrush="Black"
+                    CornerRadius="14" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Bottom"
+                >
+                    <TextBox x:Name="txtUsuario" Margin="4" Width="350" TextChanging="txtUsuario_TextChanging"/>
+                    <PasswordBox x:Name="txtPassword" Margin="4" Width="350" PasswordChar="*" PasswordChanging="txtPassword_PasswordChanging" />
+                    <TextBlock x:Name="ErrorMessage" Text="" FontSize="20" Margin="4" Foreground="White" TextAlignment="Center"/>
+                    <Button 
+                        x:Name="btnLogin" 
+                        Content="Login" 
+                        Background="Black" 
+                        Foreground="White"
+                        Click="PassportSignInButton_Click" 
+                        Width="80" 
+                        HorizontalAlignment="Center" 
+                        Margin="0,20" 
+                        IsEnabled="False"
+                    />
+                </StackPanel>
+            </Grid>
         </StackPanel>
     </Grid>
 </Page>

@@ -30,9 +30,13 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
         {
             SetProperty(ref current, value);
             OnPropertyChanged(nameof(HasCurrent));
+            OnPropertyChanged(nameof(EstadoActivo));
+            OnPropertyChanged(nameof(EstadoBaja));
         }
     }
     public bool HasCurrent => current is not null;
+    public bool EstadoActivo => current?.DISPOSITIVOS_ID_ESTADO_REG == "A" ? true : false;
+    public bool EstadoBaja => current?.DISPOSITIVOS_ID_ESTADO_REG == "B" ? true : false;
 
     public ObservableCollection<Dispositivos> Source { get; } = new();
     [ObservableProperty]
@@ -83,14 +87,21 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
     public async Task ActualizarDispositivo(Dispositivos dispositivo)
     {
         await _dispositivosServicio.ActualizarDispositivo(dispositivo);
+
+        //Actualizo Source
         var i = Source.IndexOf(dispositivo);        
         Source[i] = dispositivo;
     }
 
-    public async Task BorrarDispositivo()
+    public async Task BorrarRecuperarDispositivo()
     {
-        await _dispositivosServicio.BorrarDispositivo(SelectedDispositivo.DISPOSITIVOS_ID_REG);
-        Source.Remove(SelectedDispositivo);
+        var accion = EstadoActivo ? "B" : "A";
+        await _dispositivosServicio.BorrarRecuperarDispositivo(SelectedDispositivo.DISPOSITIVOS_ID_REG, accion);
+
+        //Actualizo Source
+        var i = Source.IndexOf(SelectedDispositivo);
+        SelectedDispositivo.DISPOSITIVOS_ID_ESTADO_REG = accion;
+        Source[i] = SelectedDispositivo;
     }
 
     public async Task<bool> ExisteContainer(Dispositivos dispositivo, string plataforma)

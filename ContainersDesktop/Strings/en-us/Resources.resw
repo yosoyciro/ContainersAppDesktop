@@ -172,15 +172,18 @@
     <value>Listas</value>
   </data>
   <data name="Shell_Movimientos.Content" xml:space="preserve">
-    <value>Tareas</value>
+    <value>Tasks history</value>
   </data>
   <data name="Shell_Sincronizaciones.Content" xml:space="preserve">
     <value>Sincronizaciones</value>
   </data>
   <data name="Shell_TareasProgramadas.Content" xml:space="preserve">
-    <value>Tareas Programadas</value>
+    <value>Program tasks</value>
   </data>
   <data name="Shell_Data2Movie.Content" xml:space="preserve">
-    <value>d2m</value>
+    <value>data2movie</value>
+  </data>
+  <data name="Settings_Tables.Text" xml:space="preserve">
+    <value>Tables</value>
   </data>
 </root>

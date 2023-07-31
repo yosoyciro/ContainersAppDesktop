@@ -51,7 +51,7 @@ public class DispositivosServicio : IDispositivosServicio
         }
     }
 
-    public async Task<bool> BorrarDispositivo(int id)
+    public async Task<bool> BorrarRecuperarDispositivo(int id, string accion)
     {
         try
         {
@@ -60,11 +60,12 @@ public class DispositivosServicio : IDispositivosServicio
                 db.Open();
 
                 SqliteCommand deleteCommand = new SqliteCommand
-                    ("UPDATE DISPOSITIVOS SET DISPOSITIVOS_ID_ESTADO_REG = 'B', DISPOSITIVOS_FECHA_ACTUALIZACION = @DISPOSITIVOS_FECHA_ACTUALIZACION "+
+                    ("UPDATE DISPOSITIVOS SET DISPOSITIVOS_ID_ESTADO_REG=@DISPOSITIVOS_ID_ESTADO_REG, DISPOSITIVOS_FECHA_ACTUALIZACION = @DISPOSITIVOS_FECHA_ACTUALIZACION " +
                     "WHERE DISPOSITIVOS_ID_REG = @DISPOSITIVOS_ID_REG", db);
 
                 deleteCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_REG", id);
                 deleteCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                deleteCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_ESTADO_REG", accion);
 
                 SqliteDataReader query = await deleteCommand.ExecuteReaderAsync();
 

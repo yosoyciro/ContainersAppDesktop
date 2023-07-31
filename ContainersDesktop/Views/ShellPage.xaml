@@ -49,27 +49,7 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_ContainersGrid" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.ContainersGridViewModel">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80a;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_TiposListaDetails" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.TiposListaDetailsViewModel">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80a;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_Dispositivos" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.DispositivosViewModel">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80a;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
                 <NavigationViewItem x:Uid="Shell_Movimientos" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.MovimientosViewModel">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80a;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_Sincronizaciones" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.SincronizacionesViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80a;"/>
                     </NavigationViewItem.Icon>
@@ -80,6 +60,11 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem x:Uid="Shell_Data2Movie" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.Data2MovieViewModel">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80a;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Uid="Shell_Sincronizaciones" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.SincronizacionesViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe80a;"/>
                     </NavigationViewItem.Icon>

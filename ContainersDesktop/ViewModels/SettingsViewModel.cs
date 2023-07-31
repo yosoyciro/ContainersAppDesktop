@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Reflection;
 using System.Windows.Input;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-
 using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Helpers;
-
 using Microsoft.UI.Xaml;
-
+//using Microsoft.UI.Xaml.Controls;
 using Windows.ApplicationModel;
 
 namespace ContainersDesktop.ViewModels;
@@ -62,5 +59,5 @@ public partial class SettingsViewModel : ObservableRecipient
         }
 
         return $"{"AppDisplayName".GetLocalized()} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
-    }
+    }    
 }

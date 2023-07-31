@@ -124,25 +124,40 @@ public sealed partial class ContainersGridPage : Page
 
     private async Task BorrarObjeto()
     {
-        try
+        ContentDialog bajaRegistroDialog = new ContentDialog
         {
-            await ViewModel.BorrarObjeto();
+            XamlRoot = this.XamlRoot,
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+            Title = "Atención!",
+            Content = "Está seguro que desea dar de baja el registro?",
+            PrimaryButtonText = "Sí",
+            CloseButtonText = "No"
+        };
 
-            ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
-        }
-        catch (Exception ex)
+        ContentDialogResult result = await bajaRegistroDialog.ShowAsync();
+
+        if (result == ContentDialogResult.Primary)
         {
-            ContentDialog dialog = new ContentDialog();
+            try
+            {
+                await ViewModel.BorrarObjeto();
 
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Error";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = ex.Message;
+                ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+            }
+            catch (Exception ex)
+            {
+                ContentDialog dialog = new ContentDialog();
 
-            await dialog.ShowAsync();
+                // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+                dialog.XamlRoot = this.XamlRoot;
+                dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+                dialog.Title = "Error";
+                dialog.CloseButtonText = "Cerrar";
+                dialog.DefaultButton = ContentDialogButton.Close;
+                dialog.Content = ex.Message;
+
+                await dialog.ShowAsync();
+            }
         }
     }
 

@@ -6,6 +6,6 @@ public interface IDispositivosServicio
     Task<List<Dispositivos>> ObtenerDispositivos();
     Task<int> CrearDispositivo(Dispositivos dispositivo);
     Task<bool> ActualizarDispositivo(Dispositivos dispositivo);
-    Task<bool> BorrarDispositivo(int id);
+    Task<bool> BorrarRecuperarDispositivo(int id, string accion);
     Task<bool> ExisteContainer(string cloudContainer);
 }

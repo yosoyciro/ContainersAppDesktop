@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using ContainersDesktop.Core.Helpers;
 using Azure;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace ContainersDesktop.Views;
 public sealed partial class DispositivosPage : Page
@@ -80,8 +81,9 @@ public sealed partial class DispositivosPage : Page
     public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistro);
     public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
     public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
-    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);   
+    public ICommand BorrarRecuperarCommand => new AsyncRelayCommand(BorrarRecuperarRegistro);   
     public ICommand SincronizarCommand => new AsyncRelayCommand(SincronizarDatos);
+    public ICommand ExportarCommand => new AsyncRelayCommand(Exportar);
 
     private async Task OpenAgregarDialog()
     {
@@ -112,27 +114,42 @@ public sealed partial class DispositivosPage : Page
     }
 
     #region CRUD
-    private async Task BorrarRegistro()
+    private async Task BorrarRecuperarRegistro()
     {
-        try
+        ContentDialog bajaRegistroDialog = new ContentDialog
         {
-            await ViewModel.BorrarDispositivo();
+            XamlRoot = this.XamlRoot,
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+            Title = "Atención!",
+            Content = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?",
+            PrimaryButtonText = "Sí",
+            CloseButtonText = "No"
+        };
 
-            DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
-        }
-        catch (Exception ex)
+        ContentDialogResult result = await bajaRegistroDialog.ShowAsync();
+
+        if (result == ContentDialogResult.Primary)
         {
-            ContentDialog dialog = new ContentDialog();
+            try
+            {
+                await ViewModel.BorrarRecuperarDispositivo();
 
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Error";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = ex.Message;
+                DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+            }
+            catch (Exception ex)
+            {
+                ContentDialog dialog = new ContentDialog();
 
-            await dialog.ShowAsync();
+                // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+                dialog.XamlRoot = this.XamlRoot;
+                dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+                dialog.Title = "Error";
+                dialog.CloseButtonText = "Cerrar";
+                dialog.DefaultButton = ContentDialogButton.Close;
+                dialog.Content = ex.Message;
+
+                await dialog.ShowAsync();
+            }
         }
     }
 
@@ -235,4 +252,9 @@ public sealed partial class DispositivosPage : Page
         ViewModel.FormViewModel.Container = sender.Text;
     }
     #endregion
+
+    private async Task Exportar()
+    {
+        //ExportToCSV
+    }
 }

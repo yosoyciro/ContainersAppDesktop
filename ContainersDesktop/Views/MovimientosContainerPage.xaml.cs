@@ -196,7 +196,22 @@ public sealed partial class MovimientosContainerPage : Page
 
     private async Task BorrarMovimiento()
     {
-        await ViewModel.BorrarMovimiento();
+        ContentDialog bajaRegistroDialog = new ContentDialog
+        {
+            XamlRoot = this.XamlRoot,
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+            Title = "Atención!",
+            Content = "Está seguro que desea dar de baja el registro?",
+            PrimaryButtonText = "Sí",
+            CloseButtonText = "No"
+        };
+
+        ContentDialogResult result = await bajaRegistroDialog.ShowAsync();
+
+        if (result == ContentDialogResult.Primary)
+        {
+            await ViewModel.BorrarMovimiento();
+        }
     }
     #endregion
 
