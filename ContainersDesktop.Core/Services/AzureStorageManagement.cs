@@ -10,7 +10,7 @@ namespace ContainersDesktop.Core.Services;
 public class AzureStorageManagement
 {
     private readonly AzureStorageConfig _azureStorageConfig;
-    private readonly Settings _settings;
+    //private readonly Settings _settings;
     private readonly string _connectionString = string.Empty;
     private readonly string _cuenta = string.Empty;
     private BlobClient blobClient;
@@ -24,14 +24,14 @@ public class AzureStorageManagement
     public AzureStorageManagement(IOptions<AzureStorageConfig> azureStorageConfig, IOptions<Settings> settings)
     {
         _azureStorageConfig = azureStorageConfig.Value;
-        _settings = settings.Value;
+        //_settings = settings.Value;
         _connectionString = _azureStorageConfig.ConnectionString;
         _cuenta = _azureStorageConfig.Cuenta;
-        _dbNameDescarga = _settings.DBNameDescarga;
-        _dbNameSubida = _settings.DBNameSubida;
-        _dbFolder = _settings.DBFolder;
+        _dbNameDescarga = settings.Value.DBNameDescarga;
+        _dbNameSubida = settings.Value.DBNameSubida;
+        _dbFolder = settings.Value.DBFolder;
         _dbFile = settings.Value.DBName;
-        _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFolder}{_dbFile}";
+        _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFolder}\\{_dbFile}";
     }
 
     public async Task<string> DownloadFile(string contenedor)
@@ -77,10 +77,11 @@ public class AzureStorageManagement
                 await blobClient.DeleteAsync();
             }
 
-            using (FileStream source = File.Open(_dbFullPath, FileMode.OpenOrCreate))
+            using (FileStream source = File.Open(_dbFullPath, FileMode.Open))
             {
                 var result = await blobClient.UploadAsync(source);
             }
+
             return true;
         }
         catch (RequestFailedException)

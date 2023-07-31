@@ -64,7 +64,7 @@ public class DispositivosServicio : IDispositivosServicio
                     "WHERE DISPOSITIVOS_ID_REG = @DISPOSITIVOS_ID_REG", db);
 
                 deleteCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_REG", id);
-                deleteCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                deleteCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
                 deleteCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_ESTADO_REG", accion);
 
                 SqliteDataReader query = await deleteCommand.ExecuteReaderAsync();
