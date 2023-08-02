@@ -35,11 +35,14 @@
                         DefaultLabelPosition="Right"
                         Grid.Column="1"
                         Grid.Row="0">
-                        <AppBarButton 
+                        <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
+                                    Icon="Add"
+                                    Label="Agregar" />
+                        <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
                                     IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}"
-                                  Icon="Edit"
-                                  Label="Modificar" />
-                        <AppBarButton 
+                                    Icon="Edit"
+                                    Label="Modificar" />
+                        <AppBarButton Command="{x:Bind BorrarCommand, Mode=OneWay}"
                                   IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
                                   Icon="Delete"
                                   Label="Borrar"/>
@@ -53,14 +56,15 @@
 
             <Grid Grid.Row="1">
                 <controls:DataGrid x:Name="TareasProgramadasGrid" 
-                                   ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" 
-                                   SelectedItem="{x:Bind ViewModel.Current, Mode=TwoWay}" 
-                                   AutoGenerateColumns="False"
-                                   HorizontalScrollBarVisibility="Visible"
-                                   AlternatingRowBackground="DarkSlateGray"
+                                    ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" 
+                                    SelectedItem="{x:Bind ViewModel.Current, Mode=TwoWay}" 
+                                    SelectionMode="Single"
+                                    AutoGenerateColumns="False"
+                                    HorizontalScrollBarVisibility="Visible"
+                                    AlternatingRowBackground="DarkSlateGray"
                                     CanUserReorderColumns="True"
                                     Sorting="TareasProgramadasGrid_Sorting"
-                                   IsReadOnly="True">
+                                    IsReadOnly="True">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="ID" Tag="Id" Binding="{Binding TAREAS_PROGRAMADAS_ID_REG}" Width="60"/>
                         <controls:DataGridTextColumn Header="Container" Tag="Container" Binding="{Binding TAREAS_PROGRAMADAS_OBJETO_MATRICULA}" Width="150"/>
@@ -69,9 +73,79 @@
                         <controls:DataGridTextColumn Header="Ubicación Origen" Tag="UbicacionOrigen" Binding="{Binding TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION}" Width="150"/>
                         <controls:DataGridTextColumn Header="Ubicación Destino" Tag="UbicacionDestino" Binding="{Binding TAREAS_PROGRAMADAS_UBICACION_DESTINO_DESCRIPCION}" Width="150"/>
                         <controls:DataGridTextColumn Header="Dispositivo" Tag="Dispositivo" Binding="{Binding TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION}" Width="200"/>
+                        <controls:DataGridTextColumn Header="Latitud" Tag="UbicacionDestino" Binding="{Binding TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Longitud" Tag="Dispositivo" Binding="{Binding TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD}" Width="150"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>
+
+            <ContentDialog x:Name="dlgFormulario"
+                        PrimaryButtonText="Aceptar"
+                        CloseButtonText="Cancelar"
+                        IsPrimaryButtonEnabled="{x:Bind ViewModel.FormViewModel.IsValid, Mode=OneWay}">
+                <RelativePanel HorizontalAlignment="Stretch">
+                    <ComboBox x:Name="cmbObjetos"
+                        Header="Container"
+                        ItemsSource="{x:Bind ViewModel.LstObjetosActivos, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.FormViewModel.Objeto, Mode=TwoWay}"
+                        DisplayMemberPath="DESCRIPCION"                                
+                        Width="240"
+                        Margin="4"
+                    />
+
+                    <CalendarDatePicker x:Name="txtFecha"
+                        Date="{x:Bind ViewModel.FormViewModel.FechaProgramada, Mode=TwoWay}"
+                        DateFormat="{}{day.integer}/{month.integer}/{year.full}"
+                        Header="Fecha"      
+                        PlaceholderText="Elija una fecha"                              
+                        Width="240"
+                        Margin="4"
+                        RelativePanel.RightOf="cmbObjetos"
+                    />
+
+                    <ComboBox x:Name="cmbUbicacionOrigen"
+                        Header="Orígen"
+                        ItemsSource="{x:Bind ViewModel.LstAlmacenesActivos, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.FormViewModel.UbicacionOrigen, Mode=TwoWay}"
+                        DisplayMemberPath="DESCRIPCION"                                
+                        Width="240"
+                        Margin="4"
+                        RelativePanel.Below="cmbObjetos"
+                    />
+
+                    <ComboBox x:Name="cmbUbicacionDestino"
+                        Header="Destino"
+                        ItemsSource="{x:Bind ViewModel.LstAlmacenesActivos, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.FormViewModel.UbicacionDestino, Mode=TwoWay}"
+                        DisplayMemberPath="DESCRIPCION"                                
+                        Width="240"
+                        Margin="4"
+                        RelativePanel.Below="cmbObjetos"
+                        RelativePanel.RightOf="cmbUbicacionOrigen"
+                    />
+
+                    <ComboBox x:Name="cmbDispositivos"
+                        Header="Dispositivo"
+                        ItemsSource="{x:Bind ViewModel.LstDispositivosActivos, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.FormViewModel.Dispositivo, Mode=TwoWay}"
+                        DisplayMemberPath="DESCRIPCION"                                
+                        Width="240"
+                        Margin="4"
+                        RelativePanel.Below="cmbUbicacionOrigen"                        
+                    />
+
+                    <Grid RelativePanel.Below="cmbDispositivos">
+                        <SymbolIcon Symbol="ReportHacked"
+                            Foreground="Red"
+                            Visibility="{x:Bind ViewModel.FormViewModel.HasErrors, Mode=OneWay}">
+                            <ToolTipService.ToolTip>
+                                <TextBlock Text="{x:Bind ViewModel.FormViewModel.Errors, Mode=OneWay}"
+                                Foreground="Red" />
+                            </ToolTipService.ToolTip>
+                        </SymbolIcon>
+                    </Grid>
+                </RelativePanel>
+            </ContentDialog>
         </Grid>
     </Border>
 </Page>

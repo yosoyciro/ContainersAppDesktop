@@ -1,20 +1,27 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
+using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Core.Services;
 using ContainersDesktop.DTO;
 
 namespace ContainersDesktop.ViewModels;
 public partial class TareasProgramadasViewModel : ObservableRecipient, INavigationAware
 {
+    private readonly TareasProgramadasFormViewModel _formViewModel = new();
+    public TareasProgramadasFormViewModel FormViewModel => _formViewModel;
+
     private readonly ITareasProgramadasServicio _tareasProgramadasServicio;
     private readonly IListasServicio _listasServicio;
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IObjetosServicio _objetosServicio;
     private string _cachedSortedColumn = string.Empty;
+    
 
     private TareaProgramadaDTO current;
     public TareaProgramadaDTO Current
@@ -32,10 +39,8 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     public ObjetosDTO objeto = null;
 
     #region Observable Collections
-    public ObservableCollection<TareaProgramadaDTO> Items
-    {
-        get;
-    } = new();
+    private readonly ObservableCollection<TareaProgramadaDTO> _items = new();
+    public ObservableCollection<TareaProgramadaDTO> Items => _items;    
     public ObservableCollection<Listas> LstListas { get; } = new();
     public ObservableCollection<DispositivosDTO> LstDispositivos { get; } = new();
     public ObservableCollection<DispositivosDTO> LstDispositivosActivos { get; } = new();
@@ -75,14 +80,14 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             };
         }
 
-        Items.Clear();
+        _items.Clear();
         var data = Objeto != null ? await _tareasProgramadasServicio.ObtenerPorObjeto(objeto.OBJ_ID_REG) : await _tareasProgramadasServicio.ObtenerTodos();
         if (data.Any())
         {
             foreach (var item in data)
             {
                 var dto = MapSourceToDTO(item);
-                Items.Add(dto);
+                _items.Add(dto);
             }
         }
     }
@@ -144,6 +149,53 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
 
     #endregion
 
+    #region CRUD
+    public async Task AgregarTareaProgramada(TareaProgramadaDTO dto)
+    {
+        try
+        {
+            var tareaProgramada = MapDTOToSource(dto);
+            dto.TAREAS_PROGRAMADAS_ID_REG = await _tareasProgramadasServicio.Agregar(tareaProgramada);
+            dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaCorta(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
+            _items.Add(dto);
+
+            OnPropertyChanged(nameof(Items));
+        }
+        catch (Exception)
+        {
+            throw;
+        }        
+    }
+
+    public async Task ActualizarTareaProgramada(TareaProgramadaDTO dto)
+    {
+        try
+        {            
+            var tareaProgramada = MapDTOToSource(dto);
+            await _tareasProgramadasServicio.Modificar(tareaProgramada);
+
+            var i = _items.IndexOf(Current);
+            dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaCorta(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
+
+            _items[i].TAREAS_PROGRAMADAS_OBJETO_ID_REG = dto.TAREAS_PROGRAMADAS_OBJETO_ID_REG;
+            _items[i].TAREAS_PROGRAMADAS_OBJETO_MATRICULA = dto.TAREAS_PROGRAMADAS_OBJETO_MATRICULA;
+            _items[i].TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA;
+            _items[i].TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION = dto.TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION;
+            _items[i].TAREAS_PROGRAMADAS_UBICACION_DESTINO_DESCRIPCION = dto.TAREAS_PROGRAMADAS_UBICACION_DESTINO_DESCRIPCION;
+            _items[i].TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = dto.TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION;
+            _items[i].TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = dto.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD;
+            _items[i].TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = dto.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD;
+
+            OnPropertyChanged(nameof(Items));
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    #endregion
+
     #region Mapeos
     private TareaProgramadaDTO MapSourceToDTO(TareaProgramada item)
     {
@@ -165,7 +217,9 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             TAREAS_PROGRAMADAS_UBICACION_DESTINO_DESCRIPCION = ubicacionDestino.DESCRIPCION,
             TAREAS_PROGRAMADAS_ORDENADO = item.TAREAS_PROGRAMADAS_ORDENADO,
             TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = item.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG,
-            TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = dispositivo.DESCRIPCION,            
+            TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = dispositivo.DESCRIPCION,   
+            TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = item.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD,
+            TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = item.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD,
         };
     }
 
@@ -181,17 +235,17 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             TAREAS_PROGRAMADAS_UBICACION_DESTINO = tareaProgramadaDTO.TAREAS_PROGRAMADAS_UBICACION_DESTINO,
             TAREAS_PROGRAMADAS_ORDENADO = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ORDENADO,
             TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG,
+            TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD,
+            TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD,
         };
     }
     #endregion
 
     #region Ordenamiento y filtro
-    //public ObservableCollection<TareaProgramadaDTO> ApplyFilter(string? filter, bool verTodos)
-    //{
-    //    return new ObservableCollection<MovimDTO>(Items.Where(x =>
-    //        (verTodos || x.MOVIM_ID_ESTADO_REG == "A")
-    //    ));
-    //}
+    public ObservableCollection<TareaProgramadaDTO> AplicarFiltro(string? filter, bool verTodos)
+    {
+        return new ObservableCollection<TareaProgramadaDTO>(Items);
+    }
 
     public string CachedSortedColumn
     {

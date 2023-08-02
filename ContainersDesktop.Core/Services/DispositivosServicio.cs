@@ -36,7 +36,7 @@ public class DispositivosServicio : IDispositivosServicio
 
                 updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_DESCRIP", dispositivo.DISPOSITIVOS_DESCRIP);
                 updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_CONTAINER", dispositivo.DISPOSITIVOS_CONTAINER);
-                updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", dispositivo.DISPOSITIVOS_FECHA_ACTUALIZACION);
+                updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
                 updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_REG", dispositivo.DISPOSITIVOS_ID_REG);
 
 
@@ -97,7 +97,7 @@ public class DispositivosServicio : IDispositivosServicio
                 insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_ESTADO_REG", dispositivo.DISPOSITIVOS_ID_ESTADO_REG);
                 insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_DESCRIP", dispositivo.DISPOSITIVOS_DESCRIP);
                 insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_CONTAINER", dispositivo.DISPOSITIVOS_CONTAINER);
-                insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", dispositivo.DISPOSITIVOS_FECHA_ACTUALIZACION);
+                insertCommand.Parameters.AddWithValue("@DISPOSITIVOS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 await insertCommand.ExecuteReaderAsync();
                 var identity = await OperacionesComunes.GetIdentity(db);

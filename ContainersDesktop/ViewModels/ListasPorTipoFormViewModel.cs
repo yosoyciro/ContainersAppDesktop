@@ -9,6 +9,7 @@ namespace ContainersDesktop.ViewModels;
 public class ListasPorTipoFormViewModel : ObservableValidator
 {
     private string _descripcion;
+    private int _orden;
 
     public ListasPorTipoFormViewModel()
     {
@@ -30,7 +31,15 @@ public class ListasPorTipoFormViewModel : ObservableValidator
         set => SetProperty(ref _descripcion, value, true);
     }
 
-    public bool IsValid => Errors.Length == 0 && !string.IsNullOrEmpty(_descripcion);
+    [Required(ErrorMessage = "El Orden es requerido")]
+    //[Range(1,99999 = "")]
+    public int Orden
+    {
+        get => _orden;
+        set => SetProperty(ref _orden, value, true);
+    }
+
+    public bool IsValid => Errors.Length == 0 ? true : false;
 
     public string Errors => string.Join(Environment.NewLine, from ValidationResult e in GetErrors(null) select e.ErrorMessage);
     //public ICommand ValidateCommand => new RelayCommand(() => ValidateAllProperties());

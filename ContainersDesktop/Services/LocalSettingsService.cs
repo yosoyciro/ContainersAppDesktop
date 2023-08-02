@@ -87,4 +87,20 @@ public class LocalSettingsService : ILocalSettingsService
             await Task.Run(() => _fileService.Save(_applicationDataFolder, _localsettingsFile, _settings));
         }
     }
+
+    public async Task DeleteSettingAsync(string key)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            ApplicationData.Current.LocalSettings.Values.Remove(key);
+        }
+        else
+        {
+            await InitializeAsync();
+
+            _settings.Remove(key);
+
+            await Task.Run(() => _fileService.Delete(_applicationDataFolder, _localsettingsFile));
+        }
+    }
 }

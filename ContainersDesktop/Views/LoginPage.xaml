@@ -10,34 +10,51 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <StackPanel.Background>
-                <ImageBrush ImageSource="/Assets/Images/1.png"/>
-            </StackPanel.Background>
+        <Grid.Background>
+            <ImageBrush ImageSource="/Assets/Images/recursos_data2movie3.png"/>
+        </Grid.Background>
+        <StackPanel Orientation="Vertical" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center">
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Image Source="/Assets/Images/RGB.jpg" Width="200" Height="100" Grid.Row="0" />
                 <StackPanel 
+                    Grid.Row="1"
+                    Orientation="Vertical"
                     Width="500" 
                     Height="300" 
-                    Background="DarkSlateGray" 
+                    Background="#373636" 
                     BorderThickness="5" 
                     BorderBrush="Black"
                     CornerRadius="14" 
                     HorizontalAlignment="Center" 
-                    VerticalAlignment="Bottom"
+                    VerticalAlignment="Center"
                 >
-                    <TextBox x:Name="txtUsuario" Margin="4" Width="350" TextChanging="txtUsuario_TextChanging"/>
-                    <PasswordBox x:Name="txtPassword" Margin="4" Width="350" PasswordChar="*" PasswordChanging="txtPassword_PasswordChanging" />
-                    <TextBlock x:Name="ErrorMessage" Text="" FontSize="20" Margin="4" Foreground="White" TextAlignment="Center"/>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" Margin="0,20">
+                        <ImageIcon />
+                        <TextBox  x:Name="txtUsuario"  Width="350" TextChanging="txtUsuario_TextChanging"/>
+                    </StackPanel>
+                    
+                    <PasswordBox Grid.Row="1" x:Name="txtPassword" Margin="0,20" Width="350" PasswordChar="*" PasswordChanging="txtPassword_PasswordChanging" />
+                    <TextBlock Grid.Row="2" x:Name="ErrorMessage" Margin="0,10" Text="" FontSize="20" Foreground="White" TextAlignment="Center"/>
                     <Button 
+                        Grid.Row="3"
                         x:Name="btnLogin" 
                         Content="Login" 
                         Background="Black" 
                         Foreground="White"
                         Click="PassportSignInButton_Click" 
-                        Width="80" 
-                        HorizontalAlignment="Center" 
+                        Width="150"    
+                        Height="50"
                         Margin="0,20" 
                         IsEnabled="False"
+                        FontWeight="Bold"
+                        FontSize="20"
+                        HorizontalAlignment="Center"
                     />
                 </StackPanel>
             </Grid>

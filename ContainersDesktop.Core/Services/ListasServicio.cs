@@ -35,11 +35,11 @@ public class ListasServicio : IListasServicio
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA", lista.LISTAS_ID_LISTA);
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_ORDEN", lista.LISTAS_ID_LISTA_ORDEN);
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_DESCRIP", lista.LISTAS_ID_LISTA_DESCRIP);
-                insertCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", lista.LISTAS_FECHA_ACTUALIZACION);
+                insertCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 await insertCommand.ExecuteReaderAsync();
 
-                int identity = await OperacionesComunes.GetIdentity(db);
+                var identity = await OperacionesComunes.GetIdentity(db);
 
                 return identity;
             }
@@ -108,7 +108,7 @@ public class ListasServicio : IListasServicio
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA", lista.LISTAS_ID_LISTA);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_ORDEN", lista.LISTAS_ID_LISTA_ORDEN);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_DESCRIP", lista.LISTAS_ID_LISTA_DESCRIP);
-                updateCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", lista.LISTAS_FECHA_ACTUALIZACION);
+                updateCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_REG", lista.LISTAS_ID_REG);
 
                 await updateCommand.ExecuteReaderAsync();

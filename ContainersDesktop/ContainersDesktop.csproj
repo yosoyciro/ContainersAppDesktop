@@ -35,6 +35,8 @@
     <Content Remove="Assets\Font\Kanit-ThinItalic.ttf" />
     <Content Remove="Assets\Icons\logo-transporte.ico" />
     <Content Remove="Assets\Images\1.png" />
+    <Content Remove="Assets\Images\recursos_data2movie3.png" />
+    <Content Remove="Assets\Images\RGB.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Styles\FontFamily.xaml" />
@@ -125,6 +127,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Assets\Icons\logo-transporte.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Images\recursos_data2movie3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Images\RGB.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Page Update="Styles\FontFamily.xaml">

@@ -34,23 +34,42 @@ public sealed partial class ListaPorTipoPage : Page
     
     public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);
     public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistro);
+    public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
+    public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
     public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);    
     public ICommand VolverCommand => new RelayCommand(Volver);
 
     private async Task OpenAgregarDialog()
     {
-        AgregarDialog.Title = "Nueva entrada de lista";
-        AgregarDialog.PrimaryButtonText = "Agregar";
+        txtOrden.IsEnabled = false;
+
+        AgregarDialog.Title = "Agregar entrada a la lista";
+        AgregarDialog.PrimaryButtonText = "Confirmar";
+        //AgregarDialog.IsPrimaryButtonEnabled = ViewModel.FormViewModel.IsValid;
         AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
-        AgregarDialog.IsPrimaryButtonEnabled = false;
+        
         AgregarDialog.DataContext = new Listas() 
         { 
-            LISTAS_ID_ESTADO_REG = "A",
-            LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now), 
-            LISTAS_ID_LISTA_ORDEN = ViewModel.Source.OrderByDescending(x => x.LISTAS_ID_LISTA_ORDEN).FirstOrDefault().LISTAS_ID_LISTA_ORDEN + 1 
+            LISTAS_ID_ESTADO_REG = "A",                        
         };
 
+        ViewModel.FormViewModel.Orden = ViewModel.Source.OrderByDescending(x => x.LISTAS_ID_LISTA_ORDEN).FirstOrDefault().LISTAS_ID_LISTA_ORDEN + 1;
         ViewModel.FormViewModel.Descripcion = string.Empty;
+        await AgregarDialog.ShowAsync();
+    }
+
+    private async Task OpenModificarDialog()
+    {
+        txtOrden.IsEnabled = true;
+
+        AgregarDialog.Title = "Modificar entrada de la lista";
+        AgregarDialog.PrimaryButtonText = "Confirmar";
+        AgregarDialog.PrimaryButtonCommand = ModificarRegistroCommand;
+        //AgregarDialog.IsPrimaryButtonEnabled = ViewModel.FormViewModel.IsValid;
+        AgregarDialog.DataContext = ViewModel.SelectedLista;
+
+        ViewModel.FormViewModel.Orden = ViewModel.SelectedLista.LISTAS_ID_LISTA_ORDEN;
+        ViewModel.FormViewModel.Descripcion = ViewModel.SelectedLista.LISTAS_ID_LISTA_DESCRIP;
         await AgregarDialog.ShowAsync();
     }
 
@@ -96,13 +115,25 @@ public sealed partial class ListaPorTipoPage : Page
     private async Task AgregarRegistro()
     {
         var lista = AgregarDialog.DataContext as Listas;
+        lista.LISTAS_ID_LISTA_ORDEN = ViewModel.FormViewModel.Orden;
         lista.LISTAS_ID_LISTA_DESCRIP = ViewModel.FormViewModel.Descripcion;
         await ViewModel.AgregarLista(lista);
 
         ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
         LimpiarIndicadorOden();
     }
-   
+
+    private async Task ModificarRegistro()
+    {
+        var lista = AgregarDialog.DataContext as Listas;
+        lista.LISTAS_ID_LISTA_ORDEN = ViewModel.FormViewModel.Orden;
+        lista.LISTAS_ID_LISTA_DESCRIP = ViewModel.FormViewModel.Descripcion;
+        await ViewModel.ActualizarLista(lista);
+
+        ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+        LimpiarIndicadorOden();
+    }
+
     private void Volver()
     {
         Frame.GoBack();

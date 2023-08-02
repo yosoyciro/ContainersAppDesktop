@@ -48,6 +48,10 @@
                         <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
                               Icon="Add"
                               Label="Agregar" />
+                        <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
+                                IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                                Icon="Edit"
+                                Label="Modificar" />
                         <AppBarButton Command="{x:Bind BorrarCommand}"
                               CommandParameter="{x:Bind ViewModel.SelectedLista, Mode=OneWay}"
                               IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
@@ -86,17 +90,17 @@
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_FECHA_ACTUALIZACION, Mode=TwoWay}" Header="Fecha Actualización" Tag="FechaActualizacion" Visibility="Collapsed" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
+            
             <ContentDialog x:Name="AgregarDialog"
                         PrimaryButtonText="Aceptar"
                         CloseButtonText="Cancelar"
                         IsPrimaryButtonEnabled="{x:Bind ViewModel.FormViewModel.IsValid, Mode=OneWay}">
                 <RelativePanel HorizontalAlignment="Stretch">
-                    <NumberBox x:Name="txtOrden"
-                               IsEnabled="False"
+                    <NumberBox x:Name="txtOrden"                               
                             Header="Orden"
                             HorizontalAlignment="Stretch"
                             Width="200"
-                            Text="{Binding LISTAS_ID_LISTA_ORDEN, Mode=TwoWay}"
+                            Text="{x:Bind ViewModel.FormViewModel.Orden, Mode=TwoWay}"
                             Margin="4,0,0,0" />
                     
                     <TextBox x:Name="txtDescripcion"

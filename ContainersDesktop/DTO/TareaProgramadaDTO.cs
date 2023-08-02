@@ -1,4 +1,6 @@
-﻿namespace ContainersDesktop.DTO;
+﻿using System.ComponentModel;
+
+namespace ContainersDesktop.DTO;
 public class TareaProgramadaDTO
 {
     public int TAREAS_PROGRAMADAS_ID_REG
@@ -46,6 +48,14 @@ public class TareaProgramadaDTO
         get; set;
     }
     public string? TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION
+    {
+        get; set;
+    }
+    public double TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD
+    {
+        get; set;
+    }
+    public double TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD
     {
         get; set;
     }
