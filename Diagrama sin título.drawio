@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-08-03T04:15:27.347Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36" etag="5AipdF1Umeb6yDUuYWwQ" version="21.6.6" type="github">
+<mxfile host="app.diagrams.net" modified="2023-08-03T04:16:24.921Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36" etag="x3mqMYdhP2M0p0LzmGfD" version="21.6.6" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="1434" dy="758" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -28,7 +28,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="lkM-y_qAxUJIHMLCBXUL-10" value="Azure Blob Storage" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="320" y="280" width="360" height="120" as="geometry" />
+          <mxGeometry x="340" y="280" width="320" height="120" as="geometry" />
         </mxCell>
         <mxCell id="lkM-y_qAxUJIHMLCBXUL-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.228;entryY=0.008;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="lkM-y_qAxUJIHMLCBXUL-12" target="lkM-y_qAxUJIHMLCBXUL-10">
           <mxGeometry relative="1" as="geometry" />
@@ -68,6 +68,18 @@
         </mxCell>
         <mxCell id="lkM-y_qAxUJIHMLCBXUL-44" value="Download Containers&amp;nbsp;DB" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="520" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="lkM-y_qAxUJIHMLCBXUL-53" value="" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="350" y="300" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lkM-y_qAxUJIHMLCBXUL-54" value="" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="430" y="300" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lkM-y_qAxUJIHMLCBXUL-55" value="" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="510" y="300" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lkM-y_qAxUJIHMLCBXUL-56" value="" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="590" y="300" width="60" height="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
