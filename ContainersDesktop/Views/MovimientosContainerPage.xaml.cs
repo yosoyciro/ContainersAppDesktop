@@ -41,6 +41,7 @@ public sealed partial class MovimientosContainerPage : Page
     public ICommand ModificarMovimientoCommand => new AsyncRelayCommand(ModificarMovimiento);
     public ICommand BorrarCommand => new AsyncRelayCommand(BorrarMovimiento);
     public ICommand VolverCommand => new RelayCommand(Volver);
+    public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
 
     private async Task AbrirModificarDialog()
     {
@@ -91,6 +92,32 @@ public sealed partial class MovimientosContainerPage : Page
         ComboAlmacenes.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstAlmacenesActivos.FirstOrDefault();
         await Dialog.ShowAsync();
     }
+
+    private async Task ExportarCommand_Execute()
+    {
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "HISTORIAL_TAREAS.csv");
+
+        try
+        {
+            Exportar.GenerarDatos(ViewModel.Items, filePath);
+
+            ContentDialog bajaRegistroDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Se generó el archivo {filePath}",
+                CloseButtonText = "Ok"
+            };
+
+            await bajaRegistroDialog.ShowAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
     #endregion
 
     #region Llamadas a los metodos CRUD

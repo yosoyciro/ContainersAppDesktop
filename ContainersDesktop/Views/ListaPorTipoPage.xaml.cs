@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using System.Data;
 
 namespace ContainersDesktop.Views;
 
@@ -38,6 +39,7 @@ public sealed partial class ListaPorTipoPage : Page
     public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
     public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);    
     public ICommand VolverCommand => new RelayCommand(Volver);
+    public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
 
     private async Task OpenAgregarDialog()
     {
@@ -71,6 +73,31 @@ public sealed partial class ListaPorTipoPage : Page
         ViewModel.FormViewModel.Orden = ViewModel.SelectedLista.LISTAS_ID_LISTA_ORDEN;
         ViewModel.FormViewModel.Descripcion = ViewModel.SelectedLista.LISTAS_ID_LISTA_DESCRIP;
         await AgregarDialog.ShowAsync();
+    }
+
+    private async Task ExportarCommand_Execute()
+    {
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), $"{ViewModel.claLista.CLALIST_DESCRIP}.csv");
+
+        try
+        {
+            Exportar.GenerarDatos(ViewModel.Source, filePath);
+
+            ContentDialog bajaRegistroDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Se generó el archivo {filePath}",
+                CloseButtonText = "Ok"
+            };
+
+            await bajaRegistroDialog.ShowAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     private async Task BorrarRegistro()

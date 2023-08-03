@@ -13,14 +13,26 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Grid HorizontalAlignment="Stretch"              
-              Margin="0,0,0,16"
-              CornerRadius="4"
-              Height="52"
-              Grid.ColumnSpan="2">
+            <StackPanel 
+                Grid.Row="0"
+                Margin="0,0,0,16"
+            >
+                <TextBlock 
+                    Text="{x:Bind ViewModel.claLista.CLALIST_DESCRIP}"                    
+                    Style="{ThemeResource SubtitleTextBlockStyle}"
+                />
+            </StackPanel>
+
+            <Grid HorizontalAlignment="Stretch"  
+                Grid.Row="1"
+                Margin="0,0,0,16"
+                CornerRadius="4"
+                Height="52"
+                Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -57,6 +69,9 @@
                               IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
                               Icon="Delete"
                               Label="Borrar"/>
+                        <AppBarButton Command="{x:Bind ExportarCommand, Mode=OneWay}"
+                              Icon="Document"
+                              Label="Exportar" />
                     </CommandBar>
                     <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
                             Checked="chkMostrarTodos_Checked"
@@ -68,13 +83,12 @@
 
             <controls:DataGrid
                 Name="ListaGrid"
-                Grid.Row="1"
+                Grid.Row="2"
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"
                 SelectedItem="{x:Bind ViewModel.SelectedLista, Mode=TwoWay}"
                 ItemsSource="{x:Bind ViewModel.Source}"                
                 SelectionMode="Single"
-                AlternatingRowBackground="DarkSlateGray"
                 CanUserSortColumns="True"
                 Sorting="ListaGrid_Sorting"
                 IsReadOnly="True"

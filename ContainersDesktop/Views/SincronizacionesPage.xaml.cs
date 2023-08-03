@@ -1,5 +1,9 @@
+using CommunityToolkit.Mvvm.Input;
+using System.Windows.Input;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml.Controls;
+using ContainersDesktop.Core.Helpers;
+using Microsoft.UI.Xaml;
 
 namespace ContainersDesktop.Views;
 
@@ -13,6 +17,33 @@ public sealed partial class SincronizacionesPage : Page
     {
         ViewModel = App.GetService<SincronizacionesViewModel>();
         InitializeComponent();
+    }
+
+    public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
+
+    private async Task ExportarCommand_Execute()
+    {
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "HISTORIAL_SINCRONIZACIONES.csv");
+
+        try
+        {
+            Exportar.GenerarDatos(ViewModel.Source, filePath);
+
+            ContentDialog bajaRegistroDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Se generó el archivo {filePath}",
+                CloseButtonText = "Ok"
+            };
+
+            await bajaRegistroDialog.ShowAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     private void DispositivosGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)

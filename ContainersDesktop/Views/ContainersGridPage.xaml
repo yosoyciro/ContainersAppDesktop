@@ -32,27 +32,30 @@
                 <CommandBar Background="Transparent"
                             DefaultLabelPosition="Right"
                             Grid.Column="1">
-                    <AppBarButton Command="{x:Bind NuevoCommand, Mode=OneWay}"
-                                  Icon="Add"
-                                  Label="Agregar" />
+                    <AppBarButton 
+                        Command="{x:Bind NuevoCommand, Mode=OneWay}"
+                        Icon="Add"
+                        Label="Agregar" />
                     <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
-                                  IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                                  Icon="Edit"
-                                  Label="Modificar" />
+                        IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                        Icon="Edit"
+                        Label="Modificar" />
                     <AppBarButton Command="{x:Bind BorrarCommand}"
-                                  CommandParameter="{x:Bind ViewModel.SelectedObjeto, Mode=OneWay}"
-                                  IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                                  Icon="Delete"
-                                  Label="Borrar"/>
+                        CommandParameter="{x:Bind ViewModel.SelectedObjeto, Mode=OneWay}"
+                        IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                        Icon="Delete"
+                        Label="Borrar"/>
                     <AppBarButton Command="{x:Bind MovimientosCommand}"
-                                  CommandParameter="{x:Bind ViewModel.SelectedObjeto, Mode=OneWay}"
-                                  IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                                  Icon="View"
-                                  Label="Tareas"/>
+                        CommandParameter="{x:Bind ViewModel.SelectedObjeto, Mode=OneWay}"
+                        IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                        Icon="View"
+                        Label="Tareas"/>
                     <AppBarButton Icon="Filter" 
-                                  Label="Filtrar" />
-                    <AppBarButton Icon="Document" 
-                                  Label="Exportar" />
+                        Label="Filtrar" />
+                    <AppBarButton 
+                        Command="{x:Bind ExportarCommand, Mode=OneWay}"
+                        Icon="Document" 
+                        Label="Exportar" />
                 </CommandBar>
 
                 <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
@@ -67,7 +70,6 @@
                 AutoGenerateColumns="False"                             
                 SelectionMode="Single"
                 SelectedItem="{x:Bind ViewModel.SelectedObjeto, Mode=TwoWay}"
-                AlternatingRowBackground="DarkSlateGray"
                 HorizontalScrollBarVisibility="Visible"                
                 CanUserReorderColumns="True"
                 Sorting="ContainersDataGrid_Sorting"

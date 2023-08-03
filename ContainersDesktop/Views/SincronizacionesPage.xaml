@@ -36,8 +36,9 @@
                         DefaultLabelPosition="Right"
                         Grid.Column="1">
                         <AppBarButton 
-                              Icon="Document"
-                              Label="Exportar"/>
+                            Command="{x:Bind ExportarCommand, Mode=OneWay}"
+                            Icon="Document"
+                            Label="Exportar"/>
                     </CommandBar>
                 </StackPanel>
             </Grid>
@@ -49,7 +50,6 @@
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"
                 ItemsSource="{x:Bind ViewModel.Source}"
-                AlternatingRowBackground="DarkSlateGray"
                 CanUserSortColumns="True"
                 Sorting="DispositivosGrid_Sorting"
                 IsReadOnly="True"

@@ -30,7 +30,7 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
     }
     public bool HasCurrent => current is not null;
 
-    private ClaList claLista = new();
+    public ClaList claLista = new();
     private readonly IListasServicio _listasServicio;
     private string _cachedSortedColumn = string.Empty;
 

@@ -43,6 +43,7 @@ public sealed partial class MovimientosPage : Page
     public ICommand ModificarMovimientoCommand => new AsyncRelayCommand(ModificarMovimiento);
     public ICommand BorrarCommand => new AsyncRelayCommand(BorrarMovimiento);    
     public ICommand VolverCommand => new RelayCommand(Volver);
+    public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
 
     private async Task AbrirModificarDialog()
     {
@@ -52,7 +53,7 @@ public sealed partial class MovimientosPage : Page
 
         //Valores x defecto combos
         TxtFecha.Date = DateTime.Parse(ViewModel.Current.MOVIM_FECHA);
-        ComboObjetos.SelectedItem = ViewModel.LstObjetos.FirstOrDefault(x => x.MOVIM_ID_OBJETO == ViewModel.Current.MOVIM_ID_OBJETO);
+        ComboObjetos.SelectedItem = ViewModel.LstObjetosActivos.FirstOrDefault(x => x.MOVIM_ID_OBJETO == ViewModel.Current.MOVIM_ID_OBJETO);
         ComboTiposMovimiento.SelectedItem = ViewModel.LstTiposMovimientoActivos.FirstOrDefault(x => x.MOVIM_TIPO_MOVIM == ViewModel.Current.MOVIM_TIPO_MOVIM) ?? ViewModel.LstTiposMovimientoActivos.FirstOrDefault();
         ComboPesos.SelectedItem = ViewModel.LstPesosActivos.FirstOrDefault(x => x.MOVIM_PESO == ViewModel.Current.MOVIM_PESO) ?? ViewModel.LstPesosActivos.FirstOrDefault();
         ComboTransportistas.SelectedItem = ViewModel.LstTransportistasActivos.FirstOrDefault(x => x.MOVIM_TRANSPORTISTA == ViewModel.Current.MOVIM_TRANSPORTISTA) ?? ViewModel.LstTransportistasActivos.FirstOrDefault();
@@ -92,6 +93,31 @@ public sealed partial class MovimientosPage : Page
         ComboEntradaSalida.SelectedItem = ViewModel.LstEntradaSalidaActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstEntradaSalidaActivos.FirstOrDefault();
         ComboAlmacenes.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstAlmacenesActivos.FirstOrDefault();
         await Dialog.ShowAsync();
+    }
+
+    private async Task ExportarCommand_Execute()
+    {
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "HISTORIAL_TAREAS.csv");
+
+        try
+        {
+            Exportar.GenerarDatos(ViewModel.Items, filePath);
+
+            ContentDialog bajaRegistroDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Se generó el archivo {filePath}",
+                CloseButtonText = "Ok"
+            };
+
+            await bajaRegistroDialog.ShowAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     #endregion

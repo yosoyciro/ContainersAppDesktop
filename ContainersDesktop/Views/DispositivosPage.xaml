@@ -78,7 +78,7 @@
                 SelectedItem="{x:Bind ViewModel.SelectedDispositivo, Mode=TwoWay}"
                 ItemsSource="{x:Bind ViewModel.Source}"                
                 SelectionMode="Single"
-                AlternatingRowBackground="DarkSlateGray">
+            >
                 <controls:DataGrid.Resources>
                     <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                 </controls:DataGrid.Resources>

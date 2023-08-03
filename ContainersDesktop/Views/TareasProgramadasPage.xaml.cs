@@ -30,6 +30,7 @@ public sealed partial class TareasProgramadasPage : Page
     public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
     public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
     public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);
+    public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
 
     private async Task OpenAgregarDialog()
     {
@@ -83,6 +84,31 @@ public sealed partial class TareasProgramadasPage : Page
             ViewModel.FormViewModel.Dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == ViewModel.Current.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG);
 
             await dlgFormulario.ShowAsync();
+        }
+    }
+
+    private async Task ExportarCommand_Execute()
+    {
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "TAREAS_PROGRAMADAS.csv");
+
+        try
+        {
+            Exportar.GenerarDatos(ViewModel.Items, filePath);
+
+            ContentDialog bajaRegistroDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Se generó el archivo {filePath}",
+                CloseButtonText = "Ok"
+            };
+
+            await bajaRegistroDialog.ShowAsync();
+        }
+        catch (Exception)
+        {
+            throw;
         }
     }
 

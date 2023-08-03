@@ -37,27 +37,28 @@
                         Grid.Column="1"
                         Grid.Row="0">
                         <AppBarButton Command="{x:Bind VolverCommand, Mode=OneWay}"
-                              Icon="Back"
-                              Label="Volver" />
+                            Icon="Back"
+                            Label="Volver" />
                         <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
-                              Icon="Add"
-                              Label="Agregar" />
+                            Icon="Add"
+                            Label="Agregar" />
                         <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
-                                IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                              Icon="Edit"
-                              Label="Modificar" />
+                            IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                            Icon="Edit"
+                            Label="Modificar" />
                         <AppBarButton Command="{x:Bind BorrarCommand, Mode=OneWay}"
-                                IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                              Icon="Delete"
-                              Label="Borrar" />
+                            IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                            Icon="Delete"
+                            Label="Borrar" />
                         <AppBarButton
-                              Icon="Filter"
-                              Label="Filtrar" />
+                            Command="{x:Bind ExportarCommand, Mode=OneWay}"
+                            Icon="Document"
+                            Label="Exportar" />
                     </CommandBar>
                     <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
-                          Checked="chkMostrarTodos_Checked"
-                              Unchecked="chkMostrarTodos_Unchecked"                              
-                          />
+                        Checked="chkMostrarTodos_Checked"
+                        Unchecked="chkMostrarTodos_Unchecked"                              
+                    />
                 </StackPanel>
             </Grid>
             
@@ -67,7 +68,6 @@
                                    SelectedItem="{x:Bind ViewModel.Current, Mode=TwoWay}" 
                                    AutoGenerateColumns="False"
                                    HorizontalScrollBarVisibility="Visible"
-                                   AlternatingRowBackground="DarkSlateGray"
                                     CanUserReorderColumns="True"
                                     Sorting="MovimientosGrid_Sorting"
                                    IsReadOnly="True"

@@ -60,6 +60,7 @@ public sealed partial class ContainersGridPage : Page
     public ICommand MovimientosCommand => new RelayCommand(VerMovimientos);
     public ICommand AgregarCommand => new AsyncRelayCommand(AgregarObjeto);
     public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarObjeto);
+    public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
 
     private async Task OpenNewDialog()
     {
@@ -120,6 +121,31 @@ public sealed partial class ContainersGridPage : Page
         ComboCables.SelectedItem = ViewModel.LstCablesActivos.FirstOrDefault(x => x.OBJ_CABLES == ViewModel.SelectedObjeto.OBJ_CABLES) ?? ViewModel.LstCablesActivos.FirstOrDefault();
         ComboLineasVida.SelectedItem = ViewModel.LstLineasVidaActivos.FirstOrDefault(x => x.OBJ_LINEA_VIDA == ViewModel.SelectedObjeto.OBJ_LINEA_VIDA) ?? ViewModel.LstLineasVidaActivos.FirstOrDefault();
         await AgregarDialog.ShowAsync();
+    }
+
+    private async Task ExportarCommand_Execute()
+    {
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "CONTAINERS.csv");
+
+        try
+        {
+            Exportar.GenerarDatos(ViewModel.Source, filePath);
+
+            ContentDialog bajaRegistroDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Se generó el archivo {filePath}",
+                CloseButtonText = "Ok"
+            };
+
+            await bajaRegistroDialog.ShowAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     private async Task BorrarObjeto()

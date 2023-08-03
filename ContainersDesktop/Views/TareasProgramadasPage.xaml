@@ -48,8 +48,10 @@
                                   Label="Borrar"/>
                         <AppBarButton Icon="Filter" 
                                   Label="Filtrar" />
-                        <AppBarButton Icon="Document" 
-                                  Label="Exportar" />
+                        <AppBarButton 
+                            Command="{x:Bind ExportarCommand, Mode=OneWay}"
+                            Icon="Document" 
+                            Label="Exportar" />
                     </CommandBar>
                 </StackPanel>
             </Grid>
@@ -61,7 +63,6 @@
                                     SelectionMode="Single"
                                     AutoGenerateColumns="False"
                                     HorizontalScrollBarVisibility="Visible"
-                                    AlternatingRowBackground="DarkSlateGray"
                                     CanUserReorderColumns="True"
                                     Sorting="TareasProgramadasGrid_Sorting"
                                     IsReadOnly="True">
