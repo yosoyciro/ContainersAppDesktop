@@ -150,22 +150,5 @@ public partial class App : Application
         await App.GetService<IActivationService>().ActivateAsync(args);
 
         MainWindow.Maximize();
-
-        //// Create IOC container and add logging feature to it.
-        //IServiceCollection services = new ServiceCollection();
-        //services.AddLogging(builder =>
-        //{
-        //    // Only Application Insights is registered as a logger provider
-        //    builder.AddApplicationInsights(
-        //        configureTelemetryConfiguration: (config) => config.ConnectionString = "InstrumentationKey=49354931-44b9-4d92-906a-4967741d22d3;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/",
-        //        configureApplicationInsightsLoggerOptions: (options) => { LogLevel.Information }
-        //    );
-        //});
-
-        //// Build provider to access the logging service.
-        //IServiceProvider provider = services.BuildServiceProvider();
-
-        //// Tell the logging service to use Serilog.File extension.
-        ////provider.GetService<ILoggerFactory>().addap
     }
 }
