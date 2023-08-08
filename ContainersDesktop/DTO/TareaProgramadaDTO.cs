@@ -7,6 +7,10 @@ public class TareaProgramadaDTO
     {
         get; set;
     }
+    public string? TAREAS_PROGRAMADAS_ID_ESTADO_REG
+    {
+        get; set;
+    }
     public int TAREAS_PROGRAMADAS_OBJETO_ID_REG
     {
         get; set;

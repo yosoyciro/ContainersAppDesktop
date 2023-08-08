@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
@@ -588,7 +585,8 @@ public partial class ContainersGridViewModel : ObservableValidator, INavigationA
             OBJ_LINEA_VIDA = objeto.OBJ_LINEA_VIDA,
             OBJ_LINEA_VIDA_DESCRIPCION = LstLineasVida.FirstOrDefault(x => x.OBJ_LINEA_VIDA == objeto.OBJ_LINEA_VIDA).DESCRIPCION,
             OBJ_OBSERVACIONES = objeto.OBJ_OBSERVACIONES,
-            OBJ_FECHA_ACTUALIZACION = objeto.OBJ_FECHA_ACTUALIZACION
+            OBJ_FECHA_ACTUALIZACION = objeto.OBJ_FECHA_ACTUALIZACION,
+            OBJ_COLOR = objeto.OBJ_COLOR,
         };
     }
 
@@ -627,7 +625,8 @@ public partial class ContainersGridViewModel : ObservableValidator, INavigationA
             OBJ_LINEA_VIDA = objetoDTO.OBJ_LINEA_VIDA,
             OBJ_LINEA_VIDA_LISTA = LstLineasVida.FirstOrDefault(x => x.OBJ_LINEA_VIDA == objetoDTO.OBJ_LINEA_VIDA).LISTAS_ID_LISTA,
             OBJ_OBSERVACIONES = objetoDTO.OBJ_OBSERVACIONES,
-            OBJ_FECHA_ACTUALIZACION = objetoDTO.OBJ_FECHA_ACTUALIZACION
+            OBJ_FECHA_ACTUALIZACION = objetoDTO.OBJ_FECHA_ACTUALIZACION,
+            OBJ_COLOR = objetoDTO.OBJ_COLOR,
         };
     }
     #endregion

@@ -7,16 +7,20 @@ public class TareaProgramada
     public int TAREAS_PROGRAMADAS_ID_REG
     {
         get; set;
-    }   
+    }
+    public string? TAREAS_PROGRAMADAS_ID_ESTADO_REG
+    {
+        get; set;
+    }
     public int TAREAS_PROGRAMADAS_OBJETO_ID_REG
     {
         get; set;
     }
-    public string TAREAS_PROGRAMADAS_FECHA_PROGRAMADA
+    public string? TAREAS_PROGRAMADAS_FECHA_PROGRAMADA
     {
         get; set;
     }
-    public string TAREAS_PROGRAMADAS_FECHA_COMPLETADA
+    public string? TAREAS_PROGRAMADAS_FECHA_COMPLETADA
     {
         get; set;
     }
@@ -28,7 +32,7 @@ public class TareaProgramada
     {
         get; set;
     }
-    public string TAREAS_PROGRAMADAS_ORDENADO
+    public string? TAREAS_PROGRAMADAS_ORDENADO
     {
         get; set;
     }
@@ -36,7 +40,7 @@ public class TareaProgramada
     {
         get; set;
     }
-    public string TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
+    public string? TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
     {
         get; set;
     }

@@ -43,7 +43,7 @@
                 </StackPanel>
             </Grid>
             <controls:DataGrid
-                Name="SincronizacionesGrid"
+                Name="grdSincronizaciones"
                 Grid.Row="1"
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"

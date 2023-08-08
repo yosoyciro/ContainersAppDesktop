@@ -24,7 +24,7 @@ public sealed partial class DispositivosPage : Page
 
     private void DispositivosPage_Loaded(object sender, RoutedEventArgs e)
     {
-        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, false);        
+        grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, false);        
     }
     
     private async Task SincronizarDatos()
@@ -132,7 +132,7 @@ public sealed partial class DispositivosPage : Page
             {
                 await ViewModel.BorrarRecuperarDispositivo();
 
-                DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+                grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
             }
             catch (Exception ex)
             {
@@ -193,7 +193,7 @@ public sealed partial class DispositivosPage : Page
             {
                 await ViewModel.CrearDispositivo(dispositivo);
 
-                DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+                grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
             }                
         }
     }
@@ -205,7 +205,7 @@ public sealed partial class DispositivosPage : Page
         dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
         await ViewModel.ActualizarDispositivo(dispositivo);
 
-        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+        grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
     }
 
     #endregion
@@ -215,7 +215,7 @@ public sealed partial class DispositivosPage : Page
     {
         if (args.QueryText != "")
         {
-            DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(args.QueryText, chkMostrarTodos.IsChecked ?? false);
+            grdDispositivos.ItemsSource = ViewModel.ApplyFilter(args.QueryText, chkMostrarTodos.IsChecked ?? false);
         }
     }
 
@@ -225,19 +225,19 @@ public sealed partial class DispositivosPage : Page
         {
             if (sender.Text == "")
             {
-                DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(sender.Text, chkMostrarTodos.IsChecked ?? false);
+                grdDispositivos.ItemsSource = ViewModel.ApplyFilter(sender.Text, chkMostrarTodos.IsChecked ?? false);
             }
         }
     }
 
     private void chkMostrarTodos_Checked(object sender, RoutedEventArgs e)
     {
-        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, true);
+        grdDispositivos.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, true);
     }
 
     private void chkMostrarTodos_Unchecked(object sender, RoutedEventArgs e)
     {
-        DispositivosGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, false);
+        grdDispositivos.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, false);
     }
 
     private void txtDispositivo_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)

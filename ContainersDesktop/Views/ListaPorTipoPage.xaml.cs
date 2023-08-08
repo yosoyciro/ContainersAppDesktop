@@ -26,7 +26,7 @@ public sealed partial class ListaPorTipoPage : Page
 
     private void ListaPorTipoPage_Loaded(object sender, RoutedEventArgs e)
     {
-        ListaGrid.ItemsSource = ViewModel.AplicarFiltro(null, false);
+        grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(null, false);
     }
     
     public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);
@@ -115,7 +115,7 @@ public sealed partial class ListaPorTipoPage : Page
             try
             {
                 await ViewModel.BorrarLista();
-                ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+                grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
                 LimpiarIndicadorOden();
             }
             catch (Exception ex)
@@ -142,7 +142,7 @@ public sealed partial class ListaPorTipoPage : Page
         lista.LISTAS_ID_LISTA_DESCRIP = ViewModel.FormViewModel.Descripcion;
         await ViewModel.AgregarLista(lista);
 
-        ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+        grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
         LimpiarIndicadorOden();
     }
 
@@ -153,7 +153,7 @@ public sealed partial class ListaPorTipoPage : Page
         lista.LISTAS_ID_LISTA_DESCRIP = ViewModel.FormViewModel.Descripcion;
         await ViewModel.ActualizarLista(lista);
 
-        ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+        grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
         LimpiarIndicadorOden();
     }
 
@@ -164,7 +164,7 @@ public sealed partial class ListaPorTipoPage : Page
     
     private void chkMostrarTodos_Checked(object sender, RoutedEventArgs e)
     {
-        ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+        grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
         LimpiarIndicadorOden();
     }
 
@@ -172,7 +172,7 @@ public sealed partial class ListaPorTipoPage : Page
     {
         if (args.QueryText != "")
         {
-            ListaGrid.ItemsSource = ViewModel.AplicarFiltro(args.QueryText, chkMostrarTodos.IsChecked ?? false);
+            grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(args.QueryText, chkMostrarTodos.IsChecked ?? false);
             LimpiarIndicadorOden();
         }        
     }
@@ -183,7 +183,7 @@ public sealed partial class ListaPorTipoPage : Page
         {
             if (sender.Text == "")
             {
-                ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+                grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
                 LimpiarIndicadorOden();
             }
         }
@@ -193,12 +193,12 @@ public sealed partial class ListaPorTipoPage : Page
     {
         // Add sorting indicator, and sort
         var isAscending = e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending;
-        ListaGrid.ItemsSource = ViewModel.SortData(e.Column.Tag.ToString(), isAscending);
+        grdListaPorTipo.ItemsSource = ViewModel.SortData(e.Column.Tag.ToString(), isAscending);
         e.Column.SortDirection = isAscending
             ? DataGridSortDirection.Ascending
             : DataGridSortDirection.Descending;
 
-        foreach (var column in ListaGrid.Columns)
+        foreach (var column in grdListaPorTipo.Columns)
         {
             if (column.Tag != null && column.Tag.ToString() != e.Column.Tag.ToString())
             {
@@ -209,7 +209,7 @@ public sealed partial class ListaPorTipoPage : Page
 
     private void LimpiarIndicadorOden()
     {
-        foreach (var column in ListaGrid.Columns)
+        foreach (var column in grdListaPorTipo.Columns)
         {          
             column.SortDirection = null;
         }

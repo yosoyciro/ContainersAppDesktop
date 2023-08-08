@@ -19,6 +19,7 @@ public class ObjetosServicio : IObjetosServicio
         _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
     }
 
+    #region Actualizar
     public async Task<bool> ActualizarObjeto(Objetos objeto)
     {
         try
@@ -38,7 +39,7 @@ public class ObjetosServicio : IObjetosServicio
                     "OBJ_PMP_LISTA = @OBJ_PMP_LISTA, OBJ_PMP = @OBJ_PMP, OBJ_CARGA_UTIL = @OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA = @OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR = @OBJ_ALTURA_EXTERIOR, " +
                     "OBJ_CUELLO_CISNE_LISTA = @OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE = @OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA = @OBJ_BARRAS_LISTA, OBJ_BARRAS = @OBJ_BARRAS, " +
                     "OBJ_CABLES_LISTA = @OBJ_CABLES_LISTA, OBJ_CABLES = @OBJ_CABLES, OBJ_LINEA_VIDA_LISTA = @OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA = @OBJ_LINEA_VIDA, OBJ_OBSERVACIONES = @OBJ_OBSERVACIONES, " +
-                    "OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION  " +
+                    "OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION, OBJ_COLOR = @OBJ_COLOR " +
                     "WHERE OBJ_ID_REG = @OBJ_ID_REG";
 
                 updateCommand.Parameters.AddWithValue("@OBJ_ID_REG", objeto.OBJ_ID_REG);
@@ -73,6 +74,7 @@ public class ObjetosServicio : IObjetosServicio
                 updateCommand.Parameters.AddWithValue("@OBJ_LINEA_VIDA", objeto.OBJ_LINEA_VIDA);
                 updateCommand.Parameters.AddWithValue("@OBJ_OBSERVACIONES", objeto.OBJ_OBSERVACIONES);
                 updateCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", objeto.OBJ_FECHA_ACTUALIZACION);
+                updateCommand.Parameters.AddWithValue("@OBJ_COLOR", objeto.OBJ_COLOR);
 
                 await updateCommand.ExecuteReaderAsync();
 
@@ -84,7 +86,9 @@ public class ObjetosServicio : IObjetosServicio
             throw new Exception(ex.Message);
         }
     }
+    #endregion
 
+    #region CrearObjeto
     public async Task<int> CrearObjeto(Objetos objeto)
     {
         try
@@ -100,11 +104,13 @@ public class ObjetosServicio : IObjetosServicio
                 insertCommand.CommandText = "INSERT INTO OBJETOS (OBJ_MATRICULA, OBJ_ID_ESTADO_REG, OBJ_SIGLAS_LISTA, OBJ_SIGLAS, OBJ_MODELO_LISTA, " +
                     "OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, " +                    
                     "OBJ_TARA_LISTA, OBJ_TARA, OBJ_PMP_LISTA, OBJ_PMP, OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR, OBJ_CUELLO_CISNE_LISTA," +
-                    "OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES, OBJ_FECHA_ACTUALIZACION)" +
+                    "OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, " +
+                    "OBJ_OBSERVACIONES, OBJ_FECHA_ACTUALIZACION, OBJ_COLOR)" +
                     "VALUES (@OBJ_MATRICULA, @OBJ_ID_ESTADO_REG, @OBJ_SIGLAS_LISTA, @OBJ_SIGLAS, @OBJ_MODELO_LISTA, @OBJ_PROPIETARIO_LISTA, @OBJ_PROPIETARIO," +
                     "@OBJ_MODELO, @OBJ_ID_OBJETO, @OBJ_VARIANTE_LISTA, @OBJ_VARIANTE, @OBJ_TIPO_LISTA, @OBJ_TIPO, @OBJ_INSPEC_CSC, " +
                     "@OBJ_TARA_LISTA, @OBJ_TARA, @OBJ_PMP_LISTA, @OBJ_PMP, @OBJ_CARGA_UTIL, @OBJ_ALTURA_EXTERIOR_LISTA, @OBJ_ALTURA_EXTERIOR, @OBJ_CUELLO_CISNE_LISTA, " +
-                    "@OBJ_CUELLO_CISNE, @OBJ_BARRAS_LISTA, @OBJ_BARRAS, @OBJ_CABLES_LISTA, @OBJ_CABLES, @OBJ_LINEA_VIDA_LISTA, @OBJ_LINEA_VIDA, @OBJ_OBSERVACIONES, @OBJ_FECHA_ACTUALIZACION);";
+                    "@OBJ_CUELLO_CISNE, @OBJ_BARRAS_LISTA, @OBJ_BARRAS, @OBJ_CABLES_LISTA, @OBJ_CABLES, @OBJ_LINEA_VIDA_LISTA, @OBJ_LINEA_VIDA, @OBJ_OBSERVACIONES, " +
+                    "@OBJ_FECHA_ACTUALIZACION, @OBJ_COLOR);";
 
                 insertCommand.Parameters.AddWithValue("@OBJ_MATRICULA", objeto.OBJ_MATRICULA);
                 insertCommand.Parameters.AddWithValue("@OBJ_ID_ESTADO_REG", objeto.OBJ_ID_ESTADO_REG);
@@ -137,6 +143,7 @@ public class ObjetosServicio : IObjetosServicio
                 insertCommand.Parameters.AddWithValue("@OBJ_LINEA_VIDA", objeto.OBJ_LINEA_VIDA);
                 insertCommand.Parameters.AddWithValue("@OBJ_OBSERVACIONES", objeto.OBJ_OBSERVACIONES);
                 insertCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", objeto.OBJ_FECHA_ACTUALIZACION);
+                insertCommand.Parameters.AddWithValue("@OBJ_COLOR", objeto.OBJ_COLOR);
 
                 await insertCommand.ExecuteReaderAsync();
 
@@ -150,7 +157,9 @@ public class ObjetosServicio : IObjetosServicio
             throw new Exception(ex.Message);
         }        
     }
+    #endregion
 
+    #region ObtenerObjetos
     public async Task<List<Objetos>> ObtenerObjetos()
     {
         List<Objetos> objetos = new List<Objetos>();
@@ -163,7 +172,7 @@ public class ObjetosServicio : IObjetosServicio
                 ("SELECT OBJ_ID_REG, OBJ_MATRICULA, OBJ_ID_ESTADO_REG, OBJ_SIGLAS_LISTA, OBJ_SIGLAS, OBJ_MODELO_LISTA, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, " +
                 "OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_TARA_LISTA, OBJ_TARA, OBJ_PMP_LISTA, OBJ_PMP, " +
                 "OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR, OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, " +
-                "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES, OBJ_FECHA_ACTUALIZACION FROM OBJETOS", db);
+                "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES, OBJ_FECHA_ACTUALIZACION, OBJ_COLOR FROM OBJETOS", db);
 
             SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
             
@@ -205,6 +214,7 @@ public class ObjetosServicio : IObjetosServicio
                         OBJ_LINEA_VIDA = query.GetInt32(29),
                         OBJ_OBSERVACIONES = query.GetString(30),
                         OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(31)),
+                        OBJ_COLOR = query.GetString(32),
                     };
                     objetos.Add(nuevoObjeto);
                 //}                
@@ -213,7 +223,9 @@ public class ObjetosServicio : IObjetosServicio
 
         return objetos;
     }
+    #endregion
 
+    #region ObtenerObjetoPorId
     public async Task<Objetos> ObtenerObjetoPorId(int id)
     {     
         var objeto = new Objetos();
@@ -225,7 +237,7 @@ public class ObjetosServicio : IObjetosServicio
                 ("SELECT OBJ_ID_REG, OBJ_MATRICULA, OBJ_ID_ESTADO_REG, OBJ_SIGLAS_LISTA, OBJ_SIGLAS, OBJ_MODELO_LISTA, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, " +
                 "OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_TARA_LISTA, OBJ_TARA, OBJ_PMP_LISTA, OBJ_PMP, " +
                 "OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR, OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, " +
-                "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES FROM OBJETOS WHERE OBJ_ID_REG = @OBJ_ID_REG", db);
+                "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES, OBJ_COLOR FROM OBJETOS WHERE OBJ_ID_REG = @OBJ_ID_REG", db);
 
             selectCommand.Parameters.AddWithValue("@OBJ_ID_REG", id);
 
@@ -264,12 +276,15 @@ public class ObjetosServicio : IObjetosServicio
                 objeto.OBJ_LINEA_VIDA_LISTA = query.GetInt32(28);
                 objeto.OBJ_LINEA_VIDA = query.GetInt32(29);
                 objeto.OBJ_OBSERVACIONES = query.GetString(30);
+                objeto.OBJ_COLOR = query.GetString(31);
             }
         }
 
         return objeto;
     }
+    #endregion
 
+    #region Borrar
     public async Task<bool> BorrarObjeto(int id)
     {
         try
@@ -293,7 +308,7 @@ public class ObjetosServicio : IObjetosServicio
         catch (Exception ex)
         {
             throw new Exception(ex.Message);
-        }
-        
+        }        
     }
+    #endregion
 }

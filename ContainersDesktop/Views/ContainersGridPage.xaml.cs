@@ -7,6 +7,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.DTO;
+using Windows.UI;
+using System.Security.Cryptography;
 
 namespace ContainersDesktop.Views;
 
@@ -27,7 +29,7 @@ public sealed partial class ContainersGridPage : Page
 
     private void ContainersGridPage_Loaded(object sender, RoutedEventArgs e)
     {
-        ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(null, false);
+        grdContainers.ItemsSource = ViewModel.ApplyFilter(null, false);
     }
     
     private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
@@ -88,6 +90,7 @@ public sealed partial class ContainersGridPage : Page
         ComboBarras.SelectedItem = ViewModel.LstBarrasActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstBarrasActivos.FirstOrDefault();
         ComboCables.SelectedItem = ViewModel.LstCablesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstCablesActivos.FirstOrDefault();
         ComboLineasVida.SelectedItem = ViewModel.LstLineasVidaActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstLineasVidaActivos.FirstOrDefault();
+        colorPicker.Color = Color.FromArgb(255,255,0,0);
         await AgregarDialog.ShowAsync();
     }
 
@@ -116,6 +119,7 @@ public sealed partial class ContainersGridPage : Page
         ComboBarras.SelectedItem = ViewModel.LstBarrasActivos.FirstOrDefault(x => x.OBJ_BARRAS == ViewModel.SelectedObjeto.OBJ_BARRAS) ?? ViewModel.LstBarrasActivos.FirstOrDefault();
         ComboCables.SelectedItem = ViewModel.LstCablesActivos.FirstOrDefault(x => x.OBJ_CABLES == ViewModel.SelectedObjeto.OBJ_CABLES) ?? ViewModel.LstCablesActivos.FirstOrDefault();
         ComboLineasVida.SelectedItem = ViewModel.LstLineasVidaActivos.FirstOrDefault(x => x.OBJ_LINEA_VIDA == ViewModel.SelectedObjeto.OBJ_LINEA_VIDA) ?? ViewModel.LstLineasVidaActivos.FirstOrDefault();
+        colorPicker.Color = HexToColor(ViewModel.SelectedObjeto.OBJ_COLOR);
         await AgregarDialog.ShowAsync();
     }
 
@@ -164,7 +168,7 @@ public sealed partial class ContainersGridPage : Page
             {
                 await ViewModel.BorrarObjeto();
 
-                ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+                grdContainers.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
             }
             catch (Exception ex)
             {
@@ -229,10 +233,11 @@ public sealed partial class ContainersGridPage : Page
         nuevoObjeto.OBJ_LINEA_VIDA_DESCRIPCION = lineasVida.DESCRIPCION;
         nuevoObjeto.OBJ_INSPEC_CSC = FormatoFecha.FechaEstandar(TxtFechaCSC.Date.Value.Date);
         nuevoObjeto.OBJ_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now.Date);
+        nuevoObjeto.OBJ_COLOR = ColorToHex(colorPicker.Color);
 
         await ViewModel.ActualizarObjeto(nuevoObjeto);
 
-        ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+        grdContainers.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
     }
 
     private async Task AgregarObjeto()
@@ -281,11 +286,11 @@ public sealed partial class ContainersGridPage : Page
         nuevoObjeto.OBJ_LINEA_VIDA = lineasVida.OBJ_LINEA_VIDA;
         //nuevoObjeto.OBJ_LINEA_VIDA_LISTA = lineasVida.LISTAS_ID_LISTA;
         nuevoObjeto.OBJ_INSPEC_CSC = FormatoFecha.FechaEstandar(TxtFechaCSC.Date.Value.Date);
-
+        nuevoObjeto.OBJ_COLOR = ColorToHex(colorPicker.Color);
 
         await ViewModel.CrearObjeto(nuevoObjeto);
 
-        ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+        grdContainers.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
     }
 
     private void VerMovimientos()
@@ -297,7 +302,7 @@ public sealed partial class ContainersGridPage : Page
     {
         if (args.QueryText != "")
         {
-            ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(args.QueryText, chkMostrarTodos.IsChecked ?? false);
+            grdContainers.ItemsSource = ViewModel.ApplyFilter(args.QueryText, chkMostrarTodos.IsChecked ?? false);
         }        
     }    
 
@@ -307,7 +312,7 @@ public sealed partial class ContainersGridPage : Page
         {
             if (sender.Text == "")
             {
-                ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(sender.Text, chkMostrarTodos.IsChecked ?? false);
+                grdContainers.ItemsSource = ViewModel.ApplyFilter(sender.Text, chkMostrarTodos.IsChecked ?? false);
             }
         }
     }
@@ -316,13 +321,13 @@ public sealed partial class ContainersGridPage : Page
     {
         // Add sorting indicator, and sort
         var isAscending = e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending;
-        ContainersDataGrid.ItemsSource = ViewModel.SortData(e.Column.Tag.ToString(), isAscending);
+        grdContainers.ItemsSource = ViewModel.SortData(e.Column.Tag.ToString(), isAscending);
         e.Column.SortDirection = isAscending
             ? DataGridSortDirection.Ascending
             : DataGridSortDirection.Descending;
 
         // Remove sorting indicators from other columns
-        foreach (var column in ContainersDataGrid.Columns)
+        foreach (var column in grdContainers.Columns)
         {
             if (column.Tag != null && column.Tag.ToString() != e.Column.Tag.ToString())
             {
@@ -333,11 +338,48 @@ public sealed partial class ContainersGridPage : Page
 
     private void chkMostrarTodos_Checked(object sender, RoutedEventArgs e)
     {
-        ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, true);
+        grdContainers.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, true);
     }
 
     private void chkMostrarTodos_Unchecked(object sender, RoutedEventArgs e)
     {
-        ContainersDataGrid.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, false);
+        grdContainers.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, false);
+    }
+
+    #region Colores
+
+    private Color HexToColor(string hex)
+    {
+        hex = hex.Replace("#", ""); // Eliminar el símbolo '#' si está presente
+        var r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        var g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+        var b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+        // Opcional: Si deseas especificar un valor alfa (transparencia)
+        byte a = 255; // Valor alfa máximo (no transparente)
+
+        //if (hex.Length == 8)
+        //{
+        //    a = byte.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
+        //}
+
+        return Color.FromArgb(a, r, g, b);
+    }
+
+    private string ColorToHex(Color color)
+    {
+        var r = color.R.ToString("X2");
+        var g = color.G.ToString("X2");
+        var b = color.B.ToString("X2");
+
+        string hex = string.Format("#{0}{1}{2}", r, g, b);
+        return hex;
+    }
+
+    #endregion
+
+    private void colorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
+    {
+        colorPicker.Color = sender.Color;
     }
 }

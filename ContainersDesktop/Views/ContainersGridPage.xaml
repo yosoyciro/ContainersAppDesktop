@@ -64,7 +64,7 @@
                           />
             </StackPanel>
             <controls:DataGrid 
-                Name="ContainersDataGrid"
+                Name="grdContainers"
                 Grid.Row="1" 
                 ItemsSource="{x:Bind ViewModel.Source}" 
                 AutoGenerateColumns="False"                             
@@ -99,16 +99,16 @@
             </controls:DataGrid>
 
             <ContentDialog  x:Name="AgregarDialog"
-                            PrimaryButtonText="Aceptar"  
-                            IsPrimaryButtonEnabled="{x:Bind ViewModel.ObjetosViewModel.IsValid, Mode=OneWay}"
-                            CloseButtonText="Cancelar"
-                            Width="1200">
+                PrimaryButtonText="Aceptar"  
+                IsPrimaryButtonEnabled="{x:Bind ViewModel.ObjetosViewModel.IsValid, Mode=OneWay}"
+                CloseButtonText="Cancelar"
+                Width="1200"
+            >
                 <RelativePanel HorizontalAlignment="Stretch">
                     <TextBox x:Name="TxtMatricula"
                                 Header="Matricula"                        
                                 Text="{x:Bind ViewModel.ObjetosViewModel.Matricula, Mode=TwoWay}"
                                 Width="200"
-                                Margin="4"
                              />
                     <ComboBox x:Name="ComboSiglas"
                                 Header="Siglas"
@@ -117,7 +117,6 @@
                                 DisplayMemberPath="DESCRIPCION"
                                 RelativePanel.Below="TxtMatricula"
                                 Width="150"
-                                Margin="4"
                     />
                     <ComboBox x:Name="ComboModelo"
                                 Header="Modelo"
@@ -127,7 +126,7 @@
                                 RelativePanel.Below="TxtMatricula"
                                 RelativePanel.RightOf="ComboSiglas"
                                 Width="150"
-                                Margin="4"
+                                Margin="4,0,0,0"
                     />
                     <ComboBox x:Name="ComboVariante"
                                 Header="Variante"
@@ -137,7 +136,7 @@
                                 RelativePanel.Below="TxtMatricula"
                                 RelativePanel.RightOf="ComboModelo"
                                 Width="150"
-                                Margin="4"
+                                Margin="4,0,0,0"
                     />
                     
                     <ComboBox x:Name="ComboTipo"
@@ -147,7 +146,6 @@
                                 DisplayMemberPath="DESCRIPCION"
                                 RelativePanel.Below="ComboSiglas"
                                 Width="150"
-                                Margin="4"
                     />
                     <CalendarDatePicker x:Name="TxtFechaCSC"
                                 Header="Fecha CSC"      
@@ -156,7 +154,7 @@
                                 RelativePanel.Below="ComboSiglas"
                                 RelativePanel.RightOf="ComboTipo"
                                 Width="150"
-                                Margin="4"
+                                Margin="4,0,0,0"
                     />
                     <ComboBox x:Name="ComboPropietario"
                                 Header="Propietario"
@@ -166,7 +164,7 @@
                                 RelativePanel.Below="ComboSiglas"
                                 RelativePanel.RightOf="TxtFechaCSC"
                                 Width="150"
-                                Margin="4"
+                                Margin="4,0,0,0"
                     />
 
                     <ComboBox x:Name="ComboTara"
@@ -176,7 +174,6 @@
                                 DisplayMemberPath="DESCRIPCION"
                                 RelativePanel.Below="ComboTipo"
                                 Width="150"
-                                Margin="4"
                     />
                     <ComboBox x:Name="ComboPMP"
                                 Header="PMP"
@@ -186,7 +183,7 @@
                                 RelativePanel.Below="ComboTipo"
                                 RelativePanel.RightOf="ComboTara"
                                 Width="150"
-                                Margin="4"
+                              Margin="4,0,0,0"
                     />
                     <TextBox x:Name="TxtCargaUtil"
                                 Header="Carga Util"      
@@ -194,7 +191,7 @@
                                 RelativePanel.Below="ComboTipo"
                                 RelativePanel.RightOf="ComboPMP"
                                 Width="150"
-                                Margin="4"
+                             Margin="4,0,0,0"
                     />
 
                     <ComboBox x:Name="ComboAlturaExterior"
@@ -204,7 +201,6 @@
                                 DisplayMemberPath="DESCRIPCION"
                                 RelativePanel.Below="ComboTara"
                                 Width="150"
-                                Margin="4"
                     />
                     <ComboBox x:Name="ComboCuelloCisne"
                                 Header="Cuello Cisne"
@@ -214,7 +210,7 @@
                                 RelativePanel.Below="ComboTara"
                                 RelativePanel.RightOf="ComboAlturaExterior"
                                 Width="150"
-                                Margin="4"
+                              Margin="4,0,0,0"
                     />
                     <ComboBox x:Name="ComboBarras"
                                 Header="Barras"
@@ -224,7 +220,7 @@
                                 RelativePanel.Below="ComboTara"
                                 RelativePanel.RightOf="ComboCuelloCisne"
                                 Width="150"
-                                Margin="4"
+                              Margin="4,0,0,0"
                     />
 
                     <ComboBox x:Name="ComboCables"
@@ -234,7 +230,6 @@
                                 DisplayMemberPath="DESCRIPCION"
                                 RelativePanel.Below="ComboAlturaExterior"
                                 Width="150"
-                                Margin="4"
                     />
                     <ComboBox x:Name="ComboLineasVida"
                                 Header="Lineas Vida"
@@ -243,19 +238,31 @@
                                 DisplayMemberPath="DESCRIPCION"
                                 RelativePanel.Below="ComboAlturaExterior"
                                 RelativePanel.RightOf="ComboCables"
-                                Width="150"
-                                Margin="4"
+                                Width="150" 
+                              Margin="4,0,0,0"
                     />
+
+                    <StackPanel Orientation="Vertical" RelativePanel.Below="ComboCables" x:Name="stpColor" Height="80">
+                        <TextBlock Text="Color" />
+                        <ColorPicker x:Name="colorPicker"
+                            ColorChanged="colorPicker_ColorChanged"
+                            CornerRadius="1"
+                            Height="70"
+                            Width="180"
+                            RelativePanel.Below="TxtObservaciones"
+                        />
+                    </StackPanel>
 
                     <TextBox x:Name="TxtObservaciones"
                                 Header="Observaciones"
                                 Text="{Binding OBJ_OBSERVACIONES, Mode=TwoWay}"
                                 TextWrapping="Wrap"
-                                RelativePanel.Below="ComboCables"
+                                RelativePanel.Below="stpColor"
                                 Width="500"
-                                Height="100"/>
+                                Height="100"
+                    />
 
-                    <Grid RelativePanel.Below="TxtObservaciones">
+                    <Grid RelativePanel.Below="TxtObservaciones" Margin="4,0">
                         <SymbolIcon Symbol="ReportHacked"
                             Foreground="Red"
                             Visibility="{x:Bind ViewModel.ObjetosViewModel.HasErrors, Mode=OneWay}">

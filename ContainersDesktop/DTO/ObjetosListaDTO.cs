@@ -53,7 +53,7 @@ public class ObjetosListaDTO
     {
         get; set;
     }
-    public string OBJ_INSPEC_CSC
+    public string? OBJ_INSPEC_CSC
     {
         get; set;
     }
@@ -126,13 +126,17 @@ public class ObjetosListaDTO
     {
         get; set;
     }
-    public string OBJ_OBSERVACIONES
+    public string? OBJ_OBSERVACIONES
     {
         get; set;
     }
-    public string OBJ_FECHA_ACTUALIZACION
+    public string? OBJ_FECHA_ACTUALIZACION
     {
         get;
         set;
+    }
+    public string? OBJ_COLOR
+    {
+        get; set;
     }
 }

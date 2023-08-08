@@ -77,10 +77,8 @@
                           />
                 </StackPanel>
             </Grid>
-            
-
             <controls:DataGrid
-                Name="ListaGrid"
+                Name="grdListaPorTipo"
                 Grid.Row="2"
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"
@@ -90,7 +88,7 @@
                 CanUserSortColumns="True"
                 Sorting="ListaGrid_Sorting"
                 IsReadOnly="True"
-                >
+            >
                 <controls:DataGrid.Resources>
                     <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                 </controls:DataGrid.Resources>

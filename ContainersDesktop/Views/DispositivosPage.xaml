@@ -69,7 +69,7 @@
 
             <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" Width="32"/>
             <controls:DataGrid
-                Name="DispositivosGrid"
+                Name="grdDispositivos"
                 Grid.Row="1"
                 IsReadOnly="True"
                 AutoGenerateColumns="False"
