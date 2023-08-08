@@ -143,6 +143,8 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
                 LstAlmacenesActivos.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                //LstUbicacionesOrigen.Add(new UbicacionOrigenDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                //LstUbicacionesDestino.Add(new UbicacionDestinoDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
         }        
     }
@@ -156,7 +158,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         {
             var tareaProgramada = MapDTOToSource(dto);
             dto.TAREAS_PROGRAMADAS_ID_REG = await _tareasProgramadasServicio.Agregar(tareaProgramada);
-            dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaCorta(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
+            dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
             _items.Add(dto);
 
             OnPropertyChanged(nameof(Items));

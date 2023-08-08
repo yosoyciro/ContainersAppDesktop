@@ -26,7 +26,7 @@ public sealed partial class TareasProgramadasPage : Page
     }
 
     public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);
-    public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistro);
+    public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistroCommand_Execute);
     public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
     public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
     public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);
@@ -45,11 +45,11 @@ public sealed partial class TareasProgramadasPage : Page
             TAREAS_PROGRAMADAS_ORDENADO = string.Empty,            
         };
 
-        cmbObjetos.SelectedItem = ViewModel.LstObjetosActivos.FirstOrDefault();
-        txtFecha.Date = DateTime.Now;
-        cmbUbicacionOrigen.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0);
-        cmbUbicacionDestino.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0);
-        cmbDispositivos.SelectedItem = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO > 0);
+        ViewModel.FormViewModel.Objeto = ViewModel.LstObjetosActivos.FirstOrDefault();
+        ViewModel.FormViewModel.FechaProgramada = DateTime.Now.Date;
+        ViewModel.FormViewModel.UbicacionOrigen =  ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0);
+        ViewModel.FormViewModel.UbicacionDestino = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0);
+        ViewModel.FormViewModel.Dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO > 0);
 
         await dlgFormulario.ShowAsync();
     }
@@ -151,10 +151,11 @@ public sealed partial class TareasProgramadasPage : Page
     //    }
     }
 
-    private async Task AgregarRegistro()
+    private async Task AgregarRegistroCommand_Execute()
     {
+        //var result = ViewModel.FormViewModel.ValidateUbicacion();
         var tareaProgramada = dlgFormulario.DataContext as TareaProgramadaDTO;
-        AsignarDTO(ref tareaProgramada);        
+        AsignarDTO(ref tareaProgramada);
         await ViewModel.AgregarTareaProgramada(tareaProgramada);
 
         //TareasProgramadasGrid.ItemsSource = ViewModel.AplicarFiltro(null, true);
@@ -175,7 +176,7 @@ public sealed partial class TareasProgramadasPage : Page
     {
         tareaProgramada.TAREAS_PROGRAMADAS_OBJETO_ID_REG = ViewModel.FormViewModel.Objeto.MOVIM_ID_OBJETO;
         tareaProgramada.TAREAS_PROGRAMADAS_OBJETO_MATRICULA = ViewModel.FormViewModel.Objeto.DESCRIPCION;
-        tareaProgramada.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.FechaEstandar(ViewModel.FormViewModel.FechaProgramada!.Value.Date);
+        tareaProgramada.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.FechaEstandar(ViewModel.FormViewModel.FechaProgramada!.DateTime);
         tareaProgramada.TAREAS_PROGRAMADAS_UBICACION_ORIGEN = ViewModel.FormViewModel.UbicacionOrigen.MOVIM_ALMACEN;
         tareaProgramada.TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION = ViewModel.FormViewModel.UbicacionOrigen.DESCRIPCION;
         tareaProgramada.TAREAS_PROGRAMADAS_UBICACION_DESTINO = ViewModel.FormViewModel.UbicacionDestino.MOVIM_ALMACEN;

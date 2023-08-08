@@ -67,7 +67,7 @@ public class MovimientosServicio : IMovimientosServicio
                         MOVIM_ALMACEN_LISTA = query.GetInt32(20),
                         MOVIM_ALMACEN = query.GetInt32(21),
                         MOVIM_PDF = query.GetString(22),
-                        MOVIM_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(23)),
+                        MOVIM_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(23)),
                         MOVIM_ID_DISPOSITIVO = query.GetInt32(24),
                         MOVIM_TAREA_PROGRAMADA_ID_REG = query.GetInt32(25),
                         MOVIM_DISPOSITIVO_LATITUD = query.GetDouble(26),
@@ -129,7 +129,7 @@ public class MovimientosServicio : IMovimientosServicio
                         MOVIM_ALMACEN_LISTA = query.GetInt32(20),
                         MOVIM_ALMACEN = query.GetInt32(21),
                         MOVIM_PDF = query.GetString(22),
-                        MOVIM_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(23)),
+                        MOVIM_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(23)),
                         MOVIM_ID_DISPOSITIVO = query.GetInt32(24),
                         MOVIM_TAREA_PROGRAMADA_ID_REG = query.GetInt32(25),
                         MOVIM_DISPOSITIVO_LATITUD = query.GetDouble(26),
@@ -461,7 +461,7 @@ public class MovimientosServicio : IMovimientosServicio
                 updateCommand.Parameters.AddWithValue("@MOVIM_ALMACEN_LISTA", movim.MOVIM_ALMACEN_LISTA);
                 updateCommand.Parameters.AddWithValue("@MOVIM_ALMACEN", movim.MOVIM_ALMACEN);
                 updateCommand.Parameters.AddWithValue("@MOVIM_PDF", movim.MOVIM_PDF);
-                updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", movim.MOVIM_FECHA_ACTUALIZACION);
+                updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 await updateCommand.ExecuteReaderAsync();
 
@@ -488,9 +488,12 @@ public class MovimientosServicio : IMovimientosServicio
                 updateCommand.Connection = db;
 
                 // Use parameterized query to prevent SQL injection attacks
-                updateCommand.CommandText = "UPDATE MOVIM SET MOVIM_ID_ESTADO_REG=@MOVIM_ID_ESTADO_REG WHERE MOVIM_ID_REG=@MOVIM_ID_REG;";
+                updateCommand.CommandText = "UPDATE MOVIM SET MOVIM_ID_ESTADO_REG=@MOVIM_ID_ESTADO_REG, " +
+                    "MOVIM_FECHA_ACTUALIZACION=@MOVIM_FECHA_ACTUALIZACION " +
+                    "WHERE MOVIM_ID_REG=@MOVIM_ID_REG;";
                 updateCommand.Parameters.AddWithValue("@MOVIM_ID_REG", id);
-                updateCommand.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", "B");                
+                updateCommand.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", "B");
+                updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 await updateCommand.ExecuteReaderAsync();
 

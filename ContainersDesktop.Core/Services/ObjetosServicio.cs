@@ -185,7 +185,7 @@ public class ObjetosServicio : IObjetosServicio
                         OBJ_VARIANTE = query.GetInt32(9),
                         OBJ_TIPO_LISTA = query.GetInt32(10),
                         OBJ_TIPO = query.GetInt32(11),
-                        OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(query.GetString(12)),
+                        OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaHora(query.GetString(12)),
                         OBJ_PROPIETARIO_LISTA = query.GetInt32(13),
                         OBJ_PROPIETARIO = query.GetInt32(14),
                         OBJ_TARA_LISTA = query.GetInt32(15),
@@ -282,7 +282,7 @@ public class ObjetosServicio : IObjetosServicio
                     ("UPDATE OBJETOS SET OBJ_ID_ESTADO_REG = 'B', OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION WHERE OBJ_ID_REG = @OBJ_ID_REG", db);
 
                 deleteCommand.Parameters.AddWithValue("@OBJ_ID_REG", id);
-                deleteCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                deleteCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 SqliteDataReader query = await deleteCommand.ExecuteReaderAsync();
 

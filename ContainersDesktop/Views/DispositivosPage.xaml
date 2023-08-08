@@ -83,9 +83,10 @@
                     <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                 </controls:DataGrid.Resources>
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_ID_REG}" Header="ID" Tag="Id" Visibility="Visible" />
-                    <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_DESCRIP}" Header="Descripción" Tag="Descripcion" />
-                    <controls:DataGridTextColumn Binding="{Binding DISPOSITIVOS_CONTAINER}" Header="Cloud Container" Tag="Container" />
+                    <controls:DataGridTextColumn Header="ID" Tag="Id" Binding="{Binding DISPOSITIVOS_ID_REG}"  />
+                    <controls:DataGridTextColumn Header="Descripción" Tag="Descripcion" Binding="{Binding DISPOSITIVOS_DESCRIP}"  />
+                    <controls:DataGridTextColumn Header="Cloud Container" Tag="Container" Binding="{Binding DISPOSITIVOS_CONTAINER}"  />
+                    <controls:DataGridTextColumn Header="Estado Reg" Tag="EstadoReg" Binding="{Binding DISPOSITIVOS_ID_ESTADO_REG}" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
 

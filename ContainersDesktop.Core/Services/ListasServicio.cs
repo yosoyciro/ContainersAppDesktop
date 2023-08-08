@@ -78,7 +78,7 @@ public class ListasServicio : IListasServicio
                         LISTAS_ID_LISTA = query.GetInt32(2),
                         LISTAS_ID_LISTA_ORDEN = query.GetInt32(3),
                         LISTAS_ID_LISTA_DESCRIP = query.GetString(4),
-                        LISTAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(5)),
+                        LISTAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(5)),
                     };
                     listas.Add(nuevaLista);
                 //}

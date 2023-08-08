@@ -42,13 +42,13 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                 {
                     TAREAS_PROGRAMADAS_ID_REG = query.GetInt32(0),
                     TAREAS_PROGRAMADAS_OBJETO_ID_REG = query.GetInt32(1),
-                    TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaCorta(query.GetString(2)),
-                    TAREAS_PROGRAMADAS_FECHA_COMPLETADA = FormatoFecha.ConvertirAFechaCorta(query.GetString(3)),
+                    TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
+                    TAREAS_PROGRAMADAS_FECHA_COMPLETADA = FormatoFecha.ConvertirAFechaHora(query.GetString(3)),
                     TAREAS_PROGRAMADAS_UBICACION_ORIGEN = query.GetInt32(4),
                     TAREAS_PROGRAMADAS_UBICACION_DESTINO = query.GetInt32(5),
                     TAREAS_PROGRAMADAS_ORDENADO = query.GetString(6),
                     TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = query.GetInt32(7),
-                    TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(8)),
+                    TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(8)),
                 };
                 movimLista.Add(movimObjeto);
             }
@@ -80,13 +80,13 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                 {
                     TAREAS_PROGRAMADAS_ID_REG = query.GetInt32(0),
                     TAREAS_PROGRAMADAS_OBJETO_ID_REG = query.GetInt32(1),
-                    TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaCorta(query.GetString(2)),
-                    TAREAS_PROGRAMADAS_FECHA_COMPLETADA = query.GetString(3) != string.Empty ? FormatoFecha.ConvertirAFechaCorta(query.GetString(3)) : string.Empty,
+                    TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
+                    TAREAS_PROGRAMADAS_FECHA_COMPLETADA = query.GetString(3) != string.Empty ? FormatoFecha.ConvertirAFechaHora(query.GetString(3)) : string.Empty,
                     TAREAS_PROGRAMADAS_UBICACION_ORIGEN = query.GetInt32(4),
                     TAREAS_PROGRAMADAS_UBICACION_DESTINO = query.GetInt32(5),
                     TAREAS_PROGRAMADAS_ORDENADO = query.GetString(6),
                     TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = query.GetInt32(7),
-                    TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(8)),
+                    TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(8)),
                 };
                 movimLista.Add(movimObjeto);
             }
@@ -180,7 +180,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                             cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD", tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD);
                             cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD", tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD);
                             cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", tareaProgramada.TAREAS_PROGRAMADAS_ID_REG);
-                            cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar());
+                            cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
                             await cmd.ExecuteNonQueryAsync();
                         }
                     }

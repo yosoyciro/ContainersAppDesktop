@@ -93,6 +93,7 @@
                     <controls:DataGridTextColumn Header="Barras" Tag="Barras" Binding="{Binding OBJ_BARRAS_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Cables" Tag="Cables" Binding="{Binding OBJ_CABLES_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Linea Vida" Tag="LineasVida" Binding="{Binding OBJ_LINEA_VIDA_DESCRIPCION}" />
+                    <controls:DataGridTextColumn Header="Estado Reg" Tag="EstadoReg" Binding="{Binding OBJ_ID_ESTADO_REG}" />
                     <controls:DataGridTextColumn Header="Observaciones" Tag="Observaciones" Binding="{Binding OBJ_OBSERVACIONES}"/>
                 </controls:DataGrid.Columns>
             </controls:DataGrid>

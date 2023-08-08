@@ -62,7 +62,7 @@ public class ClaListServicio : IClaListServicio
 
                 insertCommand.Parameters.AddWithValue("@CLALIST_DESCRIP", claList.CLALIST_DESCRIP);
                 insertCommand.Parameters.AddWithValue("@CLALIST_ID_ESTADO_REG", "A");
-                insertCommand.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"));
+                insertCommand.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 await insertCommand.ExecuteReaderAsync();
 
@@ -84,7 +84,7 @@ public class ClaListServicio : IClaListServicio
             db.Open();
 
             SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT CLALIST_ID_REG, CLALIST_ID_ESTADO_REG, CLALIST_DESCRIP FROM CLALIST", db);
+                ("SELECT CLALIST_ID_REG, CLALIST_ID_ESTADO_REG, CLALIST_DESCRIP, CLALIST_FECHA_ACTUALIZACION FROM CLALIST", db);
 
             SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
 
@@ -96,7 +96,8 @@ public class ClaListServicio : IClaListServicio
                     {
                         CLALIST_ID_REG = query.GetInt32(0),
                         CLALIST_ID_ESTADO_REG = query.GetString(1),
-                        CLALIST_DESCRIP = query.GetString(2),                        
+                        CLALIST_DESCRIP = query.GetString(2),             
+                        CLALIST_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(3)),
                     };
                     clasList.Add(clasListObjeto);
                 //}
@@ -118,7 +119,7 @@ public class ClaListServicio : IClaListServicio
                     ("UPDATE CLALIST SET CLALIST_ID_ESTADO_REG = 'B', CLALIST_FECHA_ACTUALIZACION = @CLALIST_FECHA_ACTUALIZACION WHERE CLALIST_ID_REG = @CLALIST_ID_REG", db);
 
                 deleteCommand.Parameters.AddWithValue("@CLALIST_ID_REG", id);
-                deleteCommand.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", DateTime.Now.ToShortDateString());
+                deleteCommand.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
 
                 SqliteDataReader query = await deleteCommand.ExecuteReaderAsync();
 

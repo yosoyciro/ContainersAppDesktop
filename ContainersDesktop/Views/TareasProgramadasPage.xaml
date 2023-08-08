@@ -138,7 +138,7 @@
                     <Grid RelativePanel.Below="cmbDispositivos">
                         <SymbolIcon Symbol="ReportHacked"
                             Foreground="Red"
-                            Visibility="{x:Bind ViewModel.FormViewModel.HasErrors, Mode=OneWay}">
+                            Visibility="{x:Bind ViewModel.FormViewModel.IsNotValid, Mode=OneWay}">
                             <ToolTipService.ToolTip>
                                 <TextBlock Text="{x:Bind ViewModel.FormViewModel.Errors, Mode=OneWay}"
                                 Foreground="Red" />

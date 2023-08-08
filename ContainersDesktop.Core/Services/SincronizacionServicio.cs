@@ -75,8 +75,8 @@ public class SincronizacionServicio : ISincronizacionServicio
                 var sincronizacionObjeto = new Sincronizaciones()
                 {
                     SINCRONIZACIONES_ID_REG = query.GetInt32(0),
-                    SINCRONIZACIONES_FECHA_HORA_INICIO = query.GetString(1),
-                    SINCRONIZACIONES_FECHA_HORA_FIN = query.GetString(2),
+                    SINCRONIZACIONES_FECHA_HORA_INICIO = FormatoFecha.ConvertirAFechaHora(query.GetString(1)),
+                    SINCRONIZACIONES_FECHA_HORA_FIN = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
                     SINCRONIZACIONES_DISPOSITIVO_ORIGEN = query.GetInt32(3),
                     SINCRONIZACIONES_RESULTADO = query.GetString(4),
                 };

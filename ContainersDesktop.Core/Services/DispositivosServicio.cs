@@ -120,7 +120,8 @@ public class DispositivosServicio : IDispositivosServicio
             await db.OpenAsync();
 
             SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT DISPOSITIVOS_ID_REG, DISPOSITIVOS_ID_ESTADO_REG, DISPOSITIVOS_DESCRIP, DISPOSITIVOS_CONTAINER FROM DISPOSITIVOS", db);
+                ("SELECT DISPOSITIVOS_ID_REG, DISPOSITIVOS_ID_ESTADO_REG, DISPOSITIVOS_DESCRIP, DISPOSITIVOS_CONTAINER, DISPOSITIVOS_FECHA_ACTUALIZACION " +
+                "FROM DISPOSITIVOS", db);
 
             SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
 
@@ -134,6 +135,7 @@ public class DispositivosServicio : IDispositivosServicio
                         DISPOSITIVOS_ID_ESTADO_REG = query.GetString(1),
                         DISPOSITIVOS_DESCRIP = query.GetString(2),
                         DISPOSITIVOS_CONTAINER = query.GetString(3),
+                        DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(4)),
                     };
                     dispositivosList.Add(dispositivoObjeto);
                 //}

@@ -101,7 +101,7 @@
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_LISTA_ORDEN}" Header="Orden" Tag="Orden" />
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_LISTA_DESCRIP}" Header="Descripción" Tag="Descripcion" />
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_ESTADO_REG, Mode=TwoWay}" Header="Estado Reg" Tag="Estado" />
-                    <controls:DataGridTextColumn Binding="{Binding LISTAS_FECHA_ACTUALIZACION, Mode=TwoWay}" Header="Fecha Actualización" Tag="FechaActualizacion" Visibility="Collapsed" />
+                    <controls:DataGridTextColumn Binding="{Binding LISTAS_FECHA_ACTUALIZACION, Mode=TwoWay}" Header="Fecha Actualización" Tag="FechaActualizacion" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
             
