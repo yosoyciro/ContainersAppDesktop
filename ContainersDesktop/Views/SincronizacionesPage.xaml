@@ -42,10 +42,8 @@
                     </CommandBar>
                 </StackPanel>
             </Grid>
-
-
             <controls:DataGrid
-                Name="DispositivosGrid"
+                Name="SincronizacionesGrid"
                 Grid.Row="1"
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"
@@ -53,8 +51,7 @@
                 CanUserSortColumns="True"
                 Sorting="DispositivosGrid_Sorting"
                 IsReadOnly="True"
-                >
-
+            >
                 <controls:DataGrid.Resources>
                     <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                 </controls:DataGrid.Resources>

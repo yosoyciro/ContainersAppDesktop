@@ -7,10 +7,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.DTO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
 
 namespace ContainersDesktop.Views;
 

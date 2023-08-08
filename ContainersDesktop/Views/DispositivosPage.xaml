@@ -68,7 +68,6 @@
             </Grid>
 
             <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" Width="32"/>
-
             <controls:DataGrid
                 Name="DispositivosGrid"
                 Grid.Row="1"
@@ -79,6 +78,7 @@
                 ItemsSource="{x:Bind ViewModel.Source}"                
                 SelectionMode="Single"
             >
+
                 <controls:DataGrid.Resources>
                     <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                 </controls:DataGrid.Resources>

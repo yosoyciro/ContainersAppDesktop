@@ -7,8 +7,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using ContainersDesktop.Core.Helpers;
 using Azure;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 namespace ContainersDesktop.Views;
 public sealed partial class DispositivosPage : Page

@@ -5,6 +5,9 @@
     <Platforms>x86;x64;arm64</Platforms>
     <ImplicitUsings>enable</ImplicitUsings>    
     <Nullable>enable</Nullable>
+	  <UseWinUI>true</UseWinUI>
+	  <EnableMsixTooling>true</EnableMsixTooling>
+	  <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
 
   <ItemGroup>
