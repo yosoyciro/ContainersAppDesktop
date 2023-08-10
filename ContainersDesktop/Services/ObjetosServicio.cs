@@ -6,25 +6,29 @@ using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Core.Persistencia;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
+using ContainersDesktop.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace ContainersDesktop.Core.Services;
 public class ObjetosServicio : IObjetosServicio
 {
     private readonly string _dbFile;
     private readonly string _dbFullPath;
+    private readonly ILogger<LoginViewModel> _logger;
 
-    public ObjetosServicio(IOptions<Settings> settings)
+    public ObjetosServicio(IOptions<Settings> settings, ILogger<LoginViewModel> logger)
     {
         _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
         _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
+        _logger = logger;
     }
 
     #region Actualizar
     public async Task<bool> ActualizarObjeto(Objetos objeto)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
                 await db.OpenAsync();
 
@@ -80,10 +84,16 @@ public class ObjetosServicio : IObjetosServicio
 
                 return true;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
     #endregion
@@ -91,10 +101,11 @@ public class ObjetosServicio : IObjetosServicio
     #region CrearObjeto
     public async Task<int> CrearObjeto(Objetos objeto)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
+
                 db.Open();
 
                 SqliteCommand insertCommand = new SqliteCommand();
@@ -102,7 +113,7 @@ public class ObjetosServicio : IObjetosServicio
 
                 // Use parameterized query to prevent SQL injection attacks
                 insertCommand.CommandText = "INSERT INTO OBJETOS (OBJ_MATRICULA, OBJ_ID_ESTADO_REG, OBJ_SIGLAS_LISTA, OBJ_SIGLAS, OBJ_MODELO_LISTA, " +
-                    "OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, " +                    
+                    "OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, " +
                     "OBJ_TARA_LISTA, OBJ_TARA, OBJ_PMP_LISTA, OBJ_PMP, OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR, OBJ_CUELLO_CISNE_LISTA," +
                     "OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, " +
                     "OBJ_OBSERVACIONES, OBJ_FECHA_ACTUALIZACION, OBJ_COLOR)" +
@@ -150,12 +161,18 @@ public class ObjetosServicio : IObjetosServicio
                 var identity = await OperacionesComunes.GetIdentity(db);
 
                 return identity;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
             }
         }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }        
     }
     #endregion
 
@@ -166,20 +183,22 @@ public class ObjetosServicio : IObjetosServicio
 
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            db.Open();
-
-            SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT OBJ_ID_REG, OBJ_MATRICULA, OBJ_ID_ESTADO_REG, OBJ_SIGLAS_LISTA, OBJ_SIGLAS, OBJ_MODELO_LISTA, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, " +
-                "OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_TARA_LISTA, OBJ_TARA, OBJ_PMP_LISTA, OBJ_PMP, " +
-                "OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR, OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, " +
-                "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES, OBJ_FECHA_ACTUALIZACION, OBJ_COLOR FROM OBJETOS", db);
-
-            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
-            
-            while (query.Read())
+            try
             {
-                //if (query.GetString(2) == "A")
-                //{
+                await db.OpenAsync();
+
+                SqliteCommand selectCommand = new SqliteCommand
+                    ("SELECT OBJ_ID_REG, OBJ_MATRICULA, OBJ_ID_ESTADO_REG, OBJ_SIGLAS_LISTA, OBJ_SIGLAS, OBJ_MODELO_LISTA, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, " +
+                    "OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_TARA_LISTA, OBJ_TARA, OBJ_PMP_LISTA, OBJ_PMP, " +
+                    "OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR, OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, " +
+                    "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES, OBJ_FECHA_ACTUALIZACION, OBJ_COLOR FROM OBJETOS", db);
+
+                SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+
+                while (query.Read())
+                {
+                    //if (query.GetString(2) == "A")
+                    //{
                     var nuevoObjeto = new Objetos()
                     {
                         OBJ_ID_REG = query.GetInt32(0),
@@ -217,11 +236,26 @@ public class ObjetosServicio : IObjetosServicio
                         OBJ_COLOR = query.GetString(32),
                     };
                     objetos.Add(nuevoObjeto);
-                //}                
+                    //}                
+                }
+
+                return objetos;
+            }
+            catch (SqliteException sqlex)
+            {
+                _logger.LogError("Error de BD", sqlex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
             }
         }
-
-        return objetos;
     }
     #endregion
 
@@ -231,67 +265,80 @@ public class ObjetosServicio : IObjetosServicio
         var objeto = new Objetos();
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            db.Open();
-
-            SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT OBJ_ID_REG, OBJ_MATRICULA, OBJ_ID_ESTADO_REG, OBJ_SIGLAS_LISTA, OBJ_SIGLAS, OBJ_MODELO_LISTA, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, " +
-                "OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_TARA_LISTA, OBJ_TARA, OBJ_PMP_LISTA, OBJ_PMP, " +
-                "OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR, OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, " +
-                "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES, OBJ_COLOR FROM OBJETOS WHERE OBJ_ID_REG = @OBJ_ID_REG", db);
-
-            selectCommand.Parameters.AddWithValue("@OBJ_ID_REG", id);
-
-            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
-
-            while (query.Read())
+            try
             {
-                objeto.OBJ_ID_REG = query.GetInt32(0);
-                objeto.OBJ_MATRICULA = query.GetString(1);
-                objeto.OBJ_ID_ESTADO_REG = query.GetString(2);
-                objeto.OBJ_SIGLAS_LISTA = query.GetInt32(3);
-                objeto.OBJ_SIGLAS = query.GetInt32(4);
-                objeto.OBJ_MODELO_LISTA = query.GetInt32(5);
-                objeto.OBJ_MODELO = query.GetInt32(6);
-                objeto.OBJ_ID_OBJETO = query.GetInt32(7);
-                objeto.OBJ_VARIANTE_LISTA = query.GetInt32(8);
-                objeto.OBJ_VARIANTE = query.GetInt32(9);
-                objeto.OBJ_TIPO_LISTA = query.GetInt32(10);
-                objeto.OBJ_TIPO = query.GetInt32(11);
-                objeto.OBJ_INSPEC_CSC = query.GetString(12);
-                objeto.OBJ_PROPIETARIO_LISTA = query.GetInt32(13);
-                objeto.OBJ_PROPIETARIO = query.GetInt32(14);
-                objeto.OBJ_TARA_LISTA = query.GetInt32(15);
-                objeto.OBJ_TARA = query.GetInt32(16);
-                objeto.OBJ_PMP_LISTA = query.GetInt32(17);
-                objeto.OBJ_PMP = query.GetInt32(18);
-                objeto.OBJ_CARGA_UTIL = query.GetInt32(19);
-                objeto.OBJ_ALTURA_EXTERIOR_LISTA = query.GetInt32(20);
-                objeto.OBJ_ALTURA_EXTERIOR = query.GetInt32(21);
-                objeto.OBJ_CUELLO_CISNE_LISTA = query.GetInt32(22);
-                objeto.OBJ_CUELLO_CISNE = query.GetInt32(23);
-                objeto.OBJ_BARRAS_LISTA = query.GetInt32(24);
-                objeto.OBJ_BARRAS = query.GetInt32(25);
-                objeto.OBJ_CABLES_LISTA = query.GetInt32(26);
-                objeto.OBJ_CABLES = query.GetInt32(27);
-                objeto.OBJ_LINEA_VIDA_LISTA = query.GetInt32(28);
-                objeto.OBJ_LINEA_VIDA = query.GetInt32(29);
-                objeto.OBJ_OBSERVACIONES = query.GetString(30);
-                objeto.OBJ_COLOR = query.GetString(31);
+                await db.OpenAsync();
+
+                SqliteCommand selectCommand = new SqliteCommand
+                    ("SELECT OBJ_ID_REG, OBJ_MATRICULA, OBJ_ID_ESTADO_REG, OBJ_SIGLAS_LISTA, OBJ_SIGLAS, OBJ_MODELO_LISTA, OBJ_MODELO, OBJ_ID_OBJETO, OBJ_VARIANTE_LISTA, " +
+                    "OBJ_VARIANTE, OBJ_TIPO_LISTA, OBJ_TIPO, OBJ_INSPEC_CSC, OBJ_PROPIETARIO_LISTA, OBJ_PROPIETARIO, OBJ_TARA_LISTA, OBJ_TARA, OBJ_PMP_LISTA, OBJ_PMP, " +
+                    "OBJ_CARGA_UTIL, OBJ_ALTURA_EXTERIOR_LISTA, OBJ_ALTURA_EXTERIOR, OBJ_CUELLO_CISNE_LISTA, OBJ_CUELLO_CISNE, OBJ_BARRAS_LISTA, OBJ_BARRAS, OBJ_CABLES_LISTA, " +
+                    "OBJ_CABLES, OBJ_LINEA_VIDA_LISTA, OBJ_LINEA_VIDA, OBJ_OBSERVACIONES, OBJ_COLOR FROM OBJETOS WHERE OBJ_ID_REG = @OBJ_ID_REG", db);
+
+                selectCommand.Parameters.AddWithValue("@OBJ_ID_REG", id);
+
+                SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+
+                while (query.Read())
+                {
+                    objeto.OBJ_ID_REG = query.GetInt32(0);
+                    objeto.OBJ_MATRICULA = query.GetString(1);
+                    objeto.OBJ_ID_ESTADO_REG = query.GetString(2);
+                    objeto.OBJ_SIGLAS_LISTA = query.GetInt32(3);
+                    objeto.OBJ_SIGLAS = query.GetInt32(4);
+                    objeto.OBJ_MODELO_LISTA = query.GetInt32(5);
+                    objeto.OBJ_MODELO = query.GetInt32(6);
+                    objeto.OBJ_ID_OBJETO = query.GetInt32(7);
+                    objeto.OBJ_VARIANTE_LISTA = query.GetInt32(8);
+                    objeto.OBJ_VARIANTE = query.GetInt32(9);
+                    objeto.OBJ_TIPO_LISTA = query.GetInt32(10);
+                    objeto.OBJ_TIPO = query.GetInt32(11);
+                    objeto.OBJ_INSPEC_CSC = query.GetString(12);
+                    objeto.OBJ_PROPIETARIO_LISTA = query.GetInt32(13);
+                    objeto.OBJ_PROPIETARIO = query.GetInt32(14);
+                    objeto.OBJ_TARA_LISTA = query.GetInt32(15);
+                    objeto.OBJ_TARA = query.GetInt32(16);
+                    objeto.OBJ_PMP_LISTA = query.GetInt32(17);
+                    objeto.OBJ_PMP = query.GetInt32(18);
+                    objeto.OBJ_CARGA_UTIL = query.GetInt32(19);
+                    objeto.OBJ_ALTURA_EXTERIOR_LISTA = query.GetInt32(20);
+                    objeto.OBJ_ALTURA_EXTERIOR = query.GetInt32(21);
+                    objeto.OBJ_CUELLO_CISNE_LISTA = query.GetInt32(22);
+                    objeto.OBJ_CUELLO_CISNE = query.GetInt32(23);
+                    objeto.OBJ_BARRAS_LISTA = query.GetInt32(24);
+                    objeto.OBJ_BARRAS = query.GetInt32(25);
+                    objeto.OBJ_CABLES_LISTA = query.GetInt32(26);
+                    objeto.OBJ_CABLES = query.GetInt32(27);
+                    objeto.OBJ_LINEA_VIDA_LISTA = query.GetInt32(28);
+                    objeto.OBJ_LINEA_VIDA = query.GetInt32(29);
+                    objeto.OBJ_OBSERVACIONES = query.GetString(30);
+                    objeto.OBJ_COLOR = query.GetString(31);
+                }
+
+                return objeto;
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
             }
         }
-
-        return objeto;
     }
     #endregion
 
     #region Borrar
     public async Task<bool> BorrarObjeto(int id)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
-                db.Open();
+                await db.OpenAsync();
 
                 SqliteCommand deleteCommand = new SqliteCommand
                     ("UPDATE OBJETOS SET OBJ_ID_ESTADO_REG = 'B', OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION WHERE OBJ_ID_REG = @OBJ_ID_REG", db);
@@ -301,14 +348,18 @@ public class ObjetosServicio : IObjetosServicio
 
                 SqliteDataReader query = await deleteCommand.ExecuteReaderAsync();
 
+                return true;
             }
-
-            return true;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }        
     }
     #endregion
 }

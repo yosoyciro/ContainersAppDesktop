@@ -1,7 +1,5 @@
 ﻿using System.Text;
-
 using ContainersDesktop.Core.Contracts.Services;
-
 using Newtonsoft.Json;
 
 namespace ContainersDesktop.Core.Services;

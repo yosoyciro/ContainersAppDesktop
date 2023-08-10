@@ -5,6 +5,7 @@ using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Models.Login;
 using ContainersDesktop.Core.Models.Storage;
+using ContainersDesktop.Services;
 using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.ViewModels;
@@ -16,7 +17,7 @@ public partial class Data2MovieViewModel : ObservableObject
     public Data2MovieViewModel(ILocalSettingsService localSettingsService, IOptions<Settings> settings)
     {
         _localSettingsService = localSettingsService;
-        _settings = settings.Value;        
+        _settings = settings.Value;
     }
 
     public async Task<Login> ObtenerLogin()

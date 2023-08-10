@@ -5,17 +5,21 @@ using ContainersDesktop.Core.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 using ContainersDesktop.Core.Persistencia;
+using ContainersDesktop.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace ContainersDesktop.Core.Services;
 public class TareasProgramadasServicio : ITareasProgramadasServicio
 {
     private readonly string _dbFile;
     private readonly string _dbFullPath;
+    private readonly ILogger<LoginViewModel> _logger;
 
-    public TareasProgramadasServicio(IOptions<Settings> settings)
+    public TareasProgramadasServicio(IOptions<Settings> settings, ILogger<LoginViewModel> logger)
     {
         _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
         _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
+        _logger = logger;
     }
 
     #region ObtenerPorObjeto
@@ -25,36 +29,48 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
 
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            db.Open();
-
-            SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT TAREAS_PROGRAMADAS_ID_REG, TAREAS_PROGRAMADAS_OBJETO_ID_REG, TAREAS_PROGRAMADAS_FECHA_PROGRAMADA, TAREAS_PROGRAMADAS_FECHA_COMPLETADA, " +
-                "TAREAS_PROGRAMADAS_UBICACION_ORIGEN, TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG, " +
-                "TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION FROM TAREAS_PROGRAMADAS WHERE TAREAS_PROGRAMADAS_OBJETO_ID_REG = @TAREAS_PROGRAMADAS_OBJETO_ID_REG", db);
-
-            selectCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_OBJETO_ID_REG", idObjeto);
-
-            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
-
-            while (query.Read())
+            try
             {
-                var movimObjeto = new TareaProgramada()
+                await db.OpenAsync();
+
+                SqliteCommand selectCommand = new SqliteCommand
+                    ("SELECT TAREAS_PROGRAMADAS_ID_REG, TAREAS_PROGRAMADAS_OBJETO_ID_REG, TAREAS_PROGRAMADAS_FECHA_PROGRAMADA, TAREAS_PROGRAMADAS_FECHA_COMPLETADA, " +
+                    "TAREAS_PROGRAMADAS_UBICACION_ORIGEN, TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG, " +
+                    "TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION FROM TAREAS_PROGRAMADAS WHERE TAREAS_PROGRAMADAS_OBJETO_ID_REG = @TAREAS_PROGRAMADAS_OBJETO_ID_REG", db);
+
+                selectCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_OBJETO_ID_REG", idObjeto);
+
+                SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+
+                while (query.Read())
                 {
-                    TAREAS_PROGRAMADAS_ID_REG = query.GetInt32(0),
-                    TAREAS_PROGRAMADAS_OBJETO_ID_REG = query.GetInt32(1),
-                    TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
-                    TAREAS_PROGRAMADAS_FECHA_COMPLETADA = FormatoFecha.ConvertirAFechaHora(query.GetString(3)),
-                    TAREAS_PROGRAMADAS_UBICACION_ORIGEN = query.GetInt32(4),
-                    TAREAS_PROGRAMADAS_UBICACION_DESTINO = query.GetInt32(5),
-                    TAREAS_PROGRAMADAS_ORDENADO = query.GetString(6),
-                    TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = query.GetInt32(7),
-                    TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(8)),
-                };
-                movimLista.Add(movimObjeto);
+                    var movimObjeto = new TareaProgramada()
+                    {
+                        TAREAS_PROGRAMADAS_ID_REG = query.GetInt32(0),
+                        TAREAS_PROGRAMADAS_OBJETO_ID_REG = query.GetInt32(1),
+                        TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
+                        TAREAS_PROGRAMADAS_FECHA_COMPLETADA = FormatoFecha.ConvertirAFechaHora(query.GetString(3)),
+                        TAREAS_PROGRAMADAS_UBICACION_ORIGEN = query.GetInt32(4),
+                        TAREAS_PROGRAMADAS_UBICACION_DESTINO = query.GetInt32(5),
+                        TAREAS_PROGRAMADAS_ORDENADO = query.GetString(6),
+                        TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = query.GetInt32(7),
+                        TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(8)),
+                    };
+                    movimLista.Add(movimObjeto);
+                }
+
+                return movimLista;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
             }
         }
-
-        return movimLista;
     }
     #endregion
 
@@ -65,35 +81,47 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
         
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            db.Open();
-
-            SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT TAREAS_PROGRAMADAS_ID_REG, TAREAS_PROGRAMADAS_OBJETO_ID_REG, TAREAS_PROGRAMADAS_FECHA_PROGRAMADA, TAREAS_PROGRAMADAS_FECHA_COMPLETADA, " +
-                "TAREAS_PROGRAMADAS_UBICACION_ORIGEN, TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG, " +
-                "TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION, TAREAS_PROGRAMADAS_ID_ESTADO_REG FROM TAREAS_PROGRAMADAS", db);
-
-            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
-
-            while (query.Read())
+            try
             {
-                var movimObjeto = new TareaProgramada()
+                db.Open();
+
+                SqliteCommand selectCommand = new SqliteCommand
+                    ("SELECT TAREAS_PROGRAMADAS_ID_REG, TAREAS_PROGRAMADAS_OBJETO_ID_REG, TAREAS_PROGRAMADAS_FECHA_PROGRAMADA, TAREAS_PROGRAMADAS_FECHA_COMPLETADA, " +
+                    "TAREAS_PROGRAMADAS_UBICACION_ORIGEN, TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG, " +
+                    "TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION, TAREAS_PROGRAMADAS_ID_ESTADO_REG FROM TAREAS_PROGRAMADAS", db);
+
+                SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+
+                while (query.Read())
                 {
-                    TAREAS_PROGRAMADAS_ID_REG = query.GetInt32(0),
-                    TAREAS_PROGRAMADAS_OBJETO_ID_REG = query.GetInt32(1),
-                    TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
-                    TAREAS_PROGRAMADAS_FECHA_COMPLETADA = query.GetString(3) != string.Empty ? FormatoFecha.ConvertirAFechaHora(query.GetString(3)) : string.Empty,
-                    TAREAS_PROGRAMADAS_UBICACION_ORIGEN = query.GetInt32(4),
-                    TAREAS_PROGRAMADAS_UBICACION_DESTINO = query.GetInt32(5),
-                    TAREAS_PROGRAMADAS_ORDENADO = query.GetString(6),
-                    TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = query.GetInt32(7),
-                    TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(8)),
-                    TAREAS_PROGRAMADAS_ID_ESTADO_REG = query.GetString(9),
-                };
-                movimLista.Add(movimObjeto);
+                    var movimObjeto = new TareaProgramada()
+                    {
+                        TAREAS_PROGRAMADAS_ID_REG = query.GetInt32(0),
+                        TAREAS_PROGRAMADAS_OBJETO_ID_REG = query.GetInt32(1),
+                        TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
+                        TAREAS_PROGRAMADAS_FECHA_COMPLETADA = query.GetString(3) != string.Empty ? FormatoFecha.ConvertirAFechaHora(query.GetString(3)) : string.Empty,
+                        TAREAS_PROGRAMADAS_UBICACION_ORIGEN = query.GetInt32(4),
+                        TAREAS_PROGRAMADAS_UBICACION_DESTINO = query.GetInt32(5),
+                        TAREAS_PROGRAMADAS_ORDENADO = query.GetString(6),
+                        TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = query.GetInt32(7),
+                        TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(8)),
+                        TAREAS_PROGRAMADAS_ID_ESTADO_REG = query.GetString(9),
+                    };
+                    movimLista.Add(movimObjeto);
+                }
+
+                return movimLista;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
             }
         }
-
-        return movimLista;
     }
     #endregion
 
@@ -142,7 +170,8 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError("Error", ex.Message);
+                throw;
             }
             finally
             {
@@ -191,11 +220,11 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError("Error", ex.Message);
+                throw;
             }
             finally
             {
-
                 await db.CloseAsync();
             }
         }
@@ -205,9 +234,9 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     #region Agregar
     public async Task<int> Agregar(TareaProgramada tareaProgramada)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
                 db.Open();
 
@@ -238,10 +267,16 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                 var identity = await OperacionesComunes.GetIdentity(db);
                 return identity;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
     #endregion
@@ -249,9 +284,9 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     #region Modificar
     public async Task<bool> Modificar(TareaProgramada tareaProgramada)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
                 await db.OpenAsync();
 
@@ -284,10 +319,16 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
 
                 return true;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
     #endregion
@@ -295,9 +336,9 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     #region Borrar
     public async Task<bool> Borrar(int id)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
                 await db.OpenAsync();
 
@@ -320,10 +361,16 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
 
                 return true;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
     #endregion

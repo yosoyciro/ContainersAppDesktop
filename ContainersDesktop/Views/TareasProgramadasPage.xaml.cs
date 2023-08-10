@@ -23,6 +23,29 @@ public sealed partial class TareasProgramadasPage : Page
     {
         ViewModel = App.GetService<TareasProgramadasViewModel>();
         this.InitializeComponent();
+        Loaded += TareasProgramadasPage_Loaded;
+    }
+
+    private async void TareasProgramadasPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ViewModel.CargarListasSource();
+        }
+        catch (Exception ex)
+        {
+            ContentDialog errorDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Error {ex.Message}",
+                CloseButtonText = "Ok"
+            };
+
+            await errorDialog.ShowAsync();
+        }
+        
     }
 
     public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);

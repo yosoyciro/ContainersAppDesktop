@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml.Media;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.DTO;
 using Windows.UI;
-using System.Security.Cryptography;
 
 namespace ContainersDesktop.Views;
 
@@ -27,9 +26,27 @@ public sealed partial class ContainersGridPage : Page
         this.Loaded += ContainersGridPage_Loaded;
     }
 
-    private void ContainersGridPage_Loaded(object sender, RoutedEventArgs e)
+    private async void ContainersGridPage_Loaded(object sender, RoutedEventArgs e)
     {
-        grdContainers.ItemsSource = ViewModel.ApplyFilter(null, false);
+        try
+        {
+            await ViewModel.CargarListasSource();
+            grdContainers.ItemsSource = ViewModel.ApplyFilter(null, false);
+        }
+        catch (Exception ex)
+        {
+            ContentDialog bajaRegistroDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Error {ex.Message}",
+                CloseButtonText = "Ok"
+            };
+
+            await bajaRegistroDialog.ShowAsync();
+        }
+        
     }
     
     private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject

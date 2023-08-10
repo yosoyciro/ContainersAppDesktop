@@ -1,9 +1,9 @@
-using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
-using ContainersDesktop.ViewModels;
-using Microsoft.UI.Xaml.Controls;
+using CommunityToolkit.Mvvm.Input;
 using ContainersDesktop.Core.Helpers;
+using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace ContainersDesktop.Views;
 

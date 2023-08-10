@@ -19,7 +19,6 @@ public sealed partial class Data2MoviePage : Page
     private async void Data2MoviePage_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         var login = await ViewModel.ObtenerLogin();
-        //var password = ViewModel.ObtenerPassword();
         string[] args = { login.Usuario, login.Password };
         var pathProyecto = ViewModel.ObtenerPathProyecto();
 

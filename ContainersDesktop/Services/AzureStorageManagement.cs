@@ -3,7 +3,9 @@ using Azure.Storage.Blobs;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Models.Storage;
+using ContainersDesktop.ViewModels;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
@@ -20,8 +22,9 @@ public class AzureStorageManagement
     private readonly string _dbFullPath = string.Empty;
     private readonly string _dbFolder = string.Empty;
     private string _dbPathTemp = string.Empty;
+    private readonly ILogger<LoginViewModel> _logger;
 
-    public AzureStorageManagement(IOptions<AzureStorageConfig> azureStorageConfig, IOptions<Settings> settings)
+    public AzureStorageManagement(IOptions<AzureStorageConfig> azureStorageConfig, IOptions<Settings> settings, ILogger<LoginViewModel> logger)
     {
         _azureStorageConfig = azureStorageConfig.Value;
         //_settings = settings.Value;
@@ -32,6 +35,7 @@ public class AzureStorageManagement
         _dbFolder = settings.Value.DBFolder;
         _dbFile = settings.Value.DBName;
         _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFolder}\\{_dbFile}";
+        _logger = logger;
     }
 
     public async Task<string> DownloadFile(string contenedor)
@@ -61,7 +65,8 @@ public class AzureStorageManagement
         }
         catch (SystemException ex)
         {
-            throw new Exception(ex.Message);
+            _logger.LogError(ex.Message);
+            throw;
         }
     }
 
@@ -84,12 +89,14 @@ public class AzureStorageManagement
 
             return true;
         }
-        catch (RequestFailedException)
+        catch (RequestFailedException ex)
         {
+            _logger.LogError(ex.Message);
             throw;
         }
-        catch (SystemException)
+        catch (SystemException ex)
         {
+            _logger.LogError(ex.Message);
             throw;
         }
     }

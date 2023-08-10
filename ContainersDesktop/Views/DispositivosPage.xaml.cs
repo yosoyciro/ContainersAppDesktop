@@ -22,9 +22,26 @@ public sealed partial class DispositivosPage : Page
         Loaded += DispositivosPage_Loaded;
     }
 
-    private void DispositivosPage_Loaded(object sender, RoutedEventArgs e)
+    private async void DispositivosPage_Loaded(object sender, RoutedEventArgs e)
     {
-        grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, false);        
+        try
+        {
+            await ViewModel.CargarSource();
+            grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, false);
+        }
+        catch (Exception ex)
+        {
+            ContentDialog errorDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Error {ex.Message}",
+                CloseButtonText = "Ok"
+            };
+
+            await errorDialog.ShowAsync();
+        }        
     }
     
     private async Task SincronizarDatos()

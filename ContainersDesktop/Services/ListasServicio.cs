@@ -3,7 +3,9 @@ using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Core.Persistencia;
+using ContainersDesktop.ViewModels;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
@@ -11,17 +13,20 @@ public class ListasServicio : IListasServicio
 {
     private readonly string _dbFile = string.Empty;
     private readonly string _dbFullPath = string.Empty;
-    public ListasServicio(IOptions<Settings> settings)
+    private readonly ILogger<LoginViewModel> _logger;
+
+    public ListasServicio(IOptions<Settings> settings, ILogger<LoginViewModel> logger)
     {
         _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
         _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
+        _logger = logger;
     }
 
     public async Task<int> CrearLista(Listas lista)
     {
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            db.Open();
+            await db.OpenAsync();
 
             SqliteCommand insertCommand = new SqliteCommand();
             insertCommand.Connection = db;
@@ -45,11 +50,12 @@ public class ListasServicio : IListasServicio
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError("Error", ex.Message);
+                throw;
             }
             finally
             {
-                db.Close();
+                db.CloseAsync();
             }
         }        
     }
@@ -60,19 +66,21 @@ public class ListasServicio : IListasServicio
         
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            db.Open();
-
-            SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT LISTAS_ID_REG, LISTAS_ID_ESTADO_REG, LISTAS_ID_LISTA, LISTAS_ID_LISTA_ORDEN, LISTAS_ID_LISTA_DESCRIP, LISTAS_FECHA_ACTUALIZACION FROM LISTAS", db);
-
-            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
-
-            while (query.Read())
+            try
             {
-                //if (query.GetString(1) == "A")
-                //{
+                await db.OpenAsync();
+
+                SqliteCommand selectCommand = new SqliteCommand
+                    ("SELECT LISTAS_ID_REG, LISTAS_ID_ESTADO_REG, LISTAS_ID_LISTA, LISTAS_ID_LISTA_ORDEN, LISTAS_ID_LISTA_DESCRIP, LISTAS_FECHA_ACTUALIZACION FROM LISTAS", db);
+
+                SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+
+                while (query.Read())
+                {
+                    //if (query.GetString(1) == "A")
+                    //{
                     var nuevaLista = new Listas()
-                    {                        
+                    {
                         LISTAS_ID_REG = query.GetInt32(0),
                         LISTAS_ID_ESTADO_REG = query.GetString(1),
                         LISTAS_ID_LISTA = query.GetInt32(2),
@@ -81,12 +89,23 @@ public class ListasServicio : IListasServicio
                         LISTAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(5)),
                     };
                     listas.Add(nuevaLista);
-                //}
+                    //}
+                }
+
+                return listas;
             }
-            db.Close();
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }            
         }
         
-        return listas;
+        
     }
 
     public async Task<bool> ActualizarLista(Listas lista)

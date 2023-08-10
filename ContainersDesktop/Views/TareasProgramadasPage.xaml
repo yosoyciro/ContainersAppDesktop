@@ -76,6 +76,7 @@
                         <controls:DataGridTextColumn Header="Dispositivo" Tag="Dispositivo" Binding="{Binding TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION}" Width="200"/>
                         <controls:DataGridTextColumn Header="Latitud" Tag="UbicacionDestino" Binding="{Binding TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD}" Width="150"/>
                         <controls:DataGridTextColumn Header="Longitud" Tag="Dispositivo" Binding="{Binding TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Estado Reg" Tag="EstadoReg" Binding="{Binding TAREAS_PROGRAMADAS_ID_ESTADO_REG}" />
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>

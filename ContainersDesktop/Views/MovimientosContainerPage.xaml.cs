@@ -1,17 +1,11 @@
 using CommunityToolkit.Mvvm.Input;
-using ContainersDesktop.Core.Models;
 using ContainersDesktop.ViewModels;
 using System.Windows.Input;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
 using ContainersDesktop.DTO;
 using ContainersDesktop.Core.Helpers;
-using Windows.Networking.Proximity;
-using Windows.ApplicationModel.Appointments;
 using CommunityToolkit.WinUI.UI.Controls;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
 
 namespace ContainersDesktop.Views;
 
@@ -29,9 +23,26 @@ public sealed partial class MovimientosContainerPage : Page
         Loaded += MovimientosContainerPage_Loaded;
     }
 
-    private void MovimientosContainerPage_Loaded(object sender, RoutedEventArgs e)
+    private async void MovimientosContainerPage_Loaded(object sender, RoutedEventArgs e)
     {
-        MovimientosGrid.ItemsSource = ViewModel.ApplyFilter(null, false);
+        try
+        {
+            await ViewModel.CargarListasSource();
+            MovimientosGrid.ItemsSource = ViewModel.ApplyFilter(null, false);
+        }
+        catch (Exception ex)
+        {
+            ContentDialog errorDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Error {ex.Message}",
+                CloseButtonText = "Ok"
+            };
+
+            await errorDialog.ShowAsync();
+        }        
     }
 
     #region Commands y dialoga

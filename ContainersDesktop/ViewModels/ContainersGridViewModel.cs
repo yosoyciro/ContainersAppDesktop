@@ -5,10 +5,11 @@ using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.DTO;
+using Microsoft.UI.Xaml.Controls;
 
 namespace ContainersDesktop.ViewModels;
 
-public partial class ContainersGridViewModel : ObservableValidator, INavigationAware
+public partial class ContainersGridViewModel : ObservableValidator
 {
     private ObjetosViewModel _objetosViewModel = new();
     public ObjetosViewModel ObjetosViewModel => _objetosViewModel;
@@ -73,214 +74,213 @@ public partial class ContainersGridViewModel : ObservableValidator, INavigationA
         _objetosServicio = objetosServicio;
         _listasServicio = listasServicio;
         _movimientosServicio = movimientosServicio;
+        
     }
 
-    public async void OnNavigatedTo(object parameter)
-    {        
-        #region cargo listas
-        LstListas.Clear();
-
-        //Cargo Listas
-        var listas = await _listasServicio.ObtenerListas();
-        if (listas.Any())
-        {
-            foreach (var item in listas)
-            {
-                LstListas.Add(item);
-            }
-        }
-
-        //Siglas
-        var lstSiglas = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1000 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstSiglas)
-        {
-            LstSiglas.Add(new SiglasDTO() { OBJ_SIGLAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstSiglasActivos.Add(new SiglasDTO() { OBJ_SIGLAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-        }
-
-        //Modelos
-        var lstModelos = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1100 || x.LISTAS_ID_REG == 1) )
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstModelos)
-        {
-            LstModelos.Add(new ModelosDTO() { OBJ_MODELO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstModelosActivos.Add(new ModelosDTO() { OBJ_MODELO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-        }
-
-        //Variantes
-        var lstVariantes = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1200 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstVariantes)
-        {
-            LstVariantes.Add(new VariantesDTO() { OBJ_VARIANTE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstVariantesActivos.Add(new VariantesDTO() { OBJ_VARIANTE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-        }
-
-        //Tipos
-        var lstTipos = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1300 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstTipos)
-        {
-            LstTipos.Add(new TiposDTO() { OBJ_TIPO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstTiposActivos.Add(new TiposDTO() { OBJ_TIPO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-        }
-
-        //Propietarios
-        var lstPropietarios = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1400 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstPropietarios)
-        {
-            LstPropietarios.Add(new PropietariosDTO() { OBJ_PROPIETARIO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstPropietariosActivos.Add(new PropietariosDTO() { OBJ_PROPIETARIO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });                
-            }
-        }
-
-        //TARA
-        var lstTara = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1500 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstTara)
-        {
-            LstTara.Add(new TaraDTO() { OBJ_TARA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstTaraActivos.Add(new TaraDTO() { OBJ_TARA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-        }
-
-        //PMP
-        var lstPmp = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1600 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstPmp)
-        {
-            LstPmp.Add(new PmpDTO() { OBJ_PMP = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-
-                LstPmpActivos.Add(new PmpDTO() { OBJ_PMP = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            {
-            }
-        }
-
-        //Altura Exterior
-        var lstAlturasExterior = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1700 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstAlturasExterior)
-        {
-            LstAlturasExterior.Add(new AlturasExteriorDTO() { OBJ_ALTURA_EXTERIOR = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstAlturasExteriorActivos.Add(new AlturasExteriorDTO() { OBJ_ALTURA_EXTERIOR = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-        }
-
-        //Cuello Cisne
-        var lstCuellosCisne = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1800 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstCuellosCisne)
-        {
-            LstCuellosCisne.Add(new CuellosCisneDTO() { OBJ_CUELLO_CISNE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstCuellosCisneActivos.Add(new CuellosCisneDTO() { OBJ_CUELLO_CISNE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-
-        }
-
-        //Barras
-        var lstBarras = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 1900 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstBarras)
-        {
-            LstBarras.Add(new BarrasDTO() { OBJ_BARRAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstBarrasActivos.Add(new BarrasDTO() { OBJ_BARRAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-        }
-
-        //Cables
-        var lstCables = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 2000 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstCables)
-        {
-            LstCables.Add(new CablesDTO() { OBJ_CABLES = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstCablesActivos.Add(new CablesDTO() { OBJ_CABLES = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-        }
-
-        //Lineas vida
-        var lstLineasVida = LstListas
-            .Where(x => (x.LISTAS_ID_LISTA == 2100 || x.LISTAS_ID_REG == 1))
-            .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
-            .ToList();
-        foreach (var item in lstLineasVida)
-        {
-            LstLineasVida.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
-            {
-                LstLineasVidaActivos.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            }
-        }
-
-
-        #endregion
-        await CargarSource();
-    }
-
-    private async Task CargarSource()
+    #region Listas y source
+    public async Task CargarListasSource()
     {
-        Source.Clear();
-        var data = await _objetosServicio.ObtenerObjetos();
-        if (data.Any())
+        try
         {
-            foreach (var item in data)
+            LstListas.Clear();
+
+            //Cargo Listas
+            var listas = await _listasServicio.ObtenerListas();
+            if (listas.Any())
             {
-                Source.Add(GenerarDTO(item));
+                foreach (var item in listas)
+                {
+                    LstListas.Add(item);
+                }
+            }
+
+            //Siglas
+            var lstSiglas = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1000 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstSiglas)
+            {
+                LstSiglas.Add(new SiglasDTO() { OBJ_SIGLAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstSiglasActivos.Add(new SiglasDTO() { OBJ_SIGLAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //Modelos
+            var lstModelos = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1100 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstModelos)
+            {
+                LstModelos.Add(new ModelosDTO() { OBJ_MODELO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstModelosActivos.Add(new ModelosDTO() { OBJ_MODELO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //Variantes
+            var lstVariantes = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1200 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstVariantes)
+            {
+                LstVariantes.Add(new VariantesDTO() { OBJ_VARIANTE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstVariantesActivos.Add(new VariantesDTO() { OBJ_VARIANTE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //Tipos
+            var lstTipos = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1300 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstTipos)
+            {
+                LstTipos.Add(new TiposDTO() { OBJ_TIPO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstTiposActivos.Add(new TiposDTO() { OBJ_TIPO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //Propietarios
+            var lstPropietarios = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1400 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstPropietarios)
+            {
+                LstPropietarios.Add(new PropietariosDTO() { OBJ_PROPIETARIO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstPropietariosActivos.Add(new PropietariosDTO() { OBJ_PROPIETARIO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //TARA
+            var lstTara = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1500 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstTara)
+            {
+                LstTara.Add(new TaraDTO() { OBJ_TARA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstTaraActivos.Add(new TaraDTO() { OBJ_TARA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //PMP
+            var lstPmp = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1600 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstPmp)
+            {
+                LstPmp.Add(new PmpDTO() { OBJ_PMP = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+
+                    LstPmpActivos.Add(new PmpDTO() { OBJ_PMP = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                {
+                }
+            }
+
+            //Altura Exterior
+            var lstAlturasExterior = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1700 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstAlturasExterior)
+            {
+                LstAlturasExterior.Add(new AlturasExteriorDTO() { OBJ_ALTURA_EXTERIOR = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstAlturasExteriorActivos.Add(new AlturasExteriorDTO() { OBJ_ALTURA_EXTERIOR = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //Cuello Cisne
+            var lstCuellosCisne = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1800 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstCuellosCisne)
+            {
+                LstCuellosCisne.Add(new CuellosCisneDTO() { OBJ_CUELLO_CISNE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstCuellosCisneActivos.Add(new CuellosCisneDTO() { OBJ_CUELLO_CISNE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+
+            }
+
+            //Barras
+            var lstBarras = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 1900 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstBarras)
+            {
+                LstBarras.Add(new BarrasDTO() { OBJ_BARRAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstBarrasActivos.Add(new BarrasDTO() { OBJ_BARRAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //Cables
+            var lstCables = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 2000 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstCables)
+            {
+                LstCables.Add(new CablesDTO() { OBJ_CABLES = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstCablesActivos.Add(new CablesDTO() { OBJ_CABLES = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //Lineas vida
+            var lstLineasVida = LstListas
+                .Where(x => (x.LISTAS_ID_LISTA == 2100 || x.LISTAS_ID_REG == 1))
+                .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
+                .ToList();
+            foreach (var item in lstLineasVida)
+            {
+                LstLineasVida.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                if (item.LISTAS_ID_ESTADO_REG == "A")
+                {
+                    LstLineasVidaActivos.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                }
+            }
+
+            //Source
+            Source.Clear();
+            var data = await _objetosServicio.ObtenerObjetos();
+            if (data.Any())
+            {
+                foreach (var item in data)
+                {
+                    Source.Add(GenerarDTO(item));
+                }
             }
         }
+        catch (Exception)
+        {
+            throw;
+        }        
     }
-
-    public void OnNavigatedFrom()
-    {
-    }
+    #endregion
 
     #region CRUD
     public async Task CrearObjeto(ObjetosListaDTO objetoDTO)

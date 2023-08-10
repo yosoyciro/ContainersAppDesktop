@@ -3,7 +3,9 @@ using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Core.Persistencia;
+using ContainersDesktop.ViewModels;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
@@ -11,11 +13,13 @@ public class MovimientosServicio : IMovimientosServicio
 {
     private readonly string _dbFile;
     private readonly string _dbFullPath;
+    private readonly ILogger<LoginViewModel> _logger;
 
-    public MovimientosServicio(IOptions<Settings> settings)
+    public MovimientosServicio(IOptions<Settings> settings, ILogger<LoginViewModel> logger)
     {
         _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
         _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
+        _logger = logger;
     }
 
     #region ObtenerMovimientosObjeto
@@ -25,23 +29,25 @@ public class MovimientosServicio : IMovimientosServicio
 
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            db.Open();
-
-            SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT MOVIM_ID_REG, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, MOVIM_PESO_LISTA, MOVIM_PESO, " +
-                "MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, MOVIM_CAMION_ID, " +
-                "MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, " +
-                "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_ID_DISPOSITIVO, MOVIM_TAREA_PROGRAMADA_ID_REG, MOVIM_DISPOSITIVO_LATITUD, MOVIM_DISPOSITIVO_LONGITUD " +
-                "FROM MOVIM WHERE MOVIM_ID_OBJETO = @MOVIM_ID_OBJETO", db);
-
-            selectCommand.Parameters.AddWithValue("@MOVIM_ID_OBJETO", idObjeto);
-
-            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
-
-            while (query.Read())
+            try
             {
-                //if (query.GetString(1) == "A")
-                //{
+                await db.OpenAsync();
+
+                SqliteCommand selectCommand = new SqliteCommand
+                    ("SELECT MOVIM_ID_REG, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, MOVIM_PESO_LISTA, MOVIM_PESO, " +
+                    "MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, MOVIM_CAMION_ID, " +
+                    "MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, " +
+                    "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_ID_DISPOSITIVO, MOVIM_TAREA_PROGRAMADA_ID_REG, MOVIM_DISPOSITIVO_LATITUD, MOVIM_DISPOSITIVO_LONGITUD " +
+                    "FROM MOVIM WHERE MOVIM_ID_OBJETO = @MOVIM_ID_OBJETO", db);
+
+                selectCommand.Parameters.AddWithValue("@MOVIM_ID_OBJETO", idObjeto);
+
+                SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+
+                while (query.Read())
+                {
+                    //if (query.GetString(1) == "A")
+                    //{
                     var movimObjeto = new Movim()
                     {
                         MOVIM_ID_REG = query.GetInt32(0),
@@ -74,7 +80,17 @@ public class MovimientosServicio : IMovimientosServicio
                         MOVIM_DISPOSITIVO_LONGITUD = query.GetDouble(27),
                     };
                     movimLista.Add(movimObjeto);
-                //}
+                    //}
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
             }
         }
 
@@ -89,21 +105,23 @@ public class MovimientosServicio : IMovimientosServicio
 
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            db.Open();
-
-            SqliteCommand selectCommand = new SqliteCommand
-                ("SELECT MOVIM_ID_REG, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, MOVIM_PESO_LISTA, MOVIM_PESO, " +
-                "MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, MOVIM_CAMION_ID, " +
-                "MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, " +
-                "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_ID_DISPOSITIVO, MOVIM_TAREA_PROGRAMADA_ID_REG, MOVIM_DISPOSITIVO_LATITUD, MOVIM_DISPOSITIVO_LONGITUD " +
-                "FROM MOVIM", db);
-
-            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
-
-            while (query.Read())
+            try
             {
-                //if (query.GetString(1) == "A")
-                //{
+                db.Open();
+
+                SqliteCommand selectCommand = new SqliteCommand
+                    ("SELECT MOVIM_ID_REG, MOVIM_ID_ESTADO_REG, MOVIM_FECHA, MOVIM_ID_OBJETO, MOVIM_TIPO_MOVIM_LISTA, MOVIM_TIPO_MOVIM, MOVIM_PESO_LISTA, MOVIM_PESO, " +
+                    "MOVIM_TRANSPORTISTA_LISTA, MOVIM_TRANSPORTISTA, MOVIM_CLIENTE_LISTA, MOVIM_CLIENTE, MOVIM_CHOFER_LISTA, MOVIM_CHOFER, MOVIM_CAMION_ID, " +
+                    "MOVIM_REMOLQUE_ID, MOVIM_ALBARAN_ID, MOVIM_OBSERVACIONES, MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA, " +
+                    "MOVIM_ALMACEN, MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION, MOVIM_ID_DISPOSITIVO, MOVIM_TAREA_PROGRAMADA_ID_REG, MOVIM_DISPOSITIVO_LATITUD, MOVIM_DISPOSITIVO_LONGITUD " +
+                    "FROM MOVIM", db);
+
+                SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+
+                while (query.Read())
+                {
+                    //if (query.GetString(1) == "A")
+                    //{
                     var movimObjeto = new Movim()
                     {
                         MOVIM_ID_REG = query.GetInt32(0),
@@ -136,11 +154,21 @@ public class MovimientosServicio : IMovimientosServicio
                         MOVIM_DISPOSITIVO_LONGITUD = query.GetDouble(27),
                     };
                     movimLista.Add(movimObjeto);
-                //}
+                    //}
+                }
+
+                return movimLista;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
             }
         }
-
-        return movimLista;
     }
     #endregion
 
@@ -204,7 +232,8 @@ public class MovimientosServicio : IMovimientosServicio
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError("Error", ex.Message);
+                throw;
             }
             finally 
             {                 
@@ -279,11 +308,11 @@ public class MovimientosServicio : IMovimientosServicio
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError("Error", ex.Message);
+                throw ;
             }
             finally 
             {
-
                 await db.CloseAsync();                
             }
         }
@@ -359,10 +388,11 @@ public class MovimientosServicio : IMovimientosServicio
     #region CrearMovimiento
     public async Task<int> CrearMovimiento(Movim movim)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
+
                 db.Open();
 
                 SqliteCommand insertCommand = new SqliteCommand();
@@ -408,10 +438,16 @@ public class MovimientosServicio : IMovimientosServicio
                 var identity = await OperacionesComunes.GetIdentity(db);
                 return identity;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
     #endregion
@@ -419,11 +455,11 @@ public class MovimientosServicio : IMovimientosServicio
     #region ActualizarMovimiento
     public async Task<bool> ActualizarMovimiento(Movim movim)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
-                db.Open();
+                await db.OpenAsync();
 
                 SqliteCommand updateCommand = new SqliteCommand();
                 updateCommand.Connection = db;
@@ -467,10 +503,16 @@ public class MovimientosServicio : IMovimientosServicio
 
                 return true;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
     #endregion
@@ -478,9 +520,9 @@ public class MovimientosServicio : IMovimientosServicio
     #region BajaMovimiento
     public async Task<bool> BorrarMovimiento(int id)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
                 db.Open();
 
@@ -499,10 +541,16 @@ public class MovimientosServicio : IMovimientosServicio
 
                 return true;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+
+            catch (Exception ex)
+            {
+                _logger.LogError("Error", ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
     #endregion

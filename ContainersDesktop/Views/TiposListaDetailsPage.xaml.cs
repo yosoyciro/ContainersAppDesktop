@@ -17,8 +17,30 @@ public sealed partial class TiposListaDetailsPage : Page
     {
         ViewModel = App.GetService<TiposListaDetailsViewModel>();
         this.InitializeComponent();
+        Loaded += TiposListaDetailsPage_Loaded;
     }
-           
+
+    private async void TiposListaDetailsPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ViewModel.CargarSource();
+        }
+        catch (Exception ex)
+        {
+            ContentDialog errorDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Error {ex.Message}",
+                CloseButtonText = "Ok"
+            };
+
+            await errorDialog.ShowAsync();
+        }
+    }
+
     public ICommand DetalleCommand => new RelayCommand(VerDetalle);
     public ICommand ExportarCommand => new AsyncRelayCommand(ExportarListas);
 

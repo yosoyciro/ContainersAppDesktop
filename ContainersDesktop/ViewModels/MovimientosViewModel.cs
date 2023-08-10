@@ -20,6 +20,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IObjetosServicio _objetosServicio;
     private string _cachedSortedColumn = string.Empty;
+    private ObjetosListaDTO _objetosListaDTO;
 
     private MovimDTO current;
     public MovimDTO Current
@@ -72,12 +73,10 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     {
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
-        await CargarListas();
-        await CargarSource(parameter as ObjetosListaDTO);        
+        _objetosListaDTO  = parameter as ObjetosListaDTO;       
     }
-
 
     #region CRUD
     public async Task BorrarMovimiento()
@@ -104,41 +103,17 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
             movimDTO.MOVIM_FECHA = FormatoFecha.ConvertirAFechaCorta(movimDTO.MOVIM_FECHA);
             Items[i] = movimDTO;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
 
-            throw ex;
+            throw;
         }
         
     }
     #endregion
 
     #region Listas y Source
-    private async Task CargarSource(ObjetosListaDTO objeto)
-    {
-        //Movimientos
-        if (objeto is not null)        
-        {
-            Objeto = new ObjetosDTO()
-            {
-                MOVIM_ID_OBJETO = objeto.OBJ_ID_REG,
-                DESCRIPCION = objeto.OBJ_MATRICULA,
-            };
-        }        
-
-        Items.Clear();
-        var data = Objeto != null ? await _movimientosServicio.ObtenerMovimientosObjeto(objeto.OBJ_ID_REG) : await _movimientosServicio.ObtenerMovimientosTodos();
-        if (data.Any())
-        {
-            foreach (var item in data)
-            {
-                var dto = GenerarDTO(item);
-                Items.Add(dto);
-            }
-        }
-    }
-
-    private async Task CargarListas()
+    public async Task CargarListasSource()
     {
         //Cargo Listas
         LstListas.Clear();
@@ -147,7 +122,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
         {
             foreach (var item in listas)
             {
-                LstListas.Add(item);                
+                LstListas.Add(item);
             }
         }
 
@@ -249,6 +224,27 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
                 LstAlmacenesActivos.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+            }
+        }
+
+        //Movimientos
+        if (_objetosListaDTO is not null)
+        {
+            Objeto = new ObjetosDTO()
+            {
+                MOVIM_ID_OBJETO = _objetosListaDTO.OBJ_ID_REG,
+                DESCRIPCION = _objetosListaDTO.OBJ_MATRICULA,
+            };
+        }
+
+        Items.Clear();
+        var data = Objeto != null ? await _movimientosServicio.ObtenerMovimientosObjeto(Objeto.MOVIM_ID_OBJETO) : await _movimientosServicio.ObtenerMovimientosTodos();
+        if (data.Any())
+        {
+            foreach (var item in data)
+            {
+                var dto = GenerarDTO(item);
+                Items.Add(dto);
             }
         }
     }

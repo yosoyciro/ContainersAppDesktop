@@ -35,6 +35,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     }
     public bool HasCurrent => current is not null;
 
+    private ObjetosListaDTO _objetosListaDTO;
     [ObservableProperty]
     public ObjetosDTO objeto = null;
 
@@ -61,38 +62,13 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     {
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
-        await CargarListas();
-        await CargarSource(parameter as ObjetosListaDTO);
+        _objetosListaDTO = parameter as ObjetosListaDTO;
     }
 
     #region Listas y Source
-    private async Task CargarSource(ObjetosListaDTO objeto)
-    {
-        //Objeto
-        if (objeto is not null)
-        {
-            Objeto = new ObjetosDTO()
-            {
-                MOVIM_ID_OBJETO = objeto.OBJ_ID_REG,
-                DESCRIPCION = objeto.OBJ_MATRICULA,
-            };
-        }
-
-        _items.Clear();
-        var data = Objeto != null ? await _tareasProgramadasServicio.ObtenerPorObjeto(objeto.OBJ_ID_REG) : await _tareasProgramadasServicio.ObtenerTodos();
-        if (data.Any())
-        {
-            foreach (var item in data)
-            {
-                var dto = MapSourceToDTO(item);
-                _items.Add(dto);
-            }
-        }
-    }
-
-    private async Task CargarListas()
+    public async Task CargarListasSource()
     {
         //Cargo Listas
         LstListas.Clear();
@@ -146,7 +122,28 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
                 //LstUbicacionesOrigen.Add(new UbicacionOrigenDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 //LstUbicacionesDestino.Add(new UbicacionDestinoDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
-        }        
+        }
+
+        //Objeto
+        if (_objetosListaDTO is not null)
+        {
+            Objeto = new ObjetosDTO()
+            {
+                MOVIM_ID_OBJETO = _objetosListaDTO.OBJ_ID_REG,
+                DESCRIPCION = _objetosListaDTO.OBJ_MATRICULA,
+            };
+        }
+
+        _items.Clear();
+        var data = Objeto != null ? await _tareasProgramadasServicio.ObtenerPorObjeto(Objeto.MOVIM_ID_OBJETO) : await _tareasProgramadasServicio.ObtenerTodos();
+        if (data.Any())
+        {
+            foreach (var item in data)
+            {
+                var dto = MapSourceToDTO(item);
+                _items.Add(dto);
+            }
+        }
     }
 
     #endregion
@@ -209,6 +206,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         return new TareaProgramadaDTO()
         {
             TAREAS_PROGRAMADAS_ID_REG = item.TAREAS_PROGRAMADAS_ID_REG,
+            TAREAS_PROGRAMADAS_ID_ESTADO_REG = item.TAREAS_PROGRAMADAS_ID_ESTADO_REG,
             TAREAS_PROGRAMADAS_OBJETO_ID_REG = item.TAREAS_PROGRAMADAS_OBJETO_ID_REG,
             TAREAS_PROGRAMADAS_OBJETO_MATRICULA = objeto.DESCRIPCION,
             TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = item.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA,
@@ -230,6 +228,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         return new TareaProgramada()
         {
             TAREAS_PROGRAMADAS_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ID_REG,
+            TAREAS_PROGRAMADAS_ID_ESTADO_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ID_ESTADO_REG,
             TAREAS_PROGRAMADAS_OBJETO_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_OBJETO_ID_REG,
             TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA,
             TAREAS_PROGRAMADAS_FECHA_COMPLETADA = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_COMPLETADA,

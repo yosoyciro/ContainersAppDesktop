@@ -12,7 +12,7 @@ using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Services;
 
 namespace ContainersDesktop.ViewModels;
-public partial class DispositivosViewModel : ObservableRecipient, INavigationAware
+public partial class DispositivosViewModel : ObservableRecipient
 {
     private readonly DispositivosFormViewModel _formViewModel = new();
     public DispositivosFormViewModel FormViewModel => _formViewModel;
@@ -53,17 +53,8 @@ public partial class DispositivosViewModel : ObservableRecipient, INavigationAwa
         _tareasProgramadasServicio = tareasProgramadasServicio;
     }
 
-    public void OnNavigatedFrom()
-    {
-        
-    }
-    public async void OnNavigatedTo(object parameter)
-    {
-        await CargarSource();
-    }
-
     #region CRUD
-    private async Task CargarSource()
+    public async Task CargarSource()
     {
         Source.Clear();
         var data = await _dispositivosServicio.ObtenerDispositivos();

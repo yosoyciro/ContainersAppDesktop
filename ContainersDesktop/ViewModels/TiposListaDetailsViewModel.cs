@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Models;
 
 namespace ContainersDesktop.ViewModels;
-public partial class TiposListaDetailsViewModel : ObservableRecipient, INavigationAware
+public partial class TiposListaDetailsViewModel : ObservableRecipient
 {
     private readonly IClaListServicio _claListServicio;
     [ObservableProperty]
@@ -32,15 +28,10 @@ public partial class TiposListaDetailsViewModel : ObservableRecipient, INavigati
         _claListServicio = claListServicio;
     }
 
-    public void OnNavigatedFrom()
-    {        
-    }
-
-    public async void OnNavigatedTo(object parameter)
+    public async Task CargarSource()
     {
         Items.Clear();
 
-        // TODO: Replace with real data.
         var data = await _claListServicio.ObtenerClaListas();
 
         foreach (var item in data.OrderBy(x => x.CLALIST_DESCRIP).Where(x => x.CLALIST_ID_ESTADO_REG == "A" && !string.IsNullOrEmpty(x.CLALIST_DESCRIP)))

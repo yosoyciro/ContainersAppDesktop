@@ -1,12 +1,12 @@
-using Microsoft.UI.Xaml.Controls;
-using ContainersDesktop.ViewModels;
-using ContainersDesktop.Core.Models;
-using CommunityToolkit.WinUI.UI.Controls;
-using Microsoft.UI.Xaml;
 using CommunityToolkit.Mvvm.Input;
+using ContainersDesktop.ViewModels;
 using System.Windows.Input;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml;
+using ContainersDesktop.DTO;
 using ContainersDesktop.Core.Helpers;
-using System.Data;
+using CommunityToolkit.WinUI.UI.Controls;
+using ContainersDesktop.Core.Models;
 
 namespace ContainersDesktop.Views;
 
@@ -24,8 +24,9 @@ public sealed partial class ListaPorTipoPage : Page
         this.Loaded += ListaPorTipoPage_Loaded;
     }
 
-    private void ListaPorTipoPage_Loaded(object sender, RoutedEventArgs e)
+    private async void ListaPorTipoPage_Loaded(object sender, RoutedEventArgs e)
     {
+        await ViewModel.CargarSource();
         grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(null, false);
     }
     

@@ -15,9 +15,6 @@ using System;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace ContainersDesktop.Views;
-/// <summary>
-/// An empty window that can be used on its own or navigated to within a Frame.
-/// </summary>
 public sealed partial class MovimientosPage : Page
 {
     public MovimientosViewModel ViewModel
@@ -31,9 +28,27 @@ public sealed partial class MovimientosPage : Page
         Loaded += MovimientosContainerPage_Loaded;
     }
 
-    private void MovimientosContainerPage_Loaded(object sender, RoutedEventArgs e)
+    private async void MovimientosContainerPage_Loaded(object sender, RoutedEventArgs e)
     {
-        MovimientosGrid.ItemsSource = ViewModel.ApplyFilter(null, false);
+        try
+        {
+            await ViewModel.CargarListasSource();
+            MovimientosGrid.ItemsSource = ViewModel.ApplyFilter(null, false);
+        }
+        catch (Exception ex)
+        {
+            ContentDialog errorDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Error {ex.Message}",
+                CloseButtonText = "Ok"
+            };
+
+            await errorDialog.ShowAsync();
+        }
+        
     }
 
     #region Commands y dialogs

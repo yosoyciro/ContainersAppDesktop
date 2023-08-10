@@ -3,7 +3,9 @@ using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Models.Storage;
 using ContainersDesktop.Core.Persistencia;
+using ContainersDesktop.ViewModels;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
@@ -11,20 +13,22 @@ public class DispositivosServicio : IDispositivosServicio
 {
     private readonly string _dbFile;
     private readonly string _dbFullPath;
+    private readonly ILogger<LoginViewModel> _logger;
 
-    public DispositivosServicio(IOptions<Settings> settings)
+    public DispositivosServicio(IOptions<Settings> settings, ILogger<LoginViewModel> logger)
     {
         _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
         _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
+        _logger = logger;
     }
 
     public async Task<bool> ActualizarDispositivo(Dispositivos dispositivo)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
-                db.Open();
+                await db.OpenAsync();
 
                 SqliteCommand updateCommand = new SqliteCommand();
                 updateCommand.Connection = db;
@@ -40,24 +44,30 @@ public class DispositivosServicio : IDispositivosServicio
                 updateCommand.Parameters.AddWithValue("@DISPOSITIVOS_ID_REG", dispositivo.DISPOSITIVOS_ID_REG);
 
 
-                await updateCommand.ExecuteReaderAsync();                
+                await updateCommand.ExecuteReaderAsync();
 
                 return true;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
 
     public async Task<bool> BorrarRecuperarDispositivo(int id, string accion)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
-                db.Open();
+                await db.OpenAsync();
 
                 SqliteCommand deleteCommand = new SqliteCommand
                     ("UPDATE DISPOSITIVOS SET DISPOSITIVOS_ID_ESTADO_REG=@DISPOSITIVOS_ID_ESTADO_REG, DISPOSITIVOS_FECHA_ACTUALIZACION = @DISPOSITIVOS_FECHA_ACTUALIZACION " +
@@ -69,23 +79,28 @@ public class DispositivosServicio : IDispositivosServicio
 
                 SqliteDataReader query = await deleteCommand.ExecuteReaderAsync();
 
+                return true;
             }
 
-            return true;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
 
     public async Task<int> CrearDispositivo(Dispositivos dispositivo)
     {
-        try
+        using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
+            try
             {
-                db.Open();
+                await db.OpenAsync();
 
                 SqliteCommand insertCommand = new SqliteCommand();
                 insertCommand.Connection = db;
@@ -104,10 +119,16 @@ public class DispositivosServicio : IDispositivosServicio
 
                 return identity;
             }
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+            }
         }
     }
 
@@ -115,20 +136,23 @@ public class DispositivosServicio : IDispositivosServicio
     {
         List<Dispositivos> dispositivosList = new();
 
+
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
-            await db.OpenAsync();
-
             SqliteCommand selectCommand = new SqliteCommand
                 ("SELECT DISPOSITIVOS_ID_REG, DISPOSITIVOS_ID_ESTADO_REG, DISPOSITIVOS_DESCRIP, DISPOSITIVOS_CONTAINER, DISPOSITIVOS_FECHA_ACTUALIZACION " +
                 "FROM DISPOSITIVOS", db);
 
-            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
-
-            while (query.Read())
+            try
             {
-                //if (query.GetString(1) == "A")
-                //{
+                await db.OpenAsync();
+
+                SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+
+                while (query.Read())
+                {
+                    //if (query.GetString(1) == "A")
+                    //{
                     var dispositivoObjeto = new Dispositivos()
                     {
                         DISPOSITIVOS_ID_REG = query.GetInt32(0),
@@ -138,21 +162,28 @@ public class DispositivosServicio : IDispositivosServicio
                         DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(4)),
                     };
                     dispositivosList.Add(dispositivoObjeto);
-                //}
+                    //}
+                }
+
+                return dispositivosList;
             }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error en ObtenerDispositivos", ex);
+                throw;
+            }
+            finally
+            {
+                await db.CloseAsync();
+                await selectCommand.DisposeAsync();
+                //query.Close();
+                //await query.DisposeAsync();
+                await db.DisposeAsync();
+                SqliteConnection.ClearAllPools();
 
-            selectCommand.Dispose();
-            query.Close();
-            await query.DisposeAsync();
-            db.Close();
-            db.Dispose();
-            SqliteConnection.ClearAllPools();
-
-            GC.Collect();
+                GC.Collect();
+            }
         }
-
-        
-        return dispositivosList;
     }
 
     public async Task<bool> ExisteContainer(string cloudContainer)

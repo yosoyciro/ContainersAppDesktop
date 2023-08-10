@@ -2,7 +2,9 @@
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Models.Storage;
+using ContainersDesktop.ViewModels;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Core.Services;
@@ -10,11 +12,13 @@ public class SincronizacionServicio : ISincronizacionServicio
 {
     private readonly string _dbFile;
     private readonly string _dbFullPath;
+    private readonly ILogger<LoginViewModel> _logger;
 
-    public SincronizacionServicio(IOptions<Settings> settings)
+    public SincronizacionServicio(IOptions<Settings> settings, ILogger<LoginViewModel> logger)
     {
         _dbFile = Path.Combine(settings.Value.DBFolder, settings.Value.DBName);
         _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFile}";
+        _logger = logger;
     }
 
     public async Task<bool> CrearSincronizacion(Sincronizaciones sincronizacion)
@@ -41,7 +45,8 @@ public class SincronizacionServicio : ISincronizacionServicio
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError("Error", ex.Message);
+                throw;
             }
             finally
             {

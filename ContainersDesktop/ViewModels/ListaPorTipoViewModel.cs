@@ -44,14 +44,13 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
 
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
         Console.WriteLine("parameter", parameter);
         claLista = parameter as ClaList;
-        await CargarSource();
     }
 
-    private async Task CargarSource()
+    public async Task CargarSource()
     {
         Source.Clear();
 
