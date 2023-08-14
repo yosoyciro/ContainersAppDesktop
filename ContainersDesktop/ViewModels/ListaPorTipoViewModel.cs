@@ -7,6 +7,7 @@ using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Core.Services;
 using ContainersDesktop.DTO;
 
 namespace ContainersDesktop.ViewModels;
@@ -26,9 +27,13 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
         {
             SetProperty(ref current, value);
             OnPropertyChanged(nameof(HasCurrent));
+            OnPropertyChanged(nameof(EstadoActivo));
+            OnPropertyChanged(nameof(EstadoBaja));
         }
     }
     public bool HasCurrent => current is not null;
+    public bool EstadoActivo => current?.LISTAS_ID_ESTADO_REG == "A" ? true : false;
+    public bool EstadoBaja => current?.LISTAS_ID_ESTADO_REG == "B" ? true : false;
 
     public ClaList claLista = new();
     private readonly IListasServicio _listasServicio;
@@ -64,10 +69,17 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
         }
     }
 
-    public async Task BorrarLista()
+    public async Task BorrarRecuperarLista()
     {
-        await _listasServicio.BorrarLista(SelectedLista.LISTAS_ID_REG);
-        Source.Remove(SelectedLista);
+        var accion = EstadoActivo ? "B" : "A";
+        SelectedLista.LISTAS_ID_ESTADO_REG = accion;
+        SelectedLista.LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
+        await _listasServicio.BorrarRecuperarLista(SelectedLista);
+
+        //Actualizo Source
+        var i = Source.IndexOf(SelectedLista);        
+        Source[i] = SelectedLista;
+        Source[i].LISTAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(SelectedLista.LISTAS_FECHA_ACTUALIZACION);
     }
 
     public async Task AgregarLista(Listas lista)

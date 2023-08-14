@@ -286,8 +286,9 @@ public partial class ContainersGridViewModel : ObservableValidator
     public async Task CrearObjeto(ObjetosListaDTO objetoDTO)
     {
         var objeto = GenerarObjeto(objetoDTO);
-        objeto.OBJ_ID_REG = await _objetosServicio.CrearObjeto(objeto);
-        objeto.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objeto.OBJ_INSPEC_CSC);
+        objetoDTO.OBJ_ID_REG = await _objetosServicio.CrearObjeto(objeto);
+        objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objeto.OBJ_INSPEC_CSC);
+        objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
         Source.Add(objetoDTO);
     }
 
@@ -296,6 +297,7 @@ public partial class ContainersGridViewModel : ObservableValidator
         await _objetosServicio.ActualizarObjeto(GenerarObjeto(objetoDTO));        
         var i = Source.IndexOf(objetoDTO);
         objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objetoDTO.OBJ_INSPEC_CSC);
+        objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
         Source[i] = objetoDTO;        
     }
 

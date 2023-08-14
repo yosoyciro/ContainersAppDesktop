@@ -6,5 +6,5 @@ public interface IListasServicio
     Task<List<Listas>> ObtenerListas();
     Task<int> CrearLista(Listas lista);
     Task<bool> ActualizarLista(Listas lista);
-    Task<bool> BorrarLista(int id);
+    Task<bool> BorrarRecuperarLista(Listas lista);
 }

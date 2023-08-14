@@ -213,7 +213,7 @@ public class ObjetosServicio : IObjetosServicio
                         OBJ_VARIANTE = query.GetInt32(9),
                         OBJ_TIPO_LISTA = query.GetInt32(10),
                         OBJ_TIPO = query.GetInt32(11),
-                        OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaHora(query.GetString(12)),
+                        OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(query.GetString(12)),
                         OBJ_PROPIETARIO_LISTA = query.GetInt32(13),
                         OBJ_PROPIETARIO = query.GetInt32(14),
                         OBJ_TARA_LISTA = query.GetInt32(15),
@@ -232,7 +232,7 @@ public class ObjetosServicio : IObjetosServicio
                         OBJ_LINEA_VIDA_LISTA = query.GetInt32(28),
                         OBJ_LINEA_VIDA = query.GetInt32(29),
                         OBJ_OBSERVACIONES = query.GetString(30),
-                        OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaCorta(query.GetString(31)),
+                        OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(query.GetString(31)),
                         OBJ_COLOR = query.GetString(32),
                     };
                     objetos.Add(nuevoObjeto);

@@ -83,7 +83,6 @@
                     <controls:DataGridTextColumn Header="Matrícula" Tag="Matricula" Binding="{Binding OBJ_MATRICULA}"/>
                     <controls:DataGridTextColumn Header="Siglas" Tag="Siglas" Binding="{Binding OBJ_SIGLAS_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Modelo" Tag="Modelo" Binding="{Binding OBJ_MODELO_DESCRIPCION}" />
-                    <controls:DataGridTextColumn Header="ID Objeto" Tag="IdObjeto" Binding="{Binding OBJ_ID_OBJETO}"/>
                     <controls:DataGridTextColumn Header="Variante" Tag="Variante" Binding="{Binding OBJ_VARIANTE_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Tipo" Tag="Tipo" Binding="{Binding OBJ_TIPO_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Inspec CSC" Tag="InspecCSC" Binding="{Binding OBJ_INSPEC_CSC}" />

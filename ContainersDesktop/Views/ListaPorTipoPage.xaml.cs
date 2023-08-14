@@ -34,7 +34,7 @@ public sealed partial class ListaPorTipoPage : Page
     public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistro);
     public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
     public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
-    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);    
+    public ICommand BorrarRecuperarCommand => new AsyncRelayCommand(BorrarRecuperarCommand_Execute);    
     public ICommand VolverCommand => new RelayCommand(Volver);
     public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
 
@@ -44,12 +44,12 @@ public sealed partial class ListaPorTipoPage : Page
 
         AgregarDialog.Title = "Agregar entrada a la lista";
         AgregarDialog.PrimaryButtonText = "Confirmar";
-        //AgregarDialog.IsPrimaryButtonEnabled = ViewModel.FormViewModel.IsValid;
         AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
         
         AgregarDialog.DataContext = new Listas() 
         { 
-            LISTAS_ID_ESTADO_REG = "A",                        
+            LISTAS_ID_ESTADO_REG = "A",    
+            LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
         };
 
         ViewModel.FormViewModel.Orden = ViewModel.Source.OrderByDescending(x => x.LISTAS_ID_LISTA_ORDEN).FirstOrDefault().LISTAS_ID_LISTA_ORDEN + 1;
@@ -64,7 +64,6 @@ public sealed partial class ListaPorTipoPage : Page
         AgregarDialog.Title = "Modificar entrada de la lista";
         AgregarDialog.PrimaryButtonText = "Confirmar";
         AgregarDialog.PrimaryButtonCommand = ModificarRegistroCommand;
-        //AgregarDialog.IsPrimaryButtonEnabled = ViewModel.FormViewModel.IsValid;
         AgregarDialog.DataContext = ViewModel.SelectedLista;
 
         ViewModel.FormViewModel.Orden = ViewModel.SelectedLista.LISTAS_ID_LISTA_ORDEN;
@@ -97,14 +96,14 @@ public sealed partial class ListaPorTipoPage : Page
         }
     }
 
-    private async Task BorrarRegistro()
+    private async Task BorrarRecuperarCommand_Execute()
     {
         ContentDialog bajaRegistroDialog = new ContentDialog
         {
             XamlRoot = this.XamlRoot,
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
             Title = "Atención!",
-            Content = "Está seguro que desea dar de baja el registro?",
+            Content = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?",
             PrimaryButtonText = "Sí",
             CloseButtonText = "No"
         };
@@ -114,8 +113,9 @@ public sealed partial class ListaPorTipoPage : Page
         if (result == ContentDialogResult.Primary)
         {
             try
-            {
-                await ViewModel.BorrarLista();
+            {                
+                await ViewModel.BorrarRecuperarLista();
+
                 grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
                 LimpiarIndicadorOden();
             }
@@ -152,6 +152,7 @@ public sealed partial class ListaPorTipoPage : Page
         var lista = AgregarDialog.DataContext as Listas;
         lista.LISTAS_ID_LISTA_ORDEN = ViewModel.FormViewModel.Orden;
         lista.LISTAS_ID_LISTA_DESCRIP = ViewModel.FormViewModel.Descripcion;
+        lista.LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
         await ViewModel.ActualizarLista(lista);
 
         grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);

@@ -277,31 +277,31 @@ public sealed partial class ContainersGridPage : Page
 
         //asigno los valores al objeto que voy a grabar
         nuevoObjeto.OBJ_MATRICULA = ViewModel.ObjetosViewModel.Matricula;
-        //nuevoObjeto.OBJ_ID_OBJETO = Convert.ToInt32(ViewModel.ObjetosViewModel.IdObjeto);
+        nuevoObjeto.OBJ_ID_OBJETO = 0; // Convert.ToInt32(ViewModel.ObjetosViewModel.IdObjeto);
         nuevoObjeto.OBJ_SIGLAS = siglas.OBJ_SIGLAS;
-        //nuevoObjeto.OBJ_SIGLAS_LISTA = siglas.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_SIGLAS_DESCRIPCION = siglas.DESCRIPCION;
         nuevoObjeto.OBJ_MODELO = modelo.OBJ_MODELO;
-        //nuevoObjeto.OBJ_MODELO_LISTA = modelo.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_MODELO_DESCRIPCION = modelo.DESCRIPCION;
         nuevoObjeto.OBJ_VARIANTE = variante.OBJ_VARIANTE;
-        //nuevoObjeto.OBJ_VARIANTE_LISTA = variante.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_VARIANTE_DESCRIPCION = variante.DESCRIPCION;
         nuevoObjeto.OBJ_TIPO = tipo.OBJ_TIPO;
-        //nuevoObjeto.OBJ_TIPO_LISTA = tipo.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_TIPO_DESCRIPCION = tipo.DESCRIPCION;
         nuevoObjeto.OBJ_PROPIETARIO = propietario.OBJ_PROPIETARIO;
-        //nuevoObjeto.OBJ_PROPIETARIO_LISTA = propietario.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_PROPIETARIO_DESCRIPCION = propietario.DESCRIPCION;
         nuevoObjeto.OBJ_TARA = tara.OBJ_TARA;
-        //nuevoObjeto.OBJ_TARA_LISTA = tara.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_TARA_DESCRIPCION = tara.DESCRIPCION;
         nuevoObjeto.OBJ_PMP = pmp.OBJ_PMP;
-        //nuevoObjeto.OBJ_PMP_LISTA = pmp.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_PMP_DESCRIPCION = pmp.DESCRIPCION;
         nuevoObjeto.OBJ_ALTURA_EXTERIOR = alturaExterior.OBJ_ALTURA_EXTERIOR;
-        //nuevoObjeto.OBJ_ALTURA_EXTERIOR_LISTA = alturaExterior.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_ALTURA_EXTERIOR_DESCRIPCION = alturaExterior.DESCRIPCION;
         nuevoObjeto.OBJ_CUELLO_CISNE = cuelloCisne.OBJ_CUELLO_CISNE;
-        //nuevoObjeto.OBJ_CUELLO_CISNE_LISTA = cuelloCisne.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_CUELLO_CISNE_DESCRIPCION = cuelloCisne.DESCRIPCION;
         nuevoObjeto.OBJ_BARRAS = barras.OBJ_BARRAS;
-        //nuevoObjeto.OBJ_BARRAS_LISTA = barras.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_BARRAS_DESCRIPCION = barras.DESCRIPCION;
         nuevoObjeto.OBJ_CABLES = cables.OBJ_CABLES;
-        //nuevoObjeto.OBJ_CABLES_LISTA = cables.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_CABLES_DESCRIPCION = cables.DESCRIPCION;
         nuevoObjeto.OBJ_LINEA_VIDA = lineasVida.OBJ_LINEA_VIDA;
-        //nuevoObjeto.OBJ_LINEA_VIDA_LISTA = lineasVida.LISTAS_ID_LISTA;
+        nuevoObjeto.OBJ_LINEA_VIDA_DESCRIPCION = lineasVida.DESCRIPCION;
         nuevoObjeto.OBJ_INSPEC_CSC = FormatoFecha.FechaEstandar(TxtFechaCSC.Date.Value.Date);
         nuevoObjeto.OBJ_COLOR = ColorToHex(colorPicker.Color);
 

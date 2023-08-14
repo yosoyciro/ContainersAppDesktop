@@ -13,9 +13,16 @@ public static class FormatoFecha
 
     public static string FechaEstandar(DateTime fecha)
     {
-        TimeSpan hora = new TimeSpan(0, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-        DateTime fechaYHora = fecha.Add(hora);
-        return fechaYHora.ToString("yyyy-MM-ddTHH:mm:ss");
+        //if (fecha.TimeOfDay == TimeSpan.Zero)
+        //{
+        //    TimeSpan hora = new TimeSpan(0, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+        //    DateTime fechaYHora = fecha.Add(hora);
+        //    return fechaYHora.ToString("yyyy-MM-ddTHH:mm:ss");
+        //}
+        //else
+        //{
+        return fecha.ToString("yyyy-MM-ddTHH:mm:ss");
+        //}
     }
 
     public static string ConvertirAFechaHora(string fechaEstandar)

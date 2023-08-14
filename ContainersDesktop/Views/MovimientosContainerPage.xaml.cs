@@ -56,7 +56,7 @@ public sealed partial class MovimientosContainerPage : Page
 
     private async Task AbrirModificarDialog()
     {
-        Dialog.Title = "Modificar movimiento";
+        Dialog.Title = "Modificar tarea";
         Dialog.PrimaryButtonCommand = ModificarMovimientoCommand;
         Dialog.DataContext = ViewModel.Current;
 
@@ -76,7 +76,7 @@ public sealed partial class MovimientosContainerPage : Page
 
     private async Task AbrirAgregarDialog()
     {
-        Dialog.Title = "Agregar movimiento";
+        Dialog.Title = "Agregar tarea";
         Dialog.PrimaryButtonCommand = AgregarMovimientoCommand;
         Dialog.DataContext = new MovimDTO()
         {

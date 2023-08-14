@@ -40,7 +40,7 @@ public class ListasServicio : IListasServicio
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA", lista.LISTAS_ID_LISTA);
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_ORDEN", lista.LISTAS_ID_LISTA_ORDEN);
                 insertCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_DESCRIP", lista.LISTAS_ID_LISTA_DESCRIP);
-                insertCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
+                insertCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", lista.LISTAS_FECHA_ACTUALIZACION);
 
                 await insertCommand.ExecuteReaderAsync();
 
@@ -127,7 +127,7 @@ public class ListasServicio : IListasServicio
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA", lista.LISTAS_ID_LISTA);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_ORDEN", lista.LISTAS_ID_LISTA_ORDEN);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_LISTA_DESCRIP", lista.LISTAS_ID_LISTA_DESCRIP);
-                updateCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
+                updateCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", lista.LISTAS_FECHA_ACTUALIZACION);
                 updateCommand.Parameters.AddWithValue("@LISTAS_ID_REG", lista.LISTAS_ID_REG);
 
                 await updateCommand.ExecuteReaderAsync();
@@ -141,7 +141,7 @@ public class ListasServicio : IListasServicio
         }
     }
 
-    public async Task<bool> BorrarLista(int id)
+    public async Task<bool> BorrarRecuperarLista(Listas lista)
     {
         try
         {
@@ -150,10 +150,11 @@ public class ListasServicio : IListasServicio
                 db.Open();
 
                 SqliteCommand deleteCommand = new SqliteCommand
-                    ("UPDATE LISTAS SET LISTAS_ID_ESTADO_REG = 'B', LISTAS_FECHA_ACTUALIZACION = @CLALIST_FECHA_ACTUALIZACION WHERE LISTAS_ID_REG = @LISTAS_ID_REG", db);
+                    ("UPDATE LISTAS SET LISTAS_ID_ESTADO_REG=@LISTAS_ID_ESTADO_REG, LISTAS_FECHA_ACTUALIZACION = @LISTAS_FECHA_ACTUALIZACION WHERE LISTAS_ID_REG = @LISTAS_ID_REG", db);
 
-                deleteCommand.Parameters.AddWithValue("@LISTAS_ID_REG", id);
-                deleteCommand.Parameters.AddWithValue("@CLALIST_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
+                deleteCommand.Parameters.AddWithValue("@LISTAS_ID_REG", lista.LISTAS_ID_REG);
+                deleteCommand.Parameters.AddWithValue("@LISTAS_FECHA_ACTUALIZACION", lista.LISTAS_FECHA_ACTUALIZACION);
+                deleteCommand.Parameters.AddWithValue("@LISTAS_ID_ESTADO_REG", lista.LISTAS_ID_ESTADO_REG);
 
                 SqliteDataReader query = await deleteCommand.ExecuteReaderAsync();
 

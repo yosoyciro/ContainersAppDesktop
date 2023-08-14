@@ -64,11 +64,15 @@
                                 IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
                                 Icon="Edit"
                                 Label="Modificar" />
-                        <AppBarButton Command="{x:Bind BorrarCommand}"
+                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
                               CommandParameter="{x:Bind ViewModel.SelectedLista, Mode=OneWay}"
-                              IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                              IsEnabled="{x:Bind ViewModel.EstadoActivo, Mode=OneWay}" 
                               Icon="Delete"
                               Label="Borrar"/>
+                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                              IsEnabled="{x:Bind ViewModel.EstadoBaja, Mode=OneWay}" 
+                              Icon="Up"
+                              Label="Recuperar"/>
                         <AppBarButton Command="{x:Bind ExportarCommand, Mode=OneWay}"
                               Icon="Document"
                               Label="Exportar" />
@@ -98,8 +102,8 @@
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_REG}" Header="ID" Tag="Id" IsReadOnly="True" Visibility="Visible" />
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_LISTA_ORDEN}" Header="Orden" Tag="Orden" />
                     <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_LISTA_DESCRIP}" Header="Descripción" Tag="Descripcion" />
-                    <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_ESTADO_REG, Mode=TwoWay}" Header="Estado Reg" Tag="Estado" />
-                    <controls:DataGridTextColumn Binding="{Binding LISTAS_FECHA_ACTUALIZACION, Mode=TwoWay}" Header="Fecha Actualización" Tag="FechaActualizacion" />
+                    <controls:DataGridTextColumn Binding="{Binding LISTAS_ID_ESTADO_REG}" Header="Estado Reg" Tag="Estado" />
+                    <controls:DataGridTextColumn Binding="{Binding LISTAS_FECHA_ACTUALIZACION}" Header="Fecha Actualización" Tag="FechaActualizacion" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
             
