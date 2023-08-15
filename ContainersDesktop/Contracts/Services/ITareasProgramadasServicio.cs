@@ -8,5 +8,5 @@ public interface ITareasProgramadasServicio
     Task<bool> Sincronizar(string dbDescarga, int idDispositivo);
     Task<int> Agregar(TareaProgramada tareaProgramada);
     Task<bool> Modificar(TareaProgramada tareaProgramada);
-    Task<bool> Borrar(int id);
+    Task<bool> BorrarRecuperarRegistro(TareaProgramada tareaProgramada);
 }

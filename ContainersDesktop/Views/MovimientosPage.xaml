@@ -36,29 +36,35 @@
                         Grid.Column="1"
                         Grid.Row="0">
                         <AppBarButton Command="{x:Bind VolverCommand, Mode=OneWay}"
-                                    Icon="Back"
-                                    Label="Volver" />
+                            Icon="Back"
+                            Label="Volver" />
                         <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
-                                    Icon="Add"
-                                    Label="Agregar" />
+                            Icon="Add"
+                            Label="Agregar" />
                         <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
-                                    IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}"
-                                    Icon="Edit"
-                                    Label="Modificar" />
-                        <AppBarButton Command="{x:Bind BorrarCommand}"
-                                    CommandParameter="{x:Bind ViewModel.Current, Mode=OneWay}"
-                                    IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                                    Icon="Delete"
-                                    Label="Borrar"/>
+                            IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}"
+                            Icon="Edit"
+                            Label="Modificar" />
+                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                            IsEnabled="{x:Bind ViewModel.EstadoActivo, Mode=OneWay}" 
+                            Icon="Delete"
+                            Label="Borrar"/>
+                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                            IsEnabled="{x:Bind ViewModel.EstadoBaja, Mode=OneWay}" 
+                            Icon="Up"
+                            Label="Recuperar"/>
+                        <AppBarButton Command="{x:Bind SincronizarCommand}"
+                            Icon="Sync"
+                            Label="Sincronizar"/>
                         <AppBarButton 
                             Command="{x:Bind ExportarCommand, Mode=OneWay}"
                             Icon="Document" 
                             Label="Exportar" />
                     </CommandBar>
                     <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
-                          Checked="chkMostrarTodos_Checked"
-                              Unchecked="chkMostrarTodos_Unchecked"
-                          />
+                        Checked="chkMostrarTodos_Checked"
+                        Unchecked="chkMostrarTodos_Unchecked"
+                    />
                 </StackPanel>
             </Grid>
 
@@ -101,6 +107,14 @@
                             Width="1200"
                             >
                 <RelativePanel HorizontalAlignment="Stretch">
+                    <ComboBox x:Name="ComboObjetos"
+                                Header="Container"
+                                ItemsSource="{x:Bind ViewModel.LstObjetosActivos, Mode=OneWay}"
+                                SelectedItem="{Binding MOVIM_ID_OBJETO}"
+                                DisplayMemberPath="DESCRIPCION"
+                                Width="240"
+                                Margin="4"
+                    />
                     <CalendarDatePicker x:Name="TxtFecha"
                                 Date="{x:Bind ViewModel.FormViewModel.Fecha, Mode=TwoWay}"
                                 DateFormat="{}{day.integer}/{month.integer}/{year.full}"
@@ -108,15 +122,17 @@
                                 PlaceholderText="Elija una fecha"                              
                                 Width="240"
                                 Margin="4"
+                                RelativePanel.Below="ComboObjetos"
                     />
-                    <ComboBox x:Name="ComboObjetos"
-                                Header="Container"
-                                ItemsSource="{x:Bind ViewModel.LstObjetosActivos, Mode=OneWay}"
-                                SelectedItem="{Binding MOVIM_ID_OBJETO}"
-                                DisplayMemberPath="DESCRIPCION"
+
+                    <TimePicker x:Name="tpkHora" 
+                                Time="{x:Bind ViewModel.FormViewModel.Hora, Mode=TwoWay}"
+                                MinuteIncrement="10"
+                                ClockIdentifier="24HourClock"                                 
+                                Header="Hora" 
+                                RelativePanel.Below="ComboObjetos"
                                 RelativePanel.RightOf="TxtFecha"
-                                Width="240"
-                                Margin="4"
+                                Margin="4,9"
                     />
 
                     <ComboBox x:Name="ComboTiposMovimiento"
@@ -134,8 +150,8 @@
                                 ItemsSource="{x:Bind ViewModel.LstPesosActivos, Mode=OneWay}"
                                 SelectedItem="{Binding MOVIM_PESO}"
                                 DisplayMemberPath="DESCRIPCION"
-                                RelativePanel.Below="ComboObjetos"
-                              RelativePanel.RightOf="ComboTiposMovimiento"
+                                RelativePanel.Below="TxtFecha"
+                                RelativePanel.RightOf="ComboTiposMovimiento"
                                 Width="240"
                                 Margin="4"
                     />

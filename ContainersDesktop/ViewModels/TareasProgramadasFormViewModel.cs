@@ -16,6 +16,7 @@ public class TareasProgramadasFormViewModel : ObservableValidator
 {
     private ObjetosDTO _objeto;
     private DateTimeOffset _fechaProgramada;
+    private TimeSpan _horaProgramada;
     private AlmacenesDTO _ubicacionOrigen;
     private AlmacenesDTO _ubicacionDestino;
     private DispositivosDTO _dispositivo;
@@ -45,6 +46,13 @@ public class TareasProgramadasFormViewModel : ObservableValidator
     {
         get => _fechaProgramada;
         set => SetProperty(ref _fechaProgramada, value, true);
+    }
+
+    [Required(ErrorMessage = "La Hora Programada es requerida")]
+    public TimeSpan HoraProgramada
+    {
+        get => _horaProgramada;
+        set => SetProperty(ref _horaProgramada, value, true);
     }
 
     //[Required(ErrorMessage = "La Ubicación Orígen es requerida")]

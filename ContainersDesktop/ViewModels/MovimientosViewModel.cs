@@ -2,12 +2,14 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.DTO;
+using ContainersDesktop.Services;
 
 namespace ContainersDesktop.ViewModels;
 public partial class MovimientosViewModel : ObservableRecipient, INavigationAware
@@ -19,6 +21,8 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     private readonly IListasServicio _listasServicio;
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IObjetosServicio _objetosServicio;
+    private readonly SincronizarServicio _sincronizarServicio;
+
     private string _cachedSortedColumn = string.Empty;
     private ObjetosListaDTO _objetosListaDTO;
 
@@ -30,13 +34,18 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
         {
             SetProperty(ref current, value);
             OnPropertyChanged(nameof(HasCurrent));
+            OnPropertyChanged(nameof(EstadoActivo));
+            OnPropertyChanged(nameof(EstadoBaja));
         }
     }
     public bool HasCurrent => current is not null;
+    public bool EstadoActivo => current?.MOVIM_ID_ESTADO_REG == "A" ? true : false;
+    public bool EstadoBaja => current?.MOVIM_ID_ESTADO_REG == "B" ? true : false;
 
     [ObservableProperty]
     public ObjetosDTO objeto = null;
-    
+    [ObservableProperty]
+    public bool isBusy = false;
 
     #region Observable Collections
     public ObservableCollection<MovimDTO> Items
@@ -79,17 +88,25 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     }
 
     #region CRUD
-    public async Task BorrarMovimiento()
+    public async Task BorrarRecuperarRegistro()
     {
-        await _movimientosServicio.BorrarMovimiento(Current.MOVIM_ID_REG);
-        //var item = Items.FirstOrDefault(x => x.MOVIM_ID_REG == Current.MOVIM_ID_REG);
-        Items.Remove(Current);
+        var accion = EstadoActivo ? "B" : "A";
+        Current.MOVIM_ID_ESTADO_REG = accion;
+        Current.MOVIM_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
+        var movim = GenerarMovim(Current);
+        await _movimientosServicio.BorrarRecuperarRegistro(movim);
+
+        //Actualizo Source
+        var i = Items.IndexOf(Current);        
+        Items[i] = Current;
+        Items[i].MOVIM_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(Current.MOVIM_FECHA_ACTUALIZACION);
     }
 
     public async Task AgregarMovimiento(MovimDTO movimDTO)
     {
         var movim = GenerarMovim(movimDTO);
         movimDTO.MOVIM_ID_REG = await _movimientosServicio.CrearMovimiento(movim);
+        movimDTO.MOVIM_FECHA = FormatoFecha.ConvertirAFechaHora(movimDTO.MOVIM_FECHA);
         Items.Add(movimDTO);
     }
 
@@ -100,7 +117,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
             var movim = GenerarMovim(movimDTO);
             await _movimientosServicio.ActualizarMovimiento(movim);
             var i = Items.IndexOf(movimDTO);
-            movimDTO.MOVIM_FECHA = FormatoFecha.ConvertirAFechaCorta(movimDTO.MOVIM_FECHA);
+            movimDTO.MOVIM_FECHA = FormatoFecha.ConvertirAFechaHora(movimDTO.MOVIM_FECHA);
             Items[i] = movimDTO;
         }
         catch (Exception)
@@ -551,5 +568,31 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
 
         return Items;
     }
+    #endregion
+
+    #region Sincronizacion
+    public async Task<bool> SincronizarInformacion()
+    {
+        try
+        {
+            IsBusy = true;
+            await _sincronizarServicio.Sincronizar();
+
+            return true;
+        }
+        catch (RequestFailedException)
+        {
+            throw;
+        }
+        catch (SystemException)
+        {
+            throw;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
     #endregion
 }

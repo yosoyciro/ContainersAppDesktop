@@ -63,4 +63,8 @@ public class TareaProgramadaDTO
     {
         get; set;
     }
+    public string? TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
+    {
+        get; set;
+    }
 }

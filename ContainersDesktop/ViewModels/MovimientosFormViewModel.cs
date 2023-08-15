@@ -9,6 +9,7 @@ namespace ContainersDesktop.ViewModels;
 public class MovimientosFormViewModel : ObservableValidator
 {
     private DateTimeOffset? _fecha;
+    private TimeSpan _hora;
 
     public MovimientosFormViewModel()
     {
@@ -27,6 +28,12 @@ public class MovimientosFormViewModel : ObservableValidator
     {
         get => _fecha;
         set => SetProperty(ref _fecha, value, true);
+    }
+
+    public TimeSpan Hora
+    {
+        get => _hora;
+        set => SetProperty(ref _hora, value, true);
     }
 
     public bool IsValid => Errors.Length == 0;

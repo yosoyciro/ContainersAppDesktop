@@ -71,7 +71,7 @@ public sealed partial class ContainersGridPage : Page
 
     public ICommand NuevoCommand => new AsyncRelayCommand(OpenNewDialog);
     public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
-    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarObjeto);
+    public ICommand BorrarRecuperarCommand => new AsyncRelayCommand(BorrarRecuperarCommand_Executed);
     public ICommand MovimientosCommand => new RelayCommand(VerMovimientos);
     public ICommand AgregarCommand => new AsyncRelayCommand(AgregarObjeto);
     public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarObjeto);
@@ -165,14 +165,14 @@ public sealed partial class ContainersGridPage : Page
         }
     }
 
-    private async Task BorrarObjeto()
+    private async Task BorrarRecuperarCommand_Executed()
     {
         ContentDialog bajaRegistroDialog = new ContentDialog
         {
             XamlRoot = this.XamlRoot,
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
             Title = "Atención!",
-            Content = "Está seguro que desea dar de baja el registro?",
+            Content = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?",
             PrimaryButtonText = "Sí",
             CloseButtonText = "No"
         };
@@ -183,7 +183,7 @@ public sealed partial class ContainersGridPage : Page
         {
             try
             {
-                await ViewModel.BorrarObjeto();
+                await ViewModel.BorrarRecuperarRegistro();
 
                 grdContainers.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
             }

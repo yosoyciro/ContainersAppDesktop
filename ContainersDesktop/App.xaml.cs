@@ -83,6 +83,7 @@ public partial class App : Application
             services.AddTransient<ITareasProgramadasServicio, TareasProgramadasServicio>();
             services.AddTransient<AzureStorageManagement>();
             services.AddTransient<IPlayFabServicio, PlayFabServicio>();
+            services.AddTransient<SincronizacionServicio>();
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();

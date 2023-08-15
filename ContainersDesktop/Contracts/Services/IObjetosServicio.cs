@@ -7,5 +7,5 @@ public interface IObjetosServicio
     Task<Objetos> ObtenerObjetoPorId(int id);
     Task<int> CrearObjeto(Objetos objeto);
     Task<bool> ActualizarObjeto(Objetos objeto);
-    Task<bool> BorrarObjeto(int id);
+    Task<bool> BorrarRecuperarRegistro(Objetos objeto);
 }

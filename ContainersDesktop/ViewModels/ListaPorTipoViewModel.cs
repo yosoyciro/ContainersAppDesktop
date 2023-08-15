@@ -77,7 +77,7 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
         await _listasServicio.BorrarRecuperarLista(SelectedLista);
 
         //Actualizo Source
-        var i = Source.IndexOf(SelectedLista);        
+        var i = Source.IndexOf(SelectedLista);              
         Source[i] = SelectedLista;
         Source[i].LISTAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(SelectedLista.LISTAS_FECHA_ACTUALIZACION);
     }

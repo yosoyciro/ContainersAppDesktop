@@ -331,8 +331,8 @@ public class ObjetosServicio : IObjetosServicio
     }
     #endregion
 
-    #region Borrar
-    public async Task<bool> BorrarObjeto(int id)
+    #region BorrarRecuperar
+    public async Task<bool> BorrarRecuperarRegistro(Objetos objeto)
     {
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
@@ -341,10 +341,11 @@ public class ObjetosServicio : IObjetosServicio
                 await db.OpenAsync();
 
                 SqliteCommand deleteCommand = new SqliteCommand
-                    ("UPDATE OBJETOS SET OBJ_ID_ESTADO_REG = 'B', OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION WHERE OBJ_ID_REG = @OBJ_ID_REG", db);
+                    ("UPDATE OBJETOS SET OBJ_ID_ESTADO_REG=@OBJ_ID_ESTADO_REG, OBJ_FECHA_ACTUALIZACION = @OBJ_FECHA_ACTUALIZACION WHERE OBJ_ID_REG = @OBJ_ID_REG", db);
 
-                deleteCommand.Parameters.AddWithValue("@OBJ_ID_REG", id);
-                deleteCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
+                deleteCommand.Parameters.AddWithValue("@OBJ_ID_REG", objeto.OBJ_ID_REG);
+                deleteCommand.Parameters.AddWithValue("@OBJ_ID_ESTADO_REG", objeto.OBJ_ID_ESTADO_REG);
+                deleteCommand.Parameters.AddWithValue("@OBJ_FECHA_ACTUALIZACION", objeto.OBJ_FECHA_ACTUALIZACION);
 
                 SqliteDataReader query = await deleteCommand.ExecuteReaderAsync();
 

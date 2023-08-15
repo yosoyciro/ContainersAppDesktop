@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
+using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Core.Contracts.Services;
@@ -9,6 +7,7 @@ using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.Core.Services;
 using ContainersDesktop.DTO;
+using ContainersDesktop.Services;
 
 namespace ContainersDesktop.ViewModels;
 public partial class TareasProgramadasViewModel : ObservableRecipient, INavigationAware
@@ -20,6 +19,10 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     private readonly IListasServicio _listasServicio;
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IObjetosServicio _objetosServicio;
+    private readonly ISincronizacionServicio _sincronizacionServicio;
+    private readonly AzureStorageManagement _azureStorageManagement;
+    private readonly SincronizacionesViewModel _sincronizarViewModel;
+    private readonly SincronizarServicio _sincronizarServicio;
     private string _cachedSortedColumn = string.Empty;
     
 
@@ -31,13 +34,19 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         {
             SetProperty(ref current, value);
             OnPropertyChanged(nameof(HasCurrent));
+            OnPropertyChanged(nameof(EstadoActivo));
+            OnPropertyChanged(nameof(EstadoBaja));
         }
     }
     public bool HasCurrent => current is not null;
+    public bool EstadoActivo => current?.TAREAS_PROGRAMADAS_ID_ESTADO_REG == "A" ? true : false;
+    public bool EstadoBaja => current?.TAREAS_PROGRAMADAS_ID_ESTADO_REG == "B" ? true : false;
 
     private ObjetosListaDTO _objetosListaDTO;
     [ObservableProperty]
     public ObjetosDTO objeto = null;
+    [ObservableProperty]
+    public bool isBusy = false;
 
     #region Observable Collections
     private readonly ObservableCollection<TareaProgramadaDTO> _items = new();
@@ -51,12 +60,21 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     public ObservableCollection<AlmacenesDTO> LstAlmacenesActivos { get; } = new();
     #endregion
 
-    public TareasProgramadasViewModel(ITareasProgramadasServicio tareasProgramadasServicio, IListasServicio listasServicio, IDispositivosServicio dispositivosServicio, IObjetosServicio objetosServicio)
+    public TareasProgramadasViewModel(
+        ITareasProgramadasServicio tareasProgramadasServicio
+        , IListasServicio listasServicio
+        , IDispositivosServicio dispositivosServicio
+        , IObjetosServicio objetosServicio
+        , ISincronizacionServicio sincronizacionServicio
+        , AzureStorageManagement azureStorageManagement
+        )
     {
         _tareasProgramadasServicio = tareasProgramadasServicio;
         _listasServicio = listasServicio;
         _dispositivosServicio = dispositivosServicio;
         _objetosServicio = objetosServicio;
+        _sincronizacionServicio = sincronizacionServicio;
+        _azureStorageManagement = azureStorageManagement;
     }
     public void OnNavigatedFrom()
     {
@@ -157,8 +175,6 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             dto.TAREAS_PROGRAMADAS_ID_REG = await _tareasProgramadasServicio.Agregar(tareaProgramada);
             dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
             _items.Add(dto);
-
-            OnPropertyChanged(nameof(Items));
         }
         catch (Exception)
         {
@@ -174,7 +190,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             await _tareasProgramadasServicio.Modificar(tareaProgramada);
 
             var i = _items.IndexOf(Current);
-            dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaCorta(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
+            dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
 
             _items[i].TAREAS_PROGRAMADAS_OBJETO_ID_REG = dto.TAREAS_PROGRAMADAS_OBJETO_ID_REG;
             _items[i].TAREAS_PROGRAMADAS_OBJETO_MATRICULA = dto.TAREAS_PROGRAMADAS_OBJETO_MATRICULA;
@@ -184,13 +200,34 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             _items[i].TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = dto.TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION;
             _items[i].TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = dto.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD;
             _items[i].TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = dto.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD;
-
-            OnPropertyChanged(nameof(Items));
         }
         catch (Exception)
         {
             throw;
         }
+    }
+
+    public async Task BorrarRecuperarRegistro()
+    {
+        var accion = EstadoActivo ? "B" : "A";
+        Current.TAREAS_PROGRAMADAS_ID_ESTADO_REG = accion;
+        Current.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
+
+        try
+        {
+            var tareaProgramada = MapDTOToSource(Current);
+            await _tareasProgramadasServicio.BorrarRecuperarRegistro(tareaProgramada);
+
+            //Actualizo Source
+            var i = Items.IndexOf(Current);
+            Items[i].TAREAS_PROGRAMADAS_ID_ESTADO_REG = accion;
+            Items[i].TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(Current.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        
     }
 
     #endregion
@@ -220,6 +257,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = dispositivo.DESCRIPCION,   
             TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = item.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD,
             TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = item.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD,
+            TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = item.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
         };
     }
 
@@ -238,6 +276,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG,
             TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD,
             TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD,
+            TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
         };
     }
     #endregion
@@ -245,7 +284,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     #region Ordenamiento y filtro
     public ObservableCollection<TareaProgramadaDTO> AplicarFiltro(string? filter, bool verTodos)
     {
-        return new ObservableCollection<TareaProgramadaDTO>(Items);
+        return new ObservableCollection<TareaProgramadaDTO>(Items.Where(x => (verTodos || x.TAREAS_PROGRAMADAS_ID_ESTADO_REG == "A")));
     }
 
     public string CachedSortedColumn
@@ -352,6 +391,31 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         }
 
         return Items;
+    }
+    #endregion
+
+    #region Sincronizacion
+    public async Task<bool> SincronizarInformacion()
+    {
+        try
+        {
+            IsBusy = true;
+            await _sincronizarServicio.Sincronizar();
+
+            return true;
+        }
+        catch (RequestFailedException)
+        {
+            throw;
+        }
+        catch (SystemException)
+        {
+            throw;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
     #endregion
 }

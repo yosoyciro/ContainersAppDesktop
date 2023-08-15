@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using ContainersDesktop.DTO;
 using ContainersDesktop.Core.Helpers;
 using CommunityToolkit.WinUI.UI.Controls;
+using Azure;
 
 namespace ContainersDesktop.Views;
 
@@ -50,9 +51,10 @@ public sealed partial class MovimientosContainerPage : Page
     public ICommand AgregarMovimientoCommand => new AsyncRelayCommand(AgregarMovimiento);
     public ICommand ModificarCommand => new AsyncRelayCommand(AbrirModificarDialog);
     public ICommand ModificarMovimientoCommand => new AsyncRelayCommand(ModificarMovimiento);
-    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarMovimiento);
+    public ICommand BorrarRecuperarCommand => new AsyncRelayCommand(BorrarRecuperarCommand_Execute);
     public ICommand VolverCommand => new RelayCommand(Volver);
     public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
+    public ICommand SincronizarCommand => new AsyncRelayCommand(SincronizarCommand_Execute);
 
     private async Task AbrirModificarDialog()
     {
@@ -62,6 +64,7 @@ public sealed partial class MovimientosContainerPage : Page
 
         //Valores x defecto combos
         TxtFecha.Date = DateTime.Parse(ViewModel.Current.MOVIM_FECHA);
+        tpkHora.SelectedTime = new TimeSpan(TxtFecha.Date.Value.Hour, TxtFecha.Date.Value.Minute, 0);
         ComboObjetos.SelectedItem = ViewModel.LstObjetos.FirstOrDefault(x => x.MOVIM_ID_OBJETO == ViewModel.Current.MOVIM_ID_OBJETO);
         ComboTiposMovimiento.SelectedItem = ViewModel.LstTiposMovimientoActivos.FirstOrDefault(x => x.MOVIM_TIPO_MOVIM == ViewModel.Current.MOVIM_TIPO_MOVIM) ?? ViewModel.LstTiposMovimientoActivos.FirstOrDefault();
         ComboPesos.SelectedItem = ViewModel.LstPesosActivos.FirstOrDefault(x => x.MOVIM_PESO == ViewModel.Current.MOVIM_PESO) ?? ViewModel.LstPesosActivos.FirstOrDefault();
@@ -93,6 +96,7 @@ public sealed partial class MovimientosContainerPage : Page
 
         //valores x defecto para los combo
         TxtFecha.Date = DateTime.Now.Date;
+        tpkHora.SelectedTime = new TimeSpan(TxtFecha.Date.Value.Hour, TxtFecha.Date.Value.Minute, 0);
         ComboObjetos.SelectedItem = ViewModel.LstObjetos.FirstOrDefault(x => x.MOVIM_ID_OBJETO == ViewModel.Objeto.MOVIM_ID_OBJETO);
         ComboTiposMovimiento.SelectedItem = ViewModel.LstTiposMovimientoActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstTiposMovimientoActivos.FirstOrDefault();
         ComboPesos.SelectedItem = ViewModel.LstPesosActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstPesosActivos.FirstOrDefault();
@@ -102,6 +106,55 @@ public sealed partial class MovimientosContainerPage : Page
         ComboEntradaSalida.SelectedItem = ViewModel.LstEntradaSalidaActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstEntradaSalidaActivos.FirstOrDefault();
         ComboAlmacenes.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstAlmacenesActivos.FirstOrDefault();
         await Dialog.ShowAsync();
+    }
+
+    private async Task SincronizarCommand_Execute()
+    {
+        try
+        {
+            await ViewModel.SincronizarInformacion();
+            MovimientosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Sincronización";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = "Sincronización realizada!";
+
+            await dialog.ShowAsync();
+        }
+        catch (RequestFailedException ex)
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Sincronización";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = "Error en la Sincronización: " + ex.Message;
+
+            await dialog.ShowAsync();
+        }
+        catch (SystemException ex)
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Sincronización";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = "Error en la Sincronización: " + ex.Message;
+
+            await dialog.ShowAsync();
+        }
     }
 
     private async Task ExportarCommand_Execute()
@@ -147,11 +200,14 @@ public sealed partial class MovimientosContainerPage : Page
         var almacen = ComboAlmacenes.SelectedItem as AlmacenesDTO;
         var dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == 0);
 
-        //asigno los valores al objeto que voy a grabar
+        //asigno los valores al objeto que voy a grabar        
+        TimeSpan? time = tpkHora.SelectedTime;
+        var fechaHora = ViewModel.FormViewModel.Fecha!.Value.Date.Add(time!.Value);
+
         nuevoMovimiento.MOVIM_ID_DISPOSITIVO = dispositivo.MOVIM_ID_DISPOSITIVO;
         nuevoMovimiento.MOVIM_DISPOSITIVO_DESCRIPCION = dispositivo.DESCRIPCION;
         nuevoMovimiento.MOVIM_ID_REG_MOBILE = 0;
-        nuevoMovimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(ViewModel.FormViewModel.Fecha.Value.Date);
+        nuevoMovimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(fechaHora);
         nuevoMovimiento.MOVIM_ID_OBJETO = objeto.MOVIM_ID_OBJETO;
         nuevoMovimiento.MOVIM_MATRICULA_OBJ = objeto.DESCRIPCION;
         nuevoMovimiento.MOVIM_TIPO_MOVIM = tipoMovimiento.MOVIM_TIPO_MOVIM;
@@ -198,12 +254,15 @@ public sealed partial class MovimientosContainerPage : Page
         var dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == 0);
 
         //asigno los valores al objeto que voy a grabar
+        TimeSpan? time = tpkHora.SelectedTime;
+        var fechaHora = ViewModel.FormViewModel.Fecha!.Value.Date.Add(time!.Value);
+
         movimiento.MOVIM_ID_DISPOSITIVO = dispositivo.MOVIM_ID_DISPOSITIVO;
         movimiento.MOVIM_DISPOSITIVO_DESCRIPCION = dispositivo.DESCRIPCION;
         movimiento.MOVIM_ID_REG_MOBILE = 0;
         movimiento.MOVIM_ID_OBJETO = objeto.MOVIM_ID_OBJETO;
         movimiento.MOVIM_MATRICULA_OBJ = objeto.DESCRIPCION;
-        movimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(ViewModel.FormViewModel.Fecha.Value.Date);
+        movimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(fechaHora);
         movimiento.MOVIM_TIPO_MOVIM = tipoMovimiento.MOVIM_TIPO_MOVIM;
         movimiento.MOVIM_TIPO_MOVIM_LISTA = tipoMovimiento.LISTAS_ID_LISTA;
         movimiento.MOVIM_TIPO_MOVIM_DESCRIPCION = tipoMovimiento.DESCRIPCION;
@@ -232,14 +291,14 @@ public sealed partial class MovimientosContainerPage : Page
         MovimientosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
     }
 
-    private async Task BorrarMovimiento()
+    private async Task BorrarRecuperarCommand_Execute()
     {
         ContentDialog bajaRegistroDialog = new ContentDialog
         {
             XamlRoot = this.XamlRoot,
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
             Title = "Atención!",
-            Content = "Está seguro que desea dar de baja el registro?",
+            Content = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?",
             PrimaryButtonText = "Sí",
             CloseButtonText = "No"
         };
@@ -248,7 +307,10 @@ public sealed partial class MovimientosContainerPage : Page
 
         if (result == ContentDialogResult.Primary)
         {
-            await ViewModel.BorrarMovimiento();
+            await ViewModel.BorrarRecuperarRegistro();
+
+            MovimientosGrid.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+            //LimpiarIndicadorOden();
         }
     }
     #endregion

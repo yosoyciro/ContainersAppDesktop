@@ -44,11 +44,96 @@ public sealed partial class DispositivosPage : Page
         }        
     }
     
-    private async Task SincronizarDatos()
+    //private async Task SincronizarDatos()
+    //{
+    //    try
+    //    {
+    //        await ViewModel.SincronizarInformacion();
+
+    //        ContentDialog dialog = new ContentDialog();
+
+    //        // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+    //        dialog.XamlRoot = this.XamlRoot;
+    //        dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+    //        dialog.Title = "Sincronización";
+    //        dialog.CloseButtonText = "Cerrar";
+    //        dialog.DefaultButton = ContentDialogButton.Close;
+    //        dialog.Content = "Sincronización realizada!";
+
+    //        await dialog.ShowAsync();
+    //    }
+    //    catch (RequestFailedException ex)
+    //    {
+    //        ContentDialog dialog = new ContentDialog();
+
+    //        // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+    //        dialog.XamlRoot = this.XamlRoot;
+    //        dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+    //        dialog.Title = "Sincronización";
+    //        dialog.CloseButtonText = "Cerrar";
+    //        dialog.DefaultButton = ContentDialogButton.Close;
+    //        dialog.Content = "Error en la Sincronización: " + ex.Message;
+
+    //        await dialog.ShowAsync();
+    //    }
+    //    catch (SystemException ex)
+    //    {
+    //        ContentDialog dialog = new ContentDialog();
+
+    //        // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+    //        dialog.XamlRoot = this.XamlRoot;
+    //        dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+    //        dialog.Title = "Sincronización";
+    //        dialog.CloseButtonText = "Cerrar";
+    //        dialog.DefaultButton = ContentDialogButton.Close;
+    //        dialog.Content = "Error en la Sincronización: " + ex.Message;
+
+    //        await dialog.ShowAsync();
+    //    }
+    //}
+
+    public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);
+    public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistro);
+    public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
+    public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
+    public ICommand BorrarRecuperarCommand => new AsyncRelayCommand(BorrarRecuperarRegistro);   
+    public ICommand SincronizarCommand => new AsyncRelayCommand(SincronizarCommand_Execute);
+    public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Executed);
+
+    private async Task OpenAgregarDialog()
+    {
+        AgregarDialog.Title = "Agregar dispositivo";
+        AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
+        AgregarDialog.DataContext = new Dispositivos()
+        {
+            DISPOSITIVOS_ID_ESTADO_REG = "A",
+            DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
+        };
+
+        //Valores por defecto de los campos
+        ViewModel.FormViewModel.Descripcion = string.Empty;
+        ViewModel.FormViewModel.Container = string.Empty;
+        await AgregarDialog.ShowAsync();
+    }
+
+    private async Task OpenModificarDialog()
+    {
+        AgregarDialog.Title = "Modificar dispositivo";
+        AgregarDialog.PrimaryButtonCommand = ModificarRegistroCommand;
+        AgregarDialog.DataContext = ViewModel.SelectedDispositivo;
+
+        //Valores por defecto de los campos
+        ViewModel.FormViewModel.Descripcion = ViewModel.SelectedDispositivo.DISPOSITIVOS_DESCRIP;
+        ViewModel.FormViewModel.Container = ViewModel.SelectedDispositivo.DISPOSITIVOS_CONTAINER;
+        await AgregarDialog.ShowAsync();
+    }
+
+    private async Task SincronizarCommand_Execute()
     {
         try
         {
             await ViewModel.SincronizarInformacion();
+            grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
 
             ContentDialog dialog = new ContentDialog();
 
@@ -90,42 +175,6 @@ public sealed partial class DispositivosPage : Page
 
             await dialog.ShowAsync();
         }
-    }
-
-    public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);
-    public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistro);
-    public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
-    public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
-    public ICommand BorrarRecuperarCommand => new AsyncRelayCommand(BorrarRecuperarRegistro);   
-    public ICommand SincronizarCommand => new AsyncRelayCommand(SincronizarDatos);
-    public ICommand ExportarCommand => new AsyncRelayCommand(Exportar);
-
-    private async Task OpenAgregarDialog()
-    {
-        AgregarDialog.Title = "Agregar dispositivo";
-        AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
-        AgregarDialog.DataContext = new Dispositivos()
-        {
-            DISPOSITIVOS_ID_ESTADO_REG = "A",
-            DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
-        };
-
-        //Valores por defecto de los campos
-        ViewModel.FormViewModel.Descripcion = string.Empty;
-        ViewModel.FormViewModel.Container = string.Empty;
-        await AgregarDialog.ShowAsync();
-    }
-
-    private async Task OpenModificarDialog()
-    {
-        AgregarDialog.Title = "Modificar dispositivo";
-        AgregarDialog.PrimaryButtonCommand = ModificarRegistroCommand;
-        AgregarDialog.DataContext = ViewModel.SelectedDispositivo;
-
-        //Valores por defecto de los campos
-        ViewModel.FormViewModel.Descripcion = ViewModel.SelectedDispositivo.DISPOSITIVOS_DESCRIP;
-        ViewModel.FormViewModel.Container = ViewModel.SelectedDispositivo.DISPOSITIVOS_CONTAINER;
-        await AgregarDialog.ShowAsync();
     }
 
     #region CRUD
@@ -268,8 +317,28 @@ public sealed partial class DispositivosPage : Page
     }
     #endregion
 
-    private async Task Exportar()
+    private async Task ExportarCommand_Executed()
     {
-        //ExportToCSV
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "DISPOSITIVOS.csv");
+
+        try
+        {
+            Exportar.GenerarDatos(ViewModel.Source, filePath);
+
+            ContentDialog bajaRegistroDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Se generó el archivo {filePath}",
+                CloseButtonText = "Ok"
+            };
+
+            await bajaRegistroDialog.ShowAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 }

@@ -36,23 +36,34 @@
                         Grid.Column="1"
                         Grid.Row="0">
                         <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
-                                    Icon="Add"
-                                    Label="Agregar" />
+                            Icon="Add"
+                            Label="Agregar" />
                         <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
-                                    IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}"
-                                    Icon="Edit"
-                                    Label="Modificar" />
-                        <AppBarButton Command="{x:Bind BorrarCommand, Mode=OneWay}"
-                                  IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                                  Icon="Delete"
-                                  Label="Borrar"/>
+                            IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}"
+                            Icon="Edit"
+                            Label="Modificar" />
+                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                            IsEnabled="{x:Bind ViewModel.EstadoActivo, Mode=OneWay}" 
+                            Icon="Delete"
+                            Label="Borrar"/>
+                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                            IsEnabled="{x:Bind ViewModel.EstadoBaja, Mode=OneWay}" 
+                            Icon="Up"
+                            Label="Recuperar"/>
+                        <AppBarButton Command="{x:Bind SincronizarCommand}"
+                            Icon="Sync"
+                            Label="Sincronizar"/>
                         <AppBarButton Icon="Filter" 
-                                  Label="Filtrar" />
+                            Label="Filtrar" />
                         <AppBarButton 
                             Command="{x:Bind ExportarCommand, Mode=OneWay}"
                             Icon="Document" 
                             Label="Exportar" />
                     </CommandBar>
+                    <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
+                        Checked="chkMostrarTodos_Checked"
+                        Unchecked="chkMostrarTodos_Unchecked"
+                    />
                 </StackPanel>
             </Grid>
 
@@ -102,7 +113,17 @@
                         PlaceholderText="Elija una fecha"                              
                         Width="240"
                         Margin="4"
-                        RelativePanel.RightOf="cmbObjetos"
+                        RelativePanel.Below="cmbObjetos"
+                    />
+                    
+                    <TimePicker x:Name="tpkHora" 
+                        Time="{x:Bind ViewModel.FormViewModel.HoraProgramada, Mode=TwoWay}"
+                        MinuteIncrement="10"
+                        ClockIdentifier="24HourClock"                                 
+                        Header="Hora" 
+                        RelativePanel.Below="cmbObjetos"
+                        RelativePanel.RightOf="txtFecha"
+                        Margin="4,9"
                     />
 
                     <ComboBox x:Name="cmbUbicacionOrigen"
@@ -112,7 +133,7 @@
                         DisplayMemberPath="DESCRIPCION"                                
                         Width="240"
                         Margin="4"
-                        RelativePanel.Below="cmbObjetos"
+                        RelativePanel.Below="txtFecha"
                     />
 
                     <ComboBox x:Name="cmbUbicacionDestino"
@@ -122,7 +143,7 @@
                         DisplayMemberPath="DESCRIPCION"                                
                         Width="240"
                         Margin="4"
-                        RelativePanel.Below="cmbObjetos"
+                        RelativePanel.Below="txtFecha"
                         RelativePanel.RightOf="cmbUbicacionOrigen"
                     />
 

@@ -14,14 +14,27 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Grid HorizontalAlignment="Stretch"              
-              Margin="0,0,0,16"
-              CornerRadius="4"
-              Height="52"
-              Grid.ColumnSpan="2">
+            <StackPanel 
+                Grid.Row="0"
+                Margin="0,0,0,16"
+            >
+                <TextBlock 
+                    Text="DISPOSITIVOS"                    
+                    Style="{ThemeResource SubtitleTextBlockStyle}"
+                />
+            </StackPanel>
+
+            <Grid 
+                Grid.Row="1"
+                HorizontalAlignment="Stretch"              
+                Margin="0,0,0,16"
+                CornerRadius="4"
+                Height="52"
+                Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -44,35 +57,39 @@
                         DefaultLabelPosition="Right"
                         Grid.Column="1">
                         <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
-                                Icon="Add"
-                                Label="Agregar" />
+                            Icon="Add"
+                            Label="Agregar" />
                         <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
-                                IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                                Icon="Edit"
-                                Label="Modificar" />
+                            IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
+                            Icon="Edit"
+                            Label="Modificar" />
                         <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
-                              IsEnabled="{x:Bind ViewModel.EstadoActivo, Mode=OneWay}" 
-                              Icon="Delete"
-                              Label="Borrar"/>
+                            IsEnabled="{x:Bind ViewModel.EstadoActivo, Mode=OneWay}" 
+                            Icon="Delete"
+                            Label="Borrar"/>
                         <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
-                              IsEnabled="{x:Bind ViewModel.EstadoBaja, Mode=OneWay}" 
-                              Icon="Up"
-                              Label="Recuperar"/>
+                            IsEnabled="{x:Bind ViewModel.EstadoBaja, Mode=OneWay}" 
+                            Icon="Up"
+                            Label="Recuperar"/>
                         <AppBarButton Command="{x:Bind SincronizarCommand}"
-                              Icon="Sync"
-                              Label="Sincronizar"/>
+                            Icon="Sync"
+                            Label="Sincronizar"/>
+                        <AppBarButton 
+                            Command="{x:Bind ExportarCommand, Mode=OneWay}"
+                            Icon="Document" 
+                            Label="Exportar" />
                     </CommandBar>
                     <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
-                            Checked="chkMostrarTodos_Checked"
-                            Unchecked="chkMostrarTodos_Unchecked"
-                          />
+                        Checked="chkMostrarTodos_Checked"
+                        Unchecked="chkMostrarTodos_Unchecked"
+                    />
                 </StackPanel>
             </Grid>
 
             <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" Width="32"/>
             <controls:DataGrid
                 x:Name="grdDispositivos"
-                Grid.Row="1"
+                Grid.Row="2"
                 IsReadOnly="True"
                 AutoGenerateColumns="False"
                 GridLinesVisibility="Horizontal"

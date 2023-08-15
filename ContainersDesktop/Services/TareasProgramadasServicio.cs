@@ -333,8 +333,8 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
     }
     #endregion
 
-    #region Borrar
-    public async Task<bool> Borrar(int id)
+    #region BorrarRecuperar
+    public async Task<bool> BorrarRecuperarRegistro(TareaProgramada tareaProgramada)
     {
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
@@ -349,9 +349,9 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                 updateCommand.CommandText = "UPDATE TAREAS_PROGRAMADAS SET TAREAS_PROGRAMADAS_ID_ESTADO_REG=@TAREAS_PROGRAMADAS_ID_ESTADO_REG, " +
                     " TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION=@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION " +
                     " WHERE TAREAS_PROGRAMADAS_ID_REG=@TAREAS_PROGRAMADAS_ID_REG;";
-                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", id);
-                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_ESTADO_REG", "B");
-                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
+                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", tareaProgramada.TAREAS_PROGRAMADAS_ID_REG);
+                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_ESTADO_REG", tareaProgramada.TAREAS_PROGRAMADAS_ID_ESTADO_REG);
+                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION", tareaProgramada.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION);
 
                 await updateCommand.ExecuteReaderAsync();
 

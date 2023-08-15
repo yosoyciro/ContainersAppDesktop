@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using Azure;
 
 namespace ContainersDesktop.Views;
 
@@ -31,6 +32,8 @@ public sealed partial class TareasProgramadasPage : Page
         try
         {
             await ViewModel.CargarListasSource();
+
+            TareasProgramadasGrid.ItemsSource = ViewModel.AplicarFiltro(null, chkMostrarTodos.IsChecked ?? false);
         }
         catch (Exception ex)
         {
@@ -45,15 +48,15 @@ public sealed partial class TareasProgramadasPage : Page
 
             await errorDialog.ShowAsync();
         }
-        
     }
 
     public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);
     public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistroCommand_Execute);
     public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
     public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarRegistro);
-    public ICommand BorrarCommand => new AsyncRelayCommand(BorrarRegistro);
+    public ICommand BorrarRecuperarCommand => new AsyncRelayCommand(BorrarRecuperarCommand_Execute);
     public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
+    public ICommand SincronizarCommand => new AsyncRelayCommand(SincronizarCommand_Execute);
 
     private async Task OpenAgregarDialog()
     {
@@ -70,6 +73,7 @@ public sealed partial class TareasProgramadasPage : Page
 
         ViewModel.FormViewModel.Objeto = ViewModel.LstObjetosActivos.FirstOrDefault();
         ViewModel.FormViewModel.FechaProgramada = DateTime.Now.Date;
+        ViewModel.FormViewModel.HoraProgramada = new TimeSpan(ViewModel.FormViewModel.FechaProgramada.Hour, ViewModel.FormViewModel.FechaProgramada.Minute, 0);
         ViewModel.FormViewModel.UbicacionOrigen =  ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0);
         ViewModel.FormViewModel.UbicacionDestino = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0);
         ViewModel.FormViewModel.Dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO > 0);
@@ -102,11 +106,60 @@ public sealed partial class TareasProgramadasPage : Page
 
             ViewModel.FormViewModel.Objeto = ViewModel.LstObjetosActivos.FirstOrDefault(x => x.MOVIM_ID_OBJETO == ViewModel.Current.TAREAS_PROGRAMADAS_OBJETO_ID_REG);
             ViewModel.FormViewModel.FechaProgramada = DateTime.Parse(ViewModel.Current.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA);
+            ViewModel.FormViewModel.HoraProgramada = new TimeSpan(ViewModel.FormViewModel.FechaProgramada.Hour, ViewModel.FormViewModel.FechaProgramada.Minute, 0);
             ViewModel.FormViewModel.UbicacionOrigen = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.MOVIM_ALMACEN == ViewModel.Current.TAREAS_PROGRAMADAS_UBICACION_ORIGEN);
             ViewModel.FormViewModel.UbicacionDestino = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.MOVIM_ALMACEN == ViewModel.Current.TAREAS_PROGRAMADAS_UBICACION_DESTINO);
             ViewModel.FormViewModel.Dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == ViewModel.Current.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG);
 
             await dlgFormulario.ShowAsync();
+        }
+    }
+    
+    private async Task SincronizarCommand_Execute()
+    {
+        try
+        {
+            await ViewModel.SincronizarInformacion();
+
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Sincronización";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = "Sincronización realizada!";
+
+            await dialog.ShowAsync();
+        }
+        catch (RequestFailedException ex)
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Sincronización";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = "Error en la Sincronización: " + ex.Message;
+
+            await dialog.ShowAsync();
+        }
+        catch (SystemException ex)
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "Sincronización";
+            dialog.CloseButtonText = "Cerrar";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            dialog.Content = "Error en la Sincronización: " + ex.Message;
+
+            await dialog.ShowAsync();
         }
     }
 
@@ -135,43 +188,42 @@ public sealed partial class TareasProgramadasPage : Page
         }
     }
 
-    private async Task BorrarRegistro()
+    private async Task BorrarRecuperarCommand_Execute()
     {
-    //    ContentDialog bajaRegistroDialog = new ContentDialog
-    //    {
-    //        XamlRoot = this.XamlRoot,
-    //        Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-    //        Title = "Atención!",
-    //        Content = "Está seguro que desea dar de baja el registro?",
-    //        PrimaryButtonText = "Sí",
-    //        CloseButtonText = "No"
-    //    };
+        ContentDialog bajaRegistroDialog = new ContentDialog
+        {
+            XamlRoot = this.XamlRoot,
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+            Title = "Atención!",
+            Content = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?",
+            PrimaryButtonText = "Sí",
+            CloseButtonText = "No"
+        };
 
-    //    ContentDialogResult result = await bajaRegistroDialog.ShowAsync();
+        ContentDialogResult result = await bajaRegistroDialog.ShowAsync();
 
-    //    if (result == ContentDialogResult.Primary)
-    //    {
-    //        try
-    //        {
-    //            await ViewModel.BorrarLista();
-    //            ListaGrid.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
-    //            LimpiarIndicadorOden();
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            ContentDialog dialog = new ContentDialog();
+        if (result == ContentDialogResult.Primary)
+        {
+            try
+            {
+                await ViewModel.BorrarRecuperarRegistro();
+                TareasProgramadasGrid.ItemsSource = ViewModel.AplicarFiltro(null, chkMostrarTodos.IsChecked ?? false);
+                //LimpiarIndicadorOden();      
+            }
+            catch (Exception ex)
+            {
+                ContentDialog errorDialog = new ContentDialog
+                {
+                    XamlRoot = this.XamlRoot,
+                    Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                    Title = "Error!",
+                    Content = ex.Message,
+                    PrimaryButtonText = "Ok",
+                };
 
-    //            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-    //            dialog.XamlRoot = this.XamlRoot;
-    //            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-    //            dialog.Title = "Error";
-    //            dialog.CloseButtonText = "Cerrar";
-    //            dialog.DefaultButton = ContentDialogButton.Close;
-    //            dialog.Content = ex.Message;
-
-    //            await dialog.ShowAsync();
-    //        }
-    //    }
+               await errorDialog.ShowAsync();
+            }
+        }
     }
 
     private async Task AgregarRegistroCommand_Execute()
@@ -181,7 +233,7 @@ public sealed partial class TareasProgramadasPage : Page
         AsignarDTO(ref tareaProgramada);
         await ViewModel.AgregarTareaProgramada(tareaProgramada);
 
-        //TareasProgramadasGrid.ItemsSource = ViewModel.AplicarFiltro(null, true);
+        TareasProgramadasGrid.ItemsSource = ViewModel.AplicarFiltro(null, true);
         //LimpiarIndicadorOden();
     }
 
@@ -197,9 +249,12 @@ public sealed partial class TareasProgramadasPage : Page
 
     private void AsignarDTO(ref TareaProgramadaDTO tareaProgramada)
     {
+        TimeSpan? time = tpkHora.SelectedTime;
+        var fechaHora = ViewModel.FormViewModel.FechaProgramada!.Date.Add(time!.Value);
+
         tareaProgramada.TAREAS_PROGRAMADAS_OBJETO_ID_REG = ViewModel.FormViewModel.Objeto.MOVIM_ID_OBJETO;
         tareaProgramada.TAREAS_PROGRAMADAS_OBJETO_MATRICULA = ViewModel.FormViewModel.Objeto.DESCRIPCION;
-        tareaProgramada.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.FechaEstandar(ViewModel.FormViewModel.FechaProgramada!.DateTime);
+        tareaProgramada.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.FechaEstandar(fechaHora);
         tareaProgramada.TAREAS_PROGRAMADAS_UBICACION_ORIGEN = ViewModel.FormViewModel.UbicacionOrigen.MOVIM_ALMACEN;
         tareaProgramada.TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION = ViewModel.FormViewModel.UbicacionOrigen.DESCRIPCION;
         tareaProgramada.TAREAS_PROGRAMADAS_UBICACION_DESTINO = ViewModel.FormViewModel.UbicacionDestino.MOVIM_ALMACEN;
@@ -227,5 +282,15 @@ public sealed partial class TareasProgramadasPage : Page
                 column.SortDirection = null;
             }
         }
+    }
+
+    private void chkMostrarTodos_Checked(object sender, RoutedEventArgs e)
+    {
+        TareasProgramadasGrid.ItemsSource = ViewModel.AplicarFiltro(null, true);
+    }
+
+    private void chkMostrarTodos_Unchecked(object sender, RoutedEventArgs e)
+    {
+        TareasProgramadasGrid.ItemsSource = ViewModel.AplicarFiltro(null, false);
     }
 }

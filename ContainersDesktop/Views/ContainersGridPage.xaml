@@ -14,14 +14,27 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Left"
-                    Margin="0,0,0,16"
-                    CornerRadius="4"
-                    Height="52">
+            <StackPanel 
+                Grid.Row="0"
+                Margin="0,0,0,16"
+            >
+                <TextBlock 
+                    Text="CONTAINERS"                    
+                    Style="{ThemeResource SubtitleTextBlockStyle}"
+                />
+            </StackPanel>
+
+            <StackPanel 
+                Grid.Row="1"
+                Orientation="Horizontal"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,16"
+                CornerRadius="4"
+                Height="52">
                 
                 <AutoSuggestBox x:Name="SearchBox"
                                 QuerySubmitted="SearchBox_QuerySubmitted"
@@ -43,11 +56,14 @@
                         IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
                         Icon="Edit"
                         Label="Modificar" />
-                    <AppBarButton Command="{x:Bind BorrarCommand}"
-                        CommandParameter="{x:Bind ViewModel.SelectedObjeto, Mode=OneWay}"
-                        IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                        Icon="Delete"
-                        Label="Borrar"/>
+                    <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                            IsEnabled="{x:Bind ViewModel.EstadoActivo, Mode=OneWay}" 
+                            Icon="Delete"
+                            Label="Borrar"/>
+                    <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                            IsEnabled="{x:Bind ViewModel.EstadoBaja, Mode=OneWay}" 
+                            Icon="Up"
+                            Label="Recuperar"/>
                     <AppBarButton Command="{x:Bind MovimientosCommand}"
                         CommandParameter="{x:Bind ViewModel.SelectedObjeto, Mode=OneWay}"
                         IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
@@ -68,7 +84,7 @@
             </StackPanel>
             <controls:DataGrid 
                 x:Name="grdContainers"
-                Grid.Row="1" 
+                Grid.Row="2" 
                 ItemsSource="{x:Bind ViewModel.Source}" 
                 AutoGenerateColumns="False"                             
                 SelectionMode="Single"

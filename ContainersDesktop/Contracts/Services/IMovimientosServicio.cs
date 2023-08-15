@@ -8,5 +8,5 @@ public interface IMovimientosServicio
     Task<bool> SincronizarMovimientos(string dbDescarga, int idDispositivo);
     Task<int> CrearMovimiento(Movim movim);
     Task<bool> ActualizarMovimiento(Movim movim);
-    Task<bool> BorrarMovimiento(int id);
+    Task<bool> BorrarRecuperarRegistro(Movim movim);
 }

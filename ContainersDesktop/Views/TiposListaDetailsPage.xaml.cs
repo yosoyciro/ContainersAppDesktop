@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
@@ -41,15 +42,35 @@ public sealed partial class TiposListaDetailsPage : Page
         }
     }
 
-    public ICommand DetalleCommand => new RelayCommand(VerDetalle);
-    public ICommand ExportarCommand => new AsyncRelayCommand(ExportarListas);
+    public ICommand DetalleCommand => new RelayCommand(DetalleCommand_Executed);
+    public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Executed);
 
-    private async Task ExportarListas()
+    private async Task ExportarCommand_Executed()
     {
-        //TODO: exportar listas
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "TIPOSLISTA.csv");
+
+        try
+        {
+            Exportar.GenerarDatos(ViewModel.Items, filePath);
+
+            ContentDialog bajaRegistroDialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Atención!",
+                Content = $"Se generó el archivo {filePath}",
+                CloseButtonText = "Ok"
+            };
+
+            await bajaRegistroDialog.ShowAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }    
 
-    private void VerDetalle()
+    private void DetalleCommand_Executed()
     {
         Frame.Navigate(typeof(ListaPorTipoPage), ViewModel.SelectedClaList);
     }

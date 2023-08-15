@@ -28,7 +28,10 @@ public static class FormatoFecha
     public static string ConvertirAFechaHora(string fechaEstandar)
     {
         CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
-        var fecha = Convert.ToDateTime(fechaEstandar);
-        return fecha.ToString(currentCulture.DateTimeFormat);
+        var fechaCulture = Convert.ToDateTime(fechaEstandar);
+        var fecha = fechaCulture.ToString(currentCulture.DateTimeFormat.ShortDatePattern);
+        var hora = fechaCulture.ToString(currentCulture.DateTimeFormat.ShortTimePattern);
+
+        return $"{fecha} {hora}";
     }
 }

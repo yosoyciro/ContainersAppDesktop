@@ -52,7 +52,7 @@ public class MovimientosServicio : IMovimientosServicio
                     {
                         MOVIM_ID_REG = query.GetInt32(0),
                         MOVIM_ID_ESTADO_REG = query.GetString(1),
-                        MOVIM_FECHA = FormatoFecha.ConvertirAFechaCorta(query.GetString(2)),
+                        MOVIM_FECHA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
                         MOVIM_ID_OBJETO = query.GetInt32(3),
                         MOVIM_TIPO_MOVIM_LISTA = query.GetInt32(4),
                         MOVIM_TIPO_MOVIM = query.GetInt32(5),
@@ -126,7 +126,7 @@ public class MovimientosServicio : IMovimientosServicio
                     {
                         MOVIM_ID_REG = query.GetInt32(0),
                         MOVIM_ID_ESTADO_REG = query.GetString(1),
-                        MOVIM_FECHA = FormatoFecha.ConvertirAFechaCorta(query.GetString(2)),
+                        MOVIM_FECHA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
                         MOVIM_ID_OBJETO = query.GetInt32(3),
                         MOVIM_TIPO_MOVIM_LISTA = query.GetInt32(4),
                         MOVIM_TIPO_MOVIM = query.GetInt32(5),
@@ -497,7 +497,7 @@ public class MovimientosServicio : IMovimientosServicio
                 updateCommand.Parameters.AddWithValue("@MOVIM_ALMACEN_LISTA", movim.MOVIM_ALMACEN_LISTA);
                 updateCommand.Parameters.AddWithValue("@MOVIM_ALMACEN", movim.MOVIM_ALMACEN);
                 updateCommand.Parameters.AddWithValue("@MOVIM_PDF", movim.MOVIM_PDF);
-                updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
+                updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", movim.MOVIM_FECHA_ACTUALIZACION);
 
                 await updateCommand.ExecuteReaderAsync();
 
@@ -517,8 +517,8 @@ public class MovimientosServicio : IMovimientosServicio
     }
     #endregion
 
-    #region BajaMovimiento
-    public async Task<bool> BorrarMovimiento(int id)
+    #region BajaRecuperar
+    public async Task<bool> BorrarRecuperarRegistro(Movim movim)
     {
         using (SqliteConnection db = new SqliteConnection($"Filename={_dbFullPath}"))
         {
@@ -533,9 +533,9 @@ public class MovimientosServicio : IMovimientosServicio
                 updateCommand.CommandText = "UPDATE MOVIM SET MOVIM_ID_ESTADO_REG=@MOVIM_ID_ESTADO_REG, " +
                     "MOVIM_FECHA_ACTUALIZACION=@MOVIM_FECHA_ACTUALIZACION " +
                     "WHERE MOVIM_ID_REG=@MOVIM_ID_REG;";
-                updateCommand.Parameters.AddWithValue("@MOVIM_ID_REG", id);
-                updateCommand.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", "B");
-                updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
+                updateCommand.Parameters.AddWithValue("@MOVIM_ID_REG", movim.MOVIM_ID_REG);
+                updateCommand.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", movim.MOVIM_ID_ESTADO_REG);
+                updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", movim.MOVIM_FECHA_ACTUALIZACION);
 
                 await updateCommand.ExecuteReaderAsync();
 
