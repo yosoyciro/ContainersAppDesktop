@@ -7,6 +7,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using ContainersDesktop.Core.Helpers;
 using Azure;
+using ContainersDesktop.Helpers;
+using WinUIEx.Messaging;
+using Windows.UI.Popups;
 
 namespace ContainersDesktop.Views;
 public sealed partial class DispositivosPage : Page
@@ -31,67 +34,10 @@ public sealed partial class DispositivosPage : Page
         }
         catch (Exception ex)
         {
-            ContentDialog errorDialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Atención!",
-                Content = $"Error {ex.Message}",
-                CloseButtonText = "Ok"
-            };
-
-            await errorDialog.ShowAsync();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }        
     }
-    
-    //private async Task SincronizarDatos()
-    //{
-    //    try
-    //    {
-    //        await ViewModel.SincronizarInformacion();
-
-    //        ContentDialog dialog = new ContentDialog();
-
-    //        // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-    //        dialog.XamlRoot = this.XamlRoot;
-    //        dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-    //        dialog.Title = "Sincronización";
-    //        dialog.CloseButtonText = "Cerrar";
-    //        dialog.DefaultButton = ContentDialogButton.Close;
-    //        dialog.Content = "Sincronización realizada!";
-
-    //        await dialog.ShowAsync();
-    //    }
-    //    catch (RequestFailedException ex)
-    //    {
-    //        ContentDialog dialog = new ContentDialog();
-
-    //        // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-    //        dialog.XamlRoot = this.XamlRoot;
-    //        dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-    //        dialog.Title = "Sincronización";
-    //        dialog.CloseButtonText = "Cerrar";
-    //        dialog.DefaultButton = ContentDialogButton.Close;
-    //        dialog.Content = "Error en la Sincronización: " + ex.Message;
-
-    //        await dialog.ShowAsync();
-    //    }
-    //    catch (SystemException ex)
-    //    {
-    //        ContentDialog dialog = new ContentDialog();
-
-    //        // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-    //        dialog.XamlRoot = this.XamlRoot;
-    //        dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-    //        dialog.Title = "Sincronización";
-    //        dialog.CloseButtonText = "Cerrar";
-    //        dialog.DefaultButton = ContentDialogButton.Close;
-    //        dialog.Content = "Error en la Sincronización: " + ex.Message;
-
-    //        await dialog.ShowAsync();
-    //    }
-    //}
-
+        
     public ICommand AgregarCommand => new AsyncRelayCommand(OpenAgregarDialog);
     public ICommand AgregarRegistroCommand => new AsyncRelayCommand(AgregarRegistro);
     public ICommand ModificarCommand => new AsyncRelayCommand(OpenModificarDialog);
@@ -135,62 +81,23 @@ public sealed partial class DispositivosPage : Page
             await ViewModel.SincronizarInformacion();
             grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
 
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Sincronización";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "Sincronización realizada!";
-
-            await dialog.ShowAsync();
+            await Dialogs.Aviso(this.XamlRoot, "Sincronización realizada!");
         }
         catch (RequestFailedException ex)
         {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Sincronización";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "Error en la Sincronización: " + ex.Message;
-
-            await dialog.ShowAsync();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
         catch (SystemException ex)
         {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Sincronización";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "Error en la Sincronización: " + ex.Message;
-
-            await dialog.ShowAsync();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }
 
     #region CRUD
     private async Task BorrarRecuperarRegistro()
-    {
-        ContentDialog bajaRegistroDialog = new ContentDialog
-        {
-            XamlRoot = this.XamlRoot,
-            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = "Atención!",
-            Content = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?",
-            PrimaryButtonText = "Sí",
-            CloseButtonText = "No"
-        };
-
-        ContentDialogResult result = await bajaRegistroDialog.ShowAsync();
+    {        
+        var pregunta = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?";
+        ContentDialogResult result = await Dialogs.Pregunta(this.XamlRoot, pregunta);
 
         if (result == ContentDialogResult.Primary)
         {
@@ -202,17 +109,7 @@ public sealed partial class DispositivosPage : Page
             }
             catch (Exception ex)
             {
-                ContentDialog dialog = new ContentDialog();
-
-                // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-                dialog.XamlRoot = this.XamlRoot;
-                dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-                dialog.Title = "Error";
-                dialog.CloseButtonText = "Cerrar";
-                dialog.DefaultButton = ContentDialogButton.Close;
-                dialog.Content = ex.Message;
-
-                await dialog.ShowAsync();
+                await Dialogs.Error(this.XamlRoot, ex.Message);
             }
         }
     }
@@ -223,45 +120,8 @@ public sealed partial class DispositivosPage : Page
         dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
         dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
 
-        //Verifico que el container ya no haya sido asignado a otro movil
-        if (await ViewModel.ExisteContainer(dispositivo, "local"))
-        {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Validación";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "El container ya está asignado a otro móvil";
-
-            await dialog.ShowAsync();
-        }
-        else
-        {
-            //Verifico si el Container existe en la plataforma
-            if (!await ViewModel.ExisteContainer(dispositivo, "cloud"))
-            {
-                ContentDialog dialog = new ContentDialog();
-
-                // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-                dialog.XamlRoot = this.XamlRoot;
-                dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-                dialog.Title = "Validación";
-                dialog.CloseButtonText = "Cerrar";
-                dialog.DefaultButton = ContentDialogButton.Close;
-                dialog.Content = "El container no existe en la plataforma";
-
-                await dialog.ShowAsync();
-            }
-            else
-            {
-                await ViewModel.CrearDispositivo(dispositivo);
-
-                grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
-            }                
-        }
+        await ViewModel.CrearDispositivo(dispositivo);
+        grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
     }
 
     private async Task ModificarRegistro()
@@ -269,8 +129,8 @@ public sealed partial class DispositivosPage : Page
         var dispositivo = AgregarDialog.DataContext as Dispositivos;
         dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
         dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
-        await ViewModel.ActualizarDispositivo(dispositivo);
 
+        await ViewModel.ActualizarDispositivo(dispositivo);
         grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
     }
 
@@ -311,9 +171,40 @@ public sealed partial class DispositivosPage : Page
         ViewModel.FormViewModel.Descripcion = sender.Text;
     }
 
-    private void txtCloudContainer_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+    private async void txtCloudContainer_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
     {
         ViewModel.FormViewModel.Container = sender.Text;
+
+        //if (ViewModel.FormViewModel.IsValid)
+        //{
+        //    //Verifico que el container ya no haya sido asignado a otro movil
+        //    if (await ViewModel.ExisteContainer(sender.Text, "local"))
+        //    {
+        //        ContentDialog avisoDialog = new ContentDialog
+        //        {
+        //            XamlRoot = this.Content.XamlRoot,
+        //            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+        //            Title = "Atención!",
+        //            CloseButtonText = "Cerrar",
+        //            DefaultButton = ContentDialogButton.Close,
+        //            Content = "Test",
+        //        };
+
+        //        await avisoDialog.ShowAsync();
+        //    }
+        //    else
+        //    {
+        //        ////Verifico si el Container existe en la plataforma
+        //        //if (!await ViewModel.ExisteContainer(sender.Text, "cloud"))
+        //        //{
+        //        //    await Dialogs.Aviso(this.XamlRoot, "El container no existe en la plataforma");
+        //        //}
+        //        //else
+        //        //{
+
+        //        //}
+        //    }
+        //}        
     }
     #endregion
 
@@ -323,22 +214,11 @@ public sealed partial class DispositivosPage : Page
 
         try
         {
-            Exportar.GenerarDatos(ViewModel.Source, filePath);
-
-            ContentDialog bajaRegistroDialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Atención!",
-                Content = $"Se generó el archivo {filePath}",
-                CloseButtonText = "Ok"
-            };
-
-            await bajaRegistroDialog.ShowAsync();
+            await Exportar.GenerarDatos(ViewModel.Source, filePath, this.XamlRoot);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }
 }

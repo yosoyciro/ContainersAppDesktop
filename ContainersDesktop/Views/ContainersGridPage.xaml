@@ -73,8 +73,12 @@
                         Label="Filtrar" />
                     <AppBarButton 
                         Command="{x:Bind ExportarCommand, Mode=OneWay}"
-                        Icon="Document" 
+                        Icon="Download" 
                         Label="Exportar" />
+                    <AppBarButton 
+                        Command="{x:Bind ImportarCommand, Mode=OneWay}"
+                        Icon="Up" 
+                        Label="Importar" />
                 </CommandBar>
 
                 <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
@@ -291,6 +295,19 @@
                         </SymbolIcon>
                     </Grid>
                 </RelativePanel>
+            </ContentDialog>
+            <ContentDialog x:Name="ImportarDialog">
+                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                    <Button x:Name="ElegirArchivo" 
+                            Content="Elegir archivo CSV"
+                            Click="ElegirArchivo_Click" 
+                            Margin="0,0,0,10"
+                    />
+                    <TextBlock x:Name="PickAPhotoOutputTextBlock" 
+                            TextWrapping="Wrap" 
+                            Padding="20,5,0,0"
+                    />
+                </StackPanel>
             </ContentDialog>
         </Grid>
     </Border>

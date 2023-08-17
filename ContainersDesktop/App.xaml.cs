@@ -43,6 +43,7 @@ public partial class App : Application
     }
 
     public static WindowEx MainWindow { get; } = new MainWindow();
+    public Window Window => MainWindow;
 
     public static UIElement? AppTitlebar { get; set; }
 
@@ -83,7 +84,7 @@ public partial class App : Application
             services.AddTransient<ITareasProgramadasServicio, TareasProgramadasServicio>();
             services.AddTransient<AzureStorageManagement>();
             services.AddTransient<IPlayFabServicio, PlayFabServicio>();
-            services.AddTransient<SincronizacionServicio>();
+            services.AddTransient<SincronizarServicio>();
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
@@ -110,7 +111,10 @@ public partial class App : Application
             services.AddTransient<TareasProgramadasViewModel>();
             services.AddTransient<TareasProgramadasPage>();
             services.AddTransient<Data2MovieViewModel>();
-            services.AddTransient<Data2MoviePage>();            
+            services.AddTransient<Data2MoviePage>();    
+            
+            // Forms ViewModels
+            //services.AddTransient<DispositivosFormViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

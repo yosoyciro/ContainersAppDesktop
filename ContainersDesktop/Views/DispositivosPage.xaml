@@ -132,7 +132,9 @@
                         Margin="0,10,0,0"
                     />
 
-                    <Grid RelativePanel.Below="txtCloudContainer">
+                    
+
+                    <Grid x:Name="grdMensajeValidacion" RelativePanel.Below="txtCloudContainer">
                         <SymbolIcon Symbol="ReportHacked"
                             Foreground="Red"
                             Visibility="{x:Bind ViewModel.FormViewModel.HasErrors, Mode=OneWay}">
@@ -142,6 +144,12 @@
                             </ToolTipService.ToolTip>
                         </SymbolIcon>
                     </Grid>
+
+                    <ContentDialog x:Name="dialogValidacion"
+                        RelativePanel.Below="grdMensajeValidacion"               
+                    >
+                        <TextBlock Text="Error"/>
+                    </ContentDialog>
                 </RelativePanel>
             </ContentDialog>
         </Grid>

@@ -2,6 +2,7 @@ using System.Windows.Input;
 using Azure;
 using CommunityToolkit.Mvvm.Input;
 using ContainersDesktop.Core.Helpers;
+using ContainersDesktop.Helpers;
 using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
@@ -38,46 +39,15 @@ public sealed partial class SincronizacionesPage : Page
         {
             await ViewModel.SincronizarInformacion();
             //grdSincronizaciones.ItemsSource = ViewModel.apli(null, chkMostrarTodos.IsChecked ?? false);
-
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Sincronización";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "Sincronización realizada!";
-
-            await dialog.ShowAsync();
+            await Dialogs.Aviso(this.XamlRoot, "Sincronización realizada!");          
         }
         catch (RequestFailedException ex)
         {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Sincronización";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "Error en la Sincronización: " + ex.Message;
-
-            await dialog.ShowAsync();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
         catch (SystemException ex)
         {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Sincronización";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "Error en la Sincronización: " + ex.Message;
-
-            await dialog.ShowAsync();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }
 
@@ -89,22 +59,11 @@ public sealed partial class SincronizacionesPage : Page
 
         try
         {
-            Exportar.GenerarDatos(ViewModel.Source, filePath);
-
-            ContentDialog bajaRegistroDialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Atención!",
-                Content = $"Se generó el archivo {filePath}",
-                CloseButtonText = "Ok"
-            };
-
-            await bajaRegistroDialog.ShowAsync();
+            await Exportar.GenerarDatos(ViewModel.Source, filePath, this.XamlRoot);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }
 

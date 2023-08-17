@@ -1,11 +1,17 @@
 ﻿using System.Collections.ObjectModel;
 using System.Data;
 using System.Reflection;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ContainersDesktop.Core.Helpers;
 public static class Exportar
 {
-    public static void GenerarDatos<T>(ObservableCollection<T> lista, string filePath)
+    public static ICommand AbrirUbicacionCommand => new RelayCommand(AbrirUbicacionCommand_Execute);
+
+    public static async Task GenerarDatos<T>(ObservableCollection<T> lista, string filePath, XamlRoot root)
     {
         StreamWriter sw = new StreamWriter(new FileStream(filePath, FileMode.Create, FileAccess.Write));
 
@@ -40,7 +46,57 @@ public static class Exportar
             sw.Write(sw.NewLine);
         }
         sw.Close();
+
+        ContentDialog bajaRegistroDialog = new ContentDialog
+        {
+            XamlRoot = root,
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+            Title = "Atención!",
+            Content = $"Se generó el archivo {filePath}",
+            PrimaryButtonText = "Abrir ubicación",
+            PrimaryButtonCommand = AbrirUbicacionCommand,
+            CloseButtonText = "Cerrar"
+        };
+
+        await bajaRegistroDialog.ShowAsync();
     }
+
+    //public static void GenerarDatos<T>(ObservableCollection<T> lista, string filePath)
+    //{
+    //    StreamWriter sw = new StreamWriter(new FileStream(filePath, FileMode.Create, FileAccess.Write));
+
+    //    DataSet ds = lista.ConvertToDataSet("table");
+
+    //    DataTable dt = ds.Tables[0];
+
+    //    int iColCount = dt.Columns.Count;
+    //    for (int i = 0; i < iColCount; i++)
+    //    {
+    //        sw.Write(dt.Columns[i]);
+    //        if (i < iColCount - 1)
+    //        {
+    //            sw.Write(",");
+    //        }
+    //    }
+    //    sw.Write(sw.NewLine);
+    //    // Now write all the rows.  
+    //    foreach (DataRow dr in dt.Rows)
+    //    {
+    //        for (int i = 0; i < iColCount; i++)
+    //        {
+    //            if (!Convert.IsDBNull(dr[i]))
+    //            {
+    //                sw.Write(dr[i].ToString());
+    //            }
+    //            if (i < iColCount - 1)
+    //            {
+    //                sw.Write(System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+    //            }
+    //        }
+    //        sw.Write(sw.NewLine);
+    //    }
+    //    sw.Close();
+    //}
 
     public static DataSet ConvertToDataSet<T>(this IEnumerable<T> source, string name)
     {
@@ -76,5 +132,10 @@ public static class Exportar
         foreach (PropertyInfo p in pi)
             table.Columns.Add(p.Name, p.PropertyType);
         return table;
+    }
+
+    private static void AbrirUbicacionCommand_Execute()
+    {
+        ArchivosCarpetas.AbrirUbicacion(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal)));
     }
 }

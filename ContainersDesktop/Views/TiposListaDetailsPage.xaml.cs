@@ -3,6 +3,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Core.Models;
+using ContainersDesktop.Helpers;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -29,16 +30,7 @@ public sealed partial class TiposListaDetailsPage : Page
         }
         catch (Exception ex)
         {
-            ContentDialog errorDialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Atención!",
-                Content = $"Error {ex.Message}",
-                CloseButtonText = "Ok"
-            };
-
-            await errorDialog.ShowAsync();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }
 
@@ -51,22 +43,11 @@ public sealed partial class TiposListaDetailsPage : Page
 
         try
         {
-            Exportar.GenerarDatos(ViewModel.Items, filePath);
-
-            ContentDialog bajaRegistroDialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Atención!",
-                Content = $"Se generó el archivo {filePath}",
-                CloseButtonText = "Ok"
-            };
-
-            await bajaRegistroDialog.ShowAsync();
+            await Exportar.GenerarDatos(ViewModel.Items, filePath, this.XamlRoot);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }    
 

@@ -113,6 +113,12 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Content Update="Assets\Icons\RGB_Minimizado.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
     <None Update="Assets\Images\1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

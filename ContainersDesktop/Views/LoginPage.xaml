@@ -21,7 +21,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Image Source="/Assets/Images/RGB.jpg" Width="200" Height="100" Grid.Row="0" />
+                <Image Source="/Assets/Icons/RGB_Minimizado.png" Width="250" Height="250" Grid.Row="0" Margin="-50" />
                 <StackPanel 
                     Grid.Row="1"
                     Orientation="Vertical"

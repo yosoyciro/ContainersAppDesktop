@@ -20,7 +20,7 @@ public class TareasProgramadasFormViewModel : ObservableValidator
     private AlmacenesDTO _ubicacionOrigen;
     private AlmacenesDTO _ubicacionDestino;
     private DispositivosDTO _dispositivo;
-    private List<ValidationResult> _errors = new List<ValidationResult>();
+    private List<ValidationResult> _errors = new();
 
     public TareasProgramadasFormViewModel()
     {

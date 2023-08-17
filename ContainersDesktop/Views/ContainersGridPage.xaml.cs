@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.DTO;
 using Windows.UI;
+using ContainersDesktop.Helpers;
 
 namespace ContainersDesktop.Views;
 
@@ -35,18 +36,8 @@ public sealed partial class ContainersGridPage : Page
         }
         catch (Exception ex)
         {
-            ContentDialog bajaRegistroDialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Atención!",
-                Content = $"Error {ex.Message}",
-                CloseButtonText = "Ok"
-            };
-
-            await bajaRegistroDialog.ShowAsync();
-        }
-        
+            await Dialogs.Error(this.XamlRoot, ex.Message);
+        }        
     }
     
     private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
@@ -76,6 +67,7 @@ public sealed partial class ContainersGridPage : Page
     public ICommand AgregarCommand => new AsyncRelayCommand(AgregarObjeto);
     public ICommand ModificarRegistroCommand => new AsyncRelayCommand(ModificarObjeto);
     public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
+    public ICommand ImportarCommand => new AsyncRelayCommand(ImportarCommand_Execute);    
 
     private async Task OpenNewDialog()
     {
@@ -146,39 +138,23 @@ public sealed partial class ContainersGridPage : Page
 
         try
         {
-            Exportar.GenerarDatos(ViewModel.Source, filePath);
-
-            ContentDialog bajaRegistroDialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Atención!",
-                Content = $"Se generó el archivo {filePath}",
-                CloseButtonText = "Ok"
-            };
-
-            await bajaRegistroDialog.ShowAsync();
+            await Exportar.GenerarDatos(ViewModel.Source, filePath, this.XamlRoot);           
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }
 
+    private async Task ImportarCommand_Execute()
+    {
+        await ImportarDialog.ShowAsync();
+    }      
+
     private async Task BorrarRecuperarCommand_Executed()
     {
-        ContentDialog bajaRegistroDialog = new ContentDialog
-        {
-            XamlRoot = this.XamlRoot,
-            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = "Atención!",
-            Content = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?",
-            PrimaryButtonText = "Sí",
-            CloseButtonText = "No"
-        };
-
-        ContentDialogResult result = await bajaRegistroDialog.ShowAsync();
-
+        var pregunta = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?";
+        ContentDialogResult result = await Dialogs.Pregunta(this.XamlRoot, pregunta);
         if (result == ContentDialogResult.Primary)
         {
             try
@@ -189,17 +165,7 @@ public sealed partial class ContainersGridPage : Page
             }
             catch (Exception ex)
             {
-                ContentDialog dialog = new ContentDialog();
-
-                // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-                dialog.XamlRoot = this.XamlRoot;
-                dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-                dialog.Title = "Error";
-                dialog.CloseButtonText = "Cerrar";
-                dialog.DefaultButton = ContentDialogButton.Close;
-                dialog.Content = ex.Message;
-
-                await dialog.ShowAsync();
+                await Dialogs.Error(XamlRoot, ex.Message);
             }
         }
     }
@@ -398,5 +364,10 @@ public sealed partial class ContainersGridPage : Page
     private void colorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
     {
         colorPicker.Color = sender.Color;
+    }
+
+    private void ElegirArchivo_Click(object sender, RoutedEventArgs e)
+    {
+
     }
 }

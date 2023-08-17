@@ -8,14 +8,12 @@ using ContainersDesktop.Services;
 
 namespace ContainersDesktop.ViewModels;
 public partial class DispositivosViewModel : ObservableRecipient
-{
-    private readonly DispositivosFormViewModel _formViewModel = new();    
-    
-    public DispositivosFormViewModel FormViewModel => _formViewModel;
-
+{    
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly AzureStorageManagement _azureStorageManagement;
     private readonly SincronizarServicio _sincronizarServicio;
+    private readonly DispositivosFormViewModel _formViewModel = new();
+    public DispositivosFormViewModel FormViewModel => _formViewModel;
 
     private Dispositivos current;
     public Dispositivos SelectedDispositivo
@@ -39,11 +37,11 @@ public partial class DispositivosViewModel : ObservableRecipient
     
     private string _cachedSortedColumn = string.Empty;
 
-    public DispositivosViewModel(IDispositivosServicio dispositivosServicio, AzureStorageManagement azureStorageManagement, SincronizarServicio sincronizarViewModel)
+    public DispositivosViewModel(IDispositivosServicio dispositivosServicio, AzureStorageManagement azureStorageManagement, SincronizarServicio sincronizarServicio)
     {
         _dispositivosServicio = dispositivosServicio;
         _azureStorageManagement = azureStorageManagement;
-        _sincronizarServicio = sincronizarViewModel;
+        _sincronizarServicio = sincronizarServicio;
     }
 
     #region CRUD
@@ -88,15 +86,15 @@ public partial class DispositivosViewModel : ObservableRecipient
         Source[i] = SelectedDispositivo;
     }
 
-    public async Task<bool> ExisteContainer(Dispositivos dispositivo, string plataforma)
+    public async Task<bool> ExisteContainer(string container, string plataforma)
     {
         if (plataforma == "local")
         {
-            return await _dispositivosServicio.ExisteContainer(dispositivo.DISPOSITIVOS_CONTAINER);
+            return await _dispositivosServicio.ExisteContainer(container);
         }
         else
         {
-            return _azureStorageManagement.ExisteContainer(dispositivo.DISPOSITIVOS_CONTAINER);
+            return _azureStorageManagement.ExisteContainer(container);
         }
     }
 

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System;
 using System.Linq;
 using Azure;
+using ContainersDesktop.Helpers;
 
 namespace ContainersDesktop.Views;
 
@@ -37,16 +38,7 @@ public sealed partial class TareasProgramadasPage : Page
         }
         catch (Exception ex)
         {
-            ContentDialog errorDialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Atención!",
-                Content = $"Error {ex.Message}",
-                CloseButtonText = "Ok"
-            };
-
-            await errorDialog.ShowAsync();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }
 
@@ -85,17 +77,7 @@ public sealed partial class TareasProgramadasPage : Page
     {
         if (!string.IsNullOrEmpty(ViewModel.Current.TAREAS_PROGRAMADAS_FECHA_COMPLETADA))
         {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Atención!";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "La Tarea ya fue completada, no se puede modificar";
-
-            await dialog.ShowAsync();
+            await Dialogs.Aviso(this.XamlRoot, "La Tarea ya fue completada, no se puede modificar");            
         }
         else
         {
@@ -119,47 +101,15 @@ public sealed partial class TareasProgramadasPage : Page
     {
         try
         {
-            await ViewModel.SincronizarInformacion();
-
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Sincronización";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "Sincronización realizada!";
-
-            await dialog.ShowAsync();
+            await Dialogs.Aviso(this.XamlRoot, "Sincronización realizada!");            
         }
         catch (RequestFailedException ex)
         {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Sincronización";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "Error en la Sincronización: " + ex.Message;
-
-            await dialog.ShowAsync();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
         catch (SystemException ex)
         {
-            ContentDialog dialog = new ContentDialog();
-
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = "Sincronización";
-            dialog.CloseButtonText = "Cerrar";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            dialog.Content = "Error en la Sincronización: " + ex.Message;
-
-            await dialog.ShowAsync();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }
 
@@ -169,38 +119,18 @@ public sealed partial class TareasProgramadasPage : Page
 
         try
         {
-            Exportar.GenerarDatos(ViewModel.Items, filePath);
-
-            ContentDialog bajaRegistroDialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                Title = "Atención!",
-                Content = $"Se generó el archivo {filePath}",
-                CloseButtonText = "Ok"
-            };
-
-            await bajaRegistroDialog.ShowAsync();
+            await Exportar.GenerarDatos(ViewModel.Items, filePath, this.XamlRoot);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            await Dialogs.Error(this.XamlRoot, ex.Message);
         }
     }
 
     private async Task BorrarRecuperarCommand_Execute()
     {
-        ContentDialog bajaRegistroDialog = new ContentDialog
-        {
-            XamlRoot = this.XamlRoot,
-            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = "Atención!",
-            Content = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?",
-            PrimaryButtonText = "Sí",
-            CloseButtonText = "No"
-        };
-
-        ContentDialogResult result = await bajaRegistroDialog.ShowAsync();
+        var pregunta = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?";        
+        ContentDialogResult result = await Dialogs.Pregunta(this.XamlRoot, pregunta);
 
         if (result == ContentDialogResult.Primary)
         {
@@ -212,16 +142,7 @@ public sealed partial class TareasProgramadasPage : Page
             }
             catch (Exception ex)
             {
-                ContentDialog errorDialog = new ContentDialog
-                {
-                    XamlRoot = this.XamlRoot,
-                    Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                    Title = "Error!",
-                    Content = ex.Message,
-                    PrimaryButtonText = "Ok",
-                };
-
-               await errorDialog.ShowAsync();
+                await Dialogs.Error(this.XamlRoot, ex.Message);
             }
         }
     }

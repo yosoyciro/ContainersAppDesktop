@@ -1,7 +1,5 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ContainersDesktop.ViewModels;
@@ -16,7 +14,7 @@ public class DispositivosFormViewModel : ObservableValidator
         ErrorsChanged += VMErrorsChanged;
         PropertyChanged += VMPropertyChanged;
     }
-       
+
     ~DispositivosFormViewModel()
     {
         ErrorsChanged -= VMErrorsChanged;
@@ -38,11 +36,10 @@ public class DispositivosFormViewModel : ObservableValidator
         get => _container;
         set => SetProperty(ref _container, value, true);
     }
-
+    
     public bool IsValid => Errors.Length == 0;
 
     public string Errors => string.Join(Environment.NewLine, from ValidationResult e in GetErrors(null) select e.ErrorMessage);
-    //public ICommand ValidateCommand => new RelayCommand(() => ValidateAllProperties());
 
     #region Property value change
     private void VMPropertyChanged(object sender, PropertyChangedEventArgs e)

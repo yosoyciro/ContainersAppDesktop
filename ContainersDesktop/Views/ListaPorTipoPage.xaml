@@ -74,8 +74,11 @@
                               Icon="Up"
                               Label="Recuperar"/>
                         <AppBarButton Command="{x:Bind ExportarCommand, Mode=OneWay}"
-                              Icon="Document"
+                              Icon="Download"
                               Label="Exportar" />
+                        <AppBarButton Command="{x:Bind ImportarCommand, Mode=OneWay}"
+                              Icon="Upload"
+                              Label="Importar" />
                     </CommandBar>
                     <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
                             Checked="chkMostrarTodos_Checked"
@@ -138,6 +141,19 @@
                         </SymbolIcon>
                     </Grid>
                 </RelativePanel>
+            </ContentDialog>
+            <ContentDialog x:Name="dialogImportar"
+                PrimaryButtonText="Importar"
+                CloseButtonText="Cerrar"
+            >
+                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                    <Button x:Name="PickAPhotoButton" 
+                        Content="Seleccione un archivo"
+                        Click="PickAPhotoButton_Click" 
+                        Margin="0,0,0,10"
+                />
+                    <TextBlock x:Name="PickAPhotoOutputTextBlock" TextWrapping="Wrap" Padding="20,5,0,0"/>
+                </StackPanel>
             </ContentDialog>
         </Grid>
     </Border>
