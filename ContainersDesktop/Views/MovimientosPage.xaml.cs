@@ -1,17 +1,13 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
-using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml.Controls;
-using ContainersDesktop.Core.Models;
 using Microsoft.UI.Xaml;
-using ContainersDesktop.Core.Helpers;
-using ContainersDesktop.DTO;
-using CommunityToolkit.WinUI.UI.Controls;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
-using Azure;
 using ContainersDesktop.Helpers;
+using ContainersDesktop.Dominio.DTO;
+using CommunityToolkit.WinUI.UI.Controls;
+using Azure;
+using ContainersDesktop.ViewModels;
+using ContainersDesktop.Comunes.Helpers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.

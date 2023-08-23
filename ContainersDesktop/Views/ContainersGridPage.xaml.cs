@@ -5,8 +5,8 @@ using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using ContainersDesktop.Core.Helpers;
-using ContainersDesktop.DTO;
+using ContainersDesktop.Comunes.Helpers;
+using ContainersDesktop.Dominio.DTO;
 using Windows.UI;
 using ContainersDesktop.Helpers;
 
@@ -29,6 +29,7 @@ public sealed partial class ContainersGridPage : Page
 
     private async void ContainersGridPage_Loaded(object sender, RoutedEventArgs e)
     {
+        grdContainers.Background = new SolidColorBrush(ViewModel.GridColor);       
         try
         {
             await ViewModel.CargarListasSource();
@@ -128,7 +129,7 @@ public sealed partial class ContainersGridPage : Page
         ComboBarras.SelectedItem = ViewModel.LstBarrasActivos.FirstOrDefault(x => x.OBJ_BARRAS == ViewModel.SelectedObjeto.OBJ_BARRAS) ?? ViewModel.LstBarrasActivos.FirstOrDefault();
         ComboCables.SelectedItem = ViewModel.LstCablesActivos.FirstOrDefault(x => x.OBJ_CABLES == ViewModel.SelectedObjeto.OBJ_CABLES) ?? ViewModel.LstCablesActivos.FirstOrDefault();
         ComboLineasVida.SelectedItem = ViewModel.LstLineasVidaActivos.FirstOrDefault(x => x.OBJ_LINEA_VIDA == ViewModel.SelectedObjeto.OBJ_LINEA_VIDA) ?? ViewModel.LstLineasVidaActivos.FirstOrDefault();
-        colorPicker.Color = HexToColor(ViewModel.SelectedObjeto.OBJ_COLOR);
+        colorPicker.Color = Colores.HexToColor(ViewModel.SelectedObjeto.OBJ_COLOR);
         await AgregarDialog.ShowAsync();
     }
 
@@ -148,7 +149,7 @@ public sealed partial class ContainersGridPage : Page
 
     private async Task ImportarCommand_Execute()
     {
-        await ImportarDialog.ShowAsync();
+        //await ImportarDialog.ShowAsync();
     }      
 
     private async Task BorrarRecuperarCommand_Executed()
@@ -216,7 +217,7 @@ public sealed partial class ContainersGridPage : Page
         nuevoObjeto.OBJ_LINEA_VIDA_DESCRIPCION = lineasVida.DESCRIPCION;
         nuevoObjeto.OBJ_INSPEC_CSC = FormatoFecha.FechaEstandar(TxtFechaCSC.Date.Value.Date);
         nuevoObjeto.OBJ_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now.Date);
-        nuevoObjeto.OBJ_COLOR = ColorToHex(colorPicker.Color);
+        nuevoObjeto.OBJ_COLOR = Colores.ColorToHex(colorPicker.Color);
 
         await ViewModel.ActualizarObjeto(nuevoObjeto);
 
@@ -269,7 +270,7 @@ public sealed partial class ContainersGridPage : Page
         nuevoObjeto.OBJ_LINEA_VIDA = lineasVida.OBJ_LINEA_VIDA;
         nuevoObjeto.OBJ_LINEA_VIDA_DESCRIPCION = lineasVida.DESCRIPCION;
         nuevoObjeto.OBJ_INSPEC_CSC = FormatoFecha.FechaEstandar(TxtFechaCSC.Date.Value.Date);
-        nuevoObjeto.OBJ_COLOR = ColorToHex(colorPicker.Color);
+        nuevoObjeto.OBJ_COLOR = Colores.ColorToHex(colorPicker.Color);
 
         await ViewModel.CrearObjeto(nuevoObjeto);
 
@@ -329,45 +330,8 @@ public sealed partial class ContainersGridPage : Page
         grdContainers.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, false);
     }
 
-    #region Colores
-
-    private Color HexToColor(string hex)
-    {
-        hex = hex.Replace("#", ""); // Eliminar el símbolo '#' si está presente
-        var r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-        var g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-        var b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-
-        // Opcional: Si deseas especificar un valor alfa (transparencia)
-        byte a = 255; // Valor alfa máximo (no transparente)
-
-        //if (hex.Length == 8)
-        //{
-        //    a = byte.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
-        //}
-
-        return Color.FromArgb(a, r, g, b);
-    }
-
-    private string ColorToHex(Color color)
-    {
-        var r = color.R.ToString("X2");
-        var g = color.G.ToString("X2");
-        var b = color.B.ToString("X2");
-
-        string hex = string.Format("#{0}{1}{2}", r, g, b);
-        return hex;
-    }
-
-    #endregion
-
     private void colorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
     {
         colorPicker.Color = sender.Color;
-    }
-
-    private void ElegirArchivo_Click(object sender, RoutedEventArgs e)
-    {
-
     }
 }

@@ -1,11 +1,11 @@
 using System;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
-using ContainersDesktop.Core.Models;
+using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using ContainersDesktop.Core.Helpers;
+using ContainersDesktop.Comunes.Helpers;
 using Azure;
 using ContainersDesktop.Helpers;
 using WinUIEx.Messaging;
@@ -171,7 +171,7 @@ public sealed partial class DispositivosPage : Page
         ViewModel.FormViewModel.Descripcion = sender.Text;
     }
 
-    private async void txtCloudContainer_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+    private void txtCloudContainer_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
     {
         ViewModel.FormViewModel.Container = sender.Text;
 

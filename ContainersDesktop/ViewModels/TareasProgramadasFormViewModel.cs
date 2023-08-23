@@ -1,14 +1,6 @@
-﻿using System;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Windows.Input;
+﻿using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using ContainersDesktop.DTO;
-using Microsoft.WindowsAppSDK.Runtime;
-using Newtonsoft.Json.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using ContainersDesktop.Dominio.DTO;
 
 namespace ContainersDesktop.ViewModels;
 

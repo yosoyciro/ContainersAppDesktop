@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using ContainersDesktop.Core.Helpers;
-using ContainersDesktop.Core.Models;
 using ContainersDesktop.Helpers;
+using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

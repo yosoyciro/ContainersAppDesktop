@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Helpers;
-
+using ContainersDesktop.Logica.Contracts.Services;
+using ContainersDesktop.Logica.Services;
 using Microsoft.UI.Xaml;
 
 namespace ContainersDesktop.Services;

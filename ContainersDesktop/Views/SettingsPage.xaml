@@ -61,6 +61,30 @@
                 </StackPanel>
             </StackPanel>
 
+            <TextBlock x:Uid="Settings_Grids" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                <TextBlock Text="Color de fondo" />
+                <ColorPicker x:Name="colorPicker"
+                            ColorChanged="colorPicker_ColorChanged"
+                            CornerRadius="1"
+                            Height="230"
+                            Width="180"
+                             HorizontalAlignment="Left"
+                        />
+            </StackPanel>
+
+            <TextBlock x:Uid="Settings_Combos" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                <TextBlock Text="Color de fondo" />
+                <ColorPicker x:Name="comboColorPicker"
+                            ColorChanged="comboColorPicker_ColorChanged"
+                            CornerRadius="1"
+                            Height="70"
+                            Width="180"
+                             HorizontalAlignment="Left"
+                        />
+            </StackPanel>
+
             <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
             <StackPanel Margin="{StaticResource XSmallTopMargin}">

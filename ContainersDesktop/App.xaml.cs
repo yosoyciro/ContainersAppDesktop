@@ -1,15 +1,22 @@
 ﻿using System;
 using ContainersDesktop.Activation;
 using ContainersDesktop.Contracts.Services;
-using ContainersDesktop.Core.Contracts.Services;
-using ContainersDesktop.Core.Models.Storage;
-using ContainersDesktop.Core.Persistencia;
 using ContainersDesktop.Core.Services;
-using ContainersDesktop.Models;
-using ContainersDesktop.Models.Storage;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models.Storage;
+using ContainersDesktop.Dominio.Models.UI_ConfigModels;
+using ContainersDesktop.Infraestructura.Contracts.Services;
+using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+using ContainersDesktop.Infraestructura.Persistencia;
+using ContainersDesktop.Infraestructura.Persistencia.Repositorios;
+using ContainersDesktop.Logica.Contracts;
+using ContainersDesktop.Logica.Contracts.Services;
+using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
+using CoreDesktop.Infraestructura.Mensajeria.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -60,9 +67,7 @@ public partial class App : Application
         ConfigureServices((context, services) =>
         {
             // Default Activation Handler
-            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
-
-            // Other Activation Handlers
+            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();            
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
@@ -83,8 +88,13 @@ public partial class App : Application
             services.AddTransient<ISincronizacionServicio, SincronizacionServicio>();
             services.AddTransient<ITareasProgramadasServicio, TareasProgramadasServicio>();
             services.AddTransient<AzureStorageManagement>();
-            services.AddTransient<IPlayFabServicio, PlayFabServicio>();
+            services.AddTransient<PlayFabServicio>();
             services.AddTransient<SincronizarServicio>();
+            services.AddSingleton<AzureServiceBus>();
+
+            //Config services
+            services.AddTransient<IConfigRepository<UI_Config>, ConfigRepository<UI_Config>>();
+            services.AddTransient<IConfigRepository<UI_Default>, ConfigRepository<UI_Default>>();
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
@@ -121,6 +131,11 @@ public partial class App : Application
             services.Configure<Settings>(options => context.Configuration.GetSection("Settings").Bind(options));
             services.Configure<AzureStorageConfig>(options => context.Configuration.GetSection("AzureStorageConfig").Bind(options));
 
+            // DB Context
+            services.AddDbContext<ContainersDbContext>(opt =>
+                opt.UseSqlite($"Data Source={context.Configuration.GetConnectionString("DefaultConnection")}")
+            );
+            
             //HTTP client
             //services.AddHttpClient();
 

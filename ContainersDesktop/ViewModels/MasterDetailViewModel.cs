@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 public abstract partial class MasterDetailViewModel<T> : ObservableObject
 {

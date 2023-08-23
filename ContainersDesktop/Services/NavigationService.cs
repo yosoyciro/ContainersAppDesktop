@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
 using ContainersDesktop.Contracts.Services;
-using ContainersDesktop.Contracts.ViewModels;
 using ContainersDesktop.Helpers;
-
+using ContainersDesktop.Logic.Contracts;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 

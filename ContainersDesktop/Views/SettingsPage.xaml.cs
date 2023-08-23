@@ -1,8 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using ContainersDesktop.ViewModels;
-
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI;
+using ContainersDesktop.Comunes.Helpers;
+using ContainersDesktop.Helpers;
+using Microsoft.UI.Xaml.Media;
+using Windows.UI;
+using System.Reflection;
 
 namespace ContainersDesktop.Views;
 
@@ -18,6 +23,18 @@ public sealed partial class SettingsPage : Page
     {
         ViewModel = App.GetService<SettingsViewModel>();
         InitializeComponent();
+        this.Loaded += SettingsPage_Loaded;
+    }
+
+    private async void SettingsPage_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        await ViewModel.CargarConfig();
+
+        //Colores grid
+        colorPicker.Color = Colores.HexToColor(ViewModel.Configs.FirstOrDefault(x => x.Clave == "GridColor")?.Valor);        
+
+        //Color combo
+        comboColorPicker.Color = Colores.HexToColor(ViewModel.Configs.FirstOrDefault(x => x.Clave == "ComboColor")?.Valor);
     }
 
     public ICommand GoToDispositivosCommand => new RelayCommand(GoToDispositivosCommand_Execute);
@@ -43,5 +60,17 @@ public sealed partial class SettingsPage : Page
     private void GoToSincronizacionesCommand_Execute()
     {
         Frame.Navigate(typeof(SincronizacionesPage), null);
+    }
+
+    private async void colorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
+    {
+        colorPicker.Color = sender.Color;
+        await ViewModel.Guardar("GridColor", sender.Color.ToString());
+    }
+
+    private async void comboColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
+    {
+        comboColorPicker.Color = sender.Color;
+        await ViewModel.Guardar("ComboColor", sender.Color.ToString());
     }
 }

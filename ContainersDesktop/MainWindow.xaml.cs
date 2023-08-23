@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.Threading;
 using ContainersDesktop.Helpers;
-
 using Windows.UI.ViewManagement;
 
 namespace ContainersDesktop;
@@ -9,6 +7,7 @@ namespace ContainersDesktop;
 public sealed partial class MainWindow : WindowEx
 {
     private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
+    private Timer timer;
 
     private UISettings settings;
 
@@ -24,6 +23,8 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
+
+        timer = new Timer(timerCallback, null, (int)TimeSpan.FromSeconds(15).TotalMilliseconds, Timeout.Infinite);
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed
@@ -35,5 +36,16 @@ public sealed partial class MainWindow : WindowEx
         {
             TitleBarHelper.ApplySystemThemeToCaptionButtons();
         });
+    }
+
+    private void timerCallback(object state)
+    {
+        // do some work not connected with UI
+
+        dispatcherQueue.TryEnqueue(
+            () => {
+                // do some work on UI here;
+                Console.WriteLine("timer");
+            });
     }
 }

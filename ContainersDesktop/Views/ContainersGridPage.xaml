@@ -7,9 +7,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:vm="using:ContainersDesktop.ViewModels"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    <Page.Resources>
+        <SolidColorBrush x:Key="ComboBox.ComboBoxItems.Static.Background" Color="{x:Bind ViewModel.ComboColor}"/>
+        <Style x:Key="ComboBoxItemsBackground" TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="{StaticResource ComboBox.ComboBoxItems.Static.Background}" />
+        </Style>
+    </Page.Resources>
+    
     <Border>
         <Grid>
             <Grid.RowDefinitions>
@@ -96,17 +103,17 @@
                 HorizontalScrollBarVisibility="Visible"                
                 CanUserReorderColumns="True"
                 Sorting="ContainersDataGrid_Sorting"
-                IsReadOnly="True"
+                IsReadOnly="True"                
             >
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Header="ID" Tag="Id" Binding="{Binding OBJ_ID_REG}" IsReadOnly="True" Visibility="Visible"/>
+                    <controls:DataGridTextColumn Header="ID" Tag="Id" Binding="{Binding OBJ_ID_REG}"/>
                     <controls:DataGridTextColumn Header="Matrícula" Tag="Matricula" Binding="{Binding OBJ_MATRICULA}"/>
                     <controls:DataGridTextColumn Header="Siglas" Tag="Siglas" Binding="{Binding OBJ_SIGLAS_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Modelo" Tag="Modelo" Binding="{Binding OBJ_MODELO_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Variante" Tag="Variante" Binding="{Binding OBJ_VARIANTE_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Tipo" Tag="Tipo" Binding="{Binding OBJ_TIPO_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Inspec CSC" Tag="InspecCSC" Binding="{Binding OBJ_INSPEC_CSC}" />
-                    <controls:DataGridTextColumn x:Name="PropietarioColumn" Header="Propietario" Tag="Propietario" Binding="{Binding OBJ_PROPIETARIO_DESCRIPCION}" />
+                    <controls:DataGridTextColumn Header="Propietario" Tag="Propietario" Binding="{Binding OBJ_PROPIETARIO_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="TARA" Tag="Tara" Binding="{Binding OBJ_TARA_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="PMP" Tag="Pmp" Binding="{Binding OBJ_PMP_DESCRIPCION}" />
                     <controls:DataGridTextColumn Header="Carga Util" Tag="CargaUtil" Binding="{Binding OBJ_CARGA_UTIL}"/>
@@ -133,13 +140,16 @@
                                 Width="200"
                              />
                     <ComboBox x:Name="ComboSiglas"
+                                ItemContainerStyle="{StaticResource ComboBoxItemsBackground}"
                                 Header="Siglas"
                                 ItemsSource="{x:Bind ViewModel.LstSiglasActivos, Mode=OneWay}"
                                 SelectedItem="{Binding OBJ_SIGLAS, Mode=OneWay}"
                                 DisplayMemberPath="DESCRIPCION"
                                 RelativePanel.Below="TxtMatricula"
-                                Width="150"
-                    />
+                                Width="150"                              
+                    >
+                        
+                    </ComboBox>
                     <ComboBox x:Name="ComboModelo"
                                 Header="Modelo"
                                 ItemsSource="{x:Bind ViewModel.LstModelosActivos, Mode=OneWay}"
@@ -160,7 +170,7 @@
                                 Width="150"
                                 Margin="4,0,0,0"
                     />
-                    
+
                     <ComboBox x:Name="ComboTipo"
                                 Header="Tipo"
                                 ItemsSource="{x:Bind ViewModel.LstTiposActivos, Mode=OneWay}"
@@ -295,19 +305,6 @@
                         </SymbolIcon>
                     </Grid>
                 </RelativePanel>
-            </ContentDialog>
-            <ContentDialog x:Name="ImportarDialog">
-                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
-                    <Button x:Name="ElegirArchivo" 
-                            Content="Elegir archivo CSV"
-                            Click="ElegirArchivo_Click" 
-                            Margin="0,0,0,10"
-                    />
-                    <TextBlock x:Name="PickAPhotoOutputTextBlock" 
-                            TextWrapping="Wrap" 
-                            Padding="20,5,0,0"
-                    />
-                </StackPanel>
             </ContentDialog>
         </Grid>
     </Border>

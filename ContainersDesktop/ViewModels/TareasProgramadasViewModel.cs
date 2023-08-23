@@ -1,13 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Contracts.ViewModels;
-using ContainersDesktop.Core.Contracts.Services;
-using ContainersDesktop.Core.Helpers;
-using ContainersDesktop.Core.Models;
-using ContainersDesktop.Core.Services;
-using ContainersDesktop.DTO;
-using ContainersDesktop.Services;
+using ContainersDesktop.Comunes.Helpers;
+using ContainersDesktop.Dominio.DTO;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Infraestructura.Contracts.Services;
+using ContainersDesktop.Logic.Contracts;
+using ContainersDesktop.Logica.Services;
 
 namespace ContainersDesktop.ViewModels;
 public partial class TareasProgramadasViewModel : ObservableRecipient, INavigationAware
@@ -19,9 +18,6 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     private readonly IListasServicio _listasServicio;
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IObjetosServicio _objetosServicio;
-    private readonly ISincronizacionServicio _sincronizacionServicio;
-    private readonly AzureStorageManagement _azureStorageManagement;
-    private readonly SincronizacionesViewModel _sincronizarViewModel;
     private readonly SincronizarServicio _sincronizarServicio;
     private string _cachedSortedColumn = string.Empty;
     
@@ -65,16 +61,13 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         , IListasServicio listasServicio
         , IDispositivosServicio dispositivosServicio
         , IObjetosServicio objetosServicio
-        , ISincronizacionServicio sincronizacionServicio
-        , AzureStorageManagement azureStorageManagement
-        )
+        , SincronizarServicio sincronizarServicio)
     {
         _tareasProgramadasServicio = tareasProgramadasServicio;
         _listasServicio = listasServicio;
         _dispositivosServicio = dispositivosServicio;
-        _objetosServicio = objetosServicio;
-        _sincronizacionServicio = sincronizacionServicio;
-        _azureStorageManagement = azureStorageManagement;
+        _objetosServicio = objetosServicio;        
+        _sincronizarServicio = sincronizarServicio;
     }
     public void OnNavigatedFrom()
     {

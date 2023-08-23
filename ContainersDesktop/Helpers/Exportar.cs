@@ -5,8 +5,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using ContainersDesktop.Comunes.Helpers;
 
-namespace ContainersDesktop.Core.Helpers;
+namespace ContainersDesktop.Helpers;
 public static class Exportar
 {
     public static ICommand AbrirUbicacionCommand => new RelayCommand(AbrirUbicacionCommand_Execute);

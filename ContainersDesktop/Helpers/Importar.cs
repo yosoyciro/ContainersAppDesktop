@@ -1,11 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using System.Data;
-using System.Reflection;
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
-using System.Windows.Input;
 
-namespace ContainersDesktop.Core.Helpers;
+namespace ContainersDesktop.Helpers;
 public static class Importar
 {
     public static async Task ImportarDatos(XamlRoot root)

@@ -2,10 +2,10 @@ using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml.Controls;
-using ContainersDesktop.Core.Helpers;
-using ContainersDesktop.DTO;
+using ContainersDesktop.Comunes.Helpers;
+using ContainersDesktop.Dominio.DTO;
 using CommunityToolkit.WinUI.UI.Controls;
-using ContainersDesktop.Core.Models;
+using ContainersDesktop.Dominio.Models;
 using Microsoft.UI.Xaml;
 using System.Threading.Tasks;
 using System;
@@ -101,6 +101,7 @@ public sealed partial class TareasProgramadasPage : Page
     {
         try
         {
+            await ViewModel.SincronizarInformacion();
             await Dialogs.Aviso(this.XamlRoot, "Sincronización realizada!");            
         }
         catch (RequestFailedException ex)

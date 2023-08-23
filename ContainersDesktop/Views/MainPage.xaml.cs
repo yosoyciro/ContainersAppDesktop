@@ -1,4 +1,5 @@
-﻿using ContainersDesktop.ViewModels;
+﻿using ContainersDesktop.Helpers;
+using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
 namespace ContainersDesktop.Views;
@@ -22,5 +23,11 @@ public sealed partial class MainPage : Page
     {
         var login = await ViewModel.GetUsuarioLogueado();
         txtBienvenido.Text = "Bienvenido " + login.Usuario;
+
+        var result = await ViewModel.RecibirMensajes();
+        if (!string.IsNullOrEmpty(result))
+        {
+            await Dialogs.Aviso(this.XamlRoot, result);
+        };
     }
 }

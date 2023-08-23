@@ -1,10 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Core.Contracts.Services;
-using ContainersDesktop.Core.Models;
-using ContainersDesktop.Core.Services;
-using ContainersDesktop.Services;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Infraestructura.Contracts.Services;
+using ContainersDesktop.Logica.Services;
 
 namespace ContainersDesktop.ViewModels;
 public partial class DispositivosViewModel : ObservableRecipient

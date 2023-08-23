@@ -1,11 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Contracts.ViewModels;
-using ContainersDesktop.Core.Contracts.Services;
-using ContainersDesktop.Core.Models;
-using ContainersDesktop.Services;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Infraestructura.Contracts.Services;
+using ContainersDesktop.Logica.Services;
 
 namespace ContainersDesktop.ViewModels;
 public partial class SincronizacionesViewModel : ObservableRecipient

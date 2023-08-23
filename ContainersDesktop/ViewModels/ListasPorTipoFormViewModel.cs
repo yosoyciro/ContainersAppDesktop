@@ -1,11 +1,9 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ContainersDesktop.ViewModels;
-
+    
 public class ListasPorTipoFormViewModel : ObservableValidator
 {
     private string _descripcion;

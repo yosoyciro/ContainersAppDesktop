@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Contracts.ViewModels;
-using ContainersDesktop.Core.Contracts.Services;
-using ContainersDesktop.Core.Helpers;
-using ContainersDesktop.Core.Models;
-using ContainersDesktop.Core.Services;
-using ContainersDesktop.DTO;
+using ContainersDesktop.Comunes.Helpers;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Infraestructura.Contracts.Services;
+using ContainersDesktop.Logic.Contracts;
 
 namespace ContainersDesktop.ViewModels;
 

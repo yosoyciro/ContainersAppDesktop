@@ -1,9 +1,7 @@
 using System.Windows.Input;
 using Azure;
 using CommunityToolkit.Mvvm.Input;
-using ContainersDesktop.Core.Helpers;
 using ContainersDesktop.Helpers;
-using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

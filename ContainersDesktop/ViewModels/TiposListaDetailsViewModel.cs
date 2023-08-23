@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Core.Contracts.Services;
-using ContainersDesktop.Core.Models;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Infraestructura.Contracts.Services;
 
 namespace ContainersDesktop.ViewModels;
 public partial class TiposListaDetailsViewModel : ObservableRecipient

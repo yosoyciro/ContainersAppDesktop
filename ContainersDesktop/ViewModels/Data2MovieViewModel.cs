@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Contracts.Services;
-using ContainersDesktop.Core.Contracts.Services;
-using ContainersDesktop.Core.Models.Login;
-using ContainersDesktop.Core.Models.Storage;
-using ContainersDesktop.Services;
+using ContainersDesktop.Dominio.Models.Login;
+using ContainersDesktop.Dominio.Models.Storage;
+using ContainersDesktop.Logica.Services;
 using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.ViewModels;
@@ -32,7 +30,7 @@ public partial class Data2MovieViewModel : ObservableObject
 
     public string ObtenerPathProyecto()
     {
-        var parentFolder = Directory.GetParent(Path.GetDirectoryName(typeof(Program).Assembly.Location));
+        var parentFolder = Directory.GetParent(Path.GetDirectoryName(typeof(Data2MovieViewModel).Assembly.Location));
         return $"{parentFolder.FullName}{_settings.Data2MovieProyecto}";
     }
 }

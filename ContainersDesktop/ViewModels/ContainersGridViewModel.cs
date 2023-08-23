@@ -1,10 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Contracts.ViewModels;
-using ContainersDesktop.Core.Contracts.Services;
-using ContainersDesktop.Core.Helpers;
-using ContainersDesktop.Core.Models;
-using ContainersDesktop.DTO;
+using ContainersDesktop.Comunes.Helpers;
+using ContainersDesktop.Dominio.DTO;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models.UI_ConfigModels;
+using ContainersDesktop.Infraestructura.Contracts.Services;
+using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+using CoreDesktop.Dominio.Models.Mensajeria;
+using CoreDesktop.Infraestructura.Mensajeria.Services;
+using Microsoft.UI.Xaml.Media;
+using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
 
@@ -17,12 +22,20 @@ public partial class ContainersGridViewModel : ObservableValidator
     private readonly IObjetosServicio _objetosServicio;
     private readonly IListasServicio _listasServicio;
     private readonly IMovimientosServicio _movimientosServicio;
+    private readonly IConfigRepository<UI_Config> _configRepository;
+    private readonly AzureServiceBus _azureBus;
     private string _cachedSortedColumn = string.Empty;
+
+    //Estilos
+    [ObservableProperty]
+    public Color gridColor;
 
     [ObservableProperty]
     public DateTime fechaInspec;
 
     private ObjetosListaDTO current;
+    private Color _comboColor;
+
     public ObjetosListaDTO SelectedObjeto
     {
         get => current;
@@ -37,6 +50,7 @@ public partial class ContainersGridViewModel : ObservableValidator
     public bool HasCurrent => current is not null;
     public bool EstadoActivo => current?.OBJ_ID_ESTADO_REG == "A" ? true : false;
     public bool EstadoBaja => current?.OBJ_ID_ESTADO_REG == "B" ? true : false;
+    public Color ComboColor => _comboColor;
 
     #region Observable collections
     public ObservableCollection<ObjetosListaDTO> Source
@@ -72,12 +86,15 @@ public partial class ContainersGridViewModel : ObservableValidator
     public ObservableCollection<LineasVidaDTO> LstLineasVidaActivos { get; } = new ObservableCollection<LineasVidaDTO>();
 
     #endregion
-    public ContainersGridViewModel(IObjetosServicio objetosServicio, IListasServicio listasServicio, IMovimientosServicio movimientosServicio)
+    public ContainersGridViewModel(IObjetosServicio objetosServicio, IListasServicio listasServicio, IMovimientosServicio movimientosServicio, IConfigRepository<UI_Config> configRepository, AzureServiceBus azureBus)
     {
         _objetosServicio = objetosServicio;
         _listasServicio = listasServicio;
         _movimientosServicio = movimientosServicio;
-        
+        _configRepository = configRepository;
+
+        CargarConfiguracion().Wait();
+        _azureBus = azureBus;
     }
 
     #region Listas y source
@@ -297,11 +314,15 @@ public partial class ContainersGridViewModel : ObservableValidator
 
     public async Task ActualizarObjeto(ObjetosListaDTO objetoDTO)
     {
-        await _objetosServicio.ActualizarObjeto(GenerarObjeto(objetoDTO));        
+        var objeto = GenerarObjeto(objetoDTO);
+        await _objetosServicio.ActualizarObjeto(objeto);
         var i = Source.IndexOf(objetoDTO);
         objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objetoDTO.OBJ_INSPEC_CSC);
         objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
-        Source[i] = objetoDTO;        
+        Source[i] = objetoDTO;
+
+        var mensaje = new ModifiedContainer(objeto);
+        await _azureBus.EnviarMensaje(mensaje);
     }
 
     public async Task BorrarRecuperarRegistro()
@@ -641,5 +662,18 @@ public partial class ContainersGridViewModel : ObservableValidator
             OBJ_COLOR = objetoDTO.OBJ_COLOR,
         };
     }
+    #endregion
+
+    #region Configs
+
+    private async Task CargarConfiguracion()
+    {
+        var gridColor = await _configRepository.Leer("GridColor");
+        GridColor = Colores.HexToColor(gridColor.Valor);
+
+        var comboColor = await _configRepository.Leer("ComboColor");
+        _comboColor = Colores.HexToColor(comboColor.Valor);
+    }
+    
     #endregion
 }

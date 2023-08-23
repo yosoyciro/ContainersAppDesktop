@@ -1,13 +1,13 @@
 using CommunityToolkit.Mvvm.Input;
-using ContainersDesktop.ViewModels;
 using System.Windows.Input;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
-using ContainersDesktop.DTO;
-using ContainersDesktop.Core.Helpers;
+using ContainersDesktop.Dominio.DTO;
+using ContainersDesktop.Comunes.Helpers;
 using CommunityToolkit.WinUI.UI.Controls;
 using Azure;
 using ContainersDesktop.Helpers;
+using ContainersDesktop.ViewModels;
 
 namespace ContainersDesktop.Views;
 

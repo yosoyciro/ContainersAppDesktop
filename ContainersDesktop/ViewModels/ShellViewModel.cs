@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 using ContainersDesktop.Contracts.Services;
+using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
 
 using Microsoft.UI.Xaml.Navigation;

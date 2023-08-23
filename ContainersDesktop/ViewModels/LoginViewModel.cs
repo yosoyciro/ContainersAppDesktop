@@ -1,21 +1,19 @@
-﻿using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Contracts.Services;
-using ContainersDesktop.Contracts.ViewModels;
-using ContainersDesktop.Core.Contracts.Services;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using ContainersDesktop.Logic.Contracts;
+using ContainersDesktop.Logica.Services;
 using Microsoft.Extensions.Logging;
 
 namespace ContainersDesktop.ViewModels;
 public partial class LoginViewModel : ObservableRecipient, INavigationAware
 {
-    private readonly IPlayFabServicio _playFabServicio;
+    private readonly PlayFabServicio _playFabServicio;
     private readonly ILocalSettingsService _localSettingsService;
     private readonly ILogger<LoginViewModel> _logger;
     public bool isLoggedIn
     {
         get; private set;
     }
-    public LoginViewModel(IPlayFabServicio playFabServicio, ILocalSettingsService localSettingsService, ILogger<LoginViewModel> logger)
+    public LoginViewModel(PlayFabServicio playFabServicio, ILocalSettingsService localSettingsService, ILogger<LoginViewModel> logger)
     {
         _playFabServicio = playFabServicio;
         _localSettingsService = localSettingsService;
