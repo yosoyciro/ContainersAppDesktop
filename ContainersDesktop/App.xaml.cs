@@ -15,7 +15,8 @@ using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
-using CoreDesktop.Infraestructura.Mensajeria.Services;
+using CoreDesktop.Logic.Workers;
+using CoreDesktop.Logica.Mensajeria.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -90,7 +91,9 @@ public partial class App : Application
             services.AddTransient<AzureStorageManagement>();
             services.AddTransient<PlayFabServicio>();
             services.AddTransient<SincronizarServicio>();
-            services.AddSingleton<AzureServiceBus>();
+            services.AddSingleton<AzureServiceBus>();            
+
+            //services.AddHostedService<ServiceBusWorker>();
 
             //Config services
             services.AddTransient<IConfigRepository<UI_Config>, ConfigRepository<UI_Config>>();
@@ -150,10 +153,12 @@ public partial class App : Application
             });
 
             //Telemetría de la app
-            services.AddApplicationInsightsTelemetryWorkerService();
+            services.AddApplicationInsightsTelemetryWorkerService();            
         }).
         Build();
 
+        //Workers
+        //Host.RunAsync();
         UnhandledException += App_UnhandledException;
     }
 

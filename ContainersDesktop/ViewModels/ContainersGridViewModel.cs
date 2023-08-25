@@ -7,7 +7,7 @@ using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Contracts.Services;
 using ContainersDesktop.Infraestructura.Contracts.Services.Config;
 using CoreDesktop.Dominio.Models.Mensajeria;
-using CoreDesktop.Infraestructura.Mensajeria.Services;
+using CoreDesktop.Logica.Mensajeria.Services;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 
@@ -27,14 +27,14 @@ public partial class ContainersGridViewModel : ObservableValidator
     private string _cachedSortedColumn = string.Empty;
 
     //Estilos
-    [ObservableProperty]
-    public Color gridColor;
+    private Color _gridColor;
+    private Color _comboColor;
 
     [ObservableProperty]
     public DateTime fechaInspec;
 
     private ObjetosListaDTO current;
-    private Color _comboColor;
+    
 
     public ObjetosListaDTO SelectedObjeto
     {
@@ -50,6 +50,7 @@ public partial class ContainersGridViewModel : ObservableValidator
     public bool HasCurrent => current is not null;
     public bool EstadoActivo => current?.OBJ_ID_ESTADO_REG == "A" ? true : false;
     public bool EstadoBaja => current?.OBJ_ID_ESTADO_REG == "B" ? true : false;
+    public Color GridColor => _gridColor;
     public Color ComboColor => _comboColor;
 
     #region Observable collections
@@ -669,10 +670,10 @@ public partial class ContainersGridViewModel : ObservableValidator
     private async Task CargarConfiguracion()
     {
         var gridColor = await _configRepository.Leer("GridColor");
-        GridColor = Colores.HexToColor(gridColor.Valor);
+        _gridColor = Colores.HexToColor(gridColor.Valor!);
 
         var comboColor = await _configRepository.Leer("ComboColor");
-        _comboColor = Colores.HexToColor(comboColor.Valor);
+        _comboColor = Colores.HexToColor(comboColor.Valor!);
     }
     
     #endregion

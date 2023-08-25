@@ -1,7 +1,8 @@
 {
   "profiles": {
     "ContainersDesktop (Package)": {
-      "commandName": "MsixPackage"
+      "commandName": "MsixPackage",
+      "alwaysReinstallApp": true
     },
     "ContainersDesktop (Unpackaged)": {
       "commandName": "Project"

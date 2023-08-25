@@ -9,7 +9,8 @@ public class UI_DefaultConfig : IEntityTypeConfiguration<UI_Default>
     {
         builder
             .Property(x => x.Id)
-            .HasColumnName("UI_DEFAULT_ID");
+            .HasColumnName("UI_DEFAULT_ID")
+            .ValueGeneratedOnAdd();
 
         builder
             .Property(x => x.Clave)

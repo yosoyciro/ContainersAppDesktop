@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -29,6 +30,10 @@ public partial class SettingsViewModel : ObservableRecipient
     [ObservableProperty]
     private string _versionDescription;
 
+    public ObservableCollection<string> Lenguajes = new();
+    [ObservableProperty]
+    public string lenguaje = string.Empty;
+
     public ICommand SwitchThemeCommand
     {
         get;
@@ -51,6 +56,12 @@ public partial class SettingsViewModel : ObservableRecipient
             });
         _uiConfigRepository = uiConfigRepository;
         _localSettingsService = localSettingsService;
+
+        Lenguajes.Add("Español");
+        Lenguajes.Add("Inglés");
+        Lenguajes.Add("Francés");
+        Lenguajes.Add("Catalán");
+        Lenguajes.Add("Portugués");
     }
 
     private static string GetVersionDescription()
@@ -76,18 +87,21 @@ public partial class SettingsViewModel : ObservableRecipient
         _login = await _localSettingsService.ReadSettingAsync<Login>("Login");
         Configs = await _uiConfigRepository.LeerTodas();
 
-        Console.WriteLine("configs", Configs);
+        Lenguaje = Configs.Where(x => x.Clave == "Idioma" && x.UI_CONFIG_USUARIO == _login!.Usuario).FirstOrDefault()?.Valor ?? "Español";
     }
 
     public async Task Guardar(string key, string value)
     {
-        var entidad = new UI_Config()
+        var entidad = await _uiConfigRepository.Leer(key);
+        if (entidad == null)
         {
-            Id = Configs.FirstOrDefault(x => x.Clave == key)?.Id ?? 0,
-            Clave = key,
-            Valor = value,
-            UI_CONFIG_USUARIO = _login.Usuario,
+            return;
+        }
+        else
+        {
+            entidad.Valor = value;
+            await _uiConfigRepository.Guardar(entidad);
         };
-        await _uiConfigRepository.Guardar(entidad);
+       
     }
 }

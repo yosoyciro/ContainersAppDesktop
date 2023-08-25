@@ -186,4 +186,13 @@
   <data name="Settings_Tables.Text" xml:space="preserve">
     <value>Tables</value>
   </data>
+  <data name="Settings_Combos.Text" xml:space="preserve">
+    <value>Combo backgroung color</value>
+  </data>
+  <data name="Settings_Grids.Text" xml:space="preserve">
+    <value>Grid background color</value>
+  </data>
+  <data name="Settings_Idioma.Text" xml:space="preserve">
+    <value>Language</value>
+  </data>
 </root>

@@ -103,7 +103,8 @@
                 HorizontalScrollBarVisibility="Visible"                
                 CanUserReorderColumns="True"
                 Sorting="ContainersDataGrid_Sorting"
-                IsReadOnly="True"                
+                IsReadOnly="True"            
+                GridLinesVisibility="Horizontal"
             >
                 <controls:DataGrid.Columns>
                     <controls:DataGridTextColumn Header="ID" Tag="Id" Binding="{Binding OBJ_ID_REG}"/>

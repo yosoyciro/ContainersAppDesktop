@@ -25,7 +25,7 @@ public static class Colores
     public static Windows.UI.Color HexToColor(string hex)
     {
         //hex = hex.Replace("#", ""); // Eliminar el símbolo '#' si está presente
-        var a = byte.Parse(hex.Substring(1, 2), System.Globalization.NumberStyles.HexNumber);
+        var a = (byte)255; // byte.Parse(hex.Substring(1, 2), System.Globalization.NumberStyles.HexNumber);
         var r = byte.Parse(hex.Substring(3, 2), System.Globalization.NumberStyles.HexNumber);
         var g = byte.Parse(hex.Substring(5, 2), System.Globalization.NumberStyles.HexNumber);
         var b = byte.Parse(hex.Substring(7, 2), System.Globalization.NumberStyles.HexNumber);

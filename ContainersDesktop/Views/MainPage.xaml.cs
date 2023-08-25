@@ -21,13 +21,15 @@ public sealed partial class MainPage : Page
 
     private async void MainPage_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var login = await ViewModel.GetUsuarioLogueado();
+        var login = ViewModel.Login;
         txtBienvenido.Text = "Bienvenido " + login.Usuario;
 
-        var result = await ViewModel.RecibirMensajes();
-        if (!string.IsNullOrEmpty(result))
-        {
-            await Dialogs.Aviso(this.XamlRoot, result);
-        };
+        //var result = await ViewModel.RecibirMensajes();
+        //if (!string.IsNullOrEmpty(result))
+        //{
+        //    await Dialogs.Aviso(this.XamlRoot, result);
+        //};
+
+        await ViewModel.VerificarConfiguracion();
     }
 }

@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using Azure;
 using ContainersDesktop.Helpers;
+using Microsoft.UI.Xaml.Media;
 
 namespace ContainersDesktop.Views;
 
@@ -30,6 +31,7 @@ public sealed partial class TareasProgramadasPage : Page
 
     private async void TareasProgramadasPage_Loaded(object sender, RoutedEventArgs e)
     {
+        TareasProgramadasGrid.Background = new SolidColorBrush(ViewModel.GridColor);
         try
         {
             await ViewModel.CargarListasSource();

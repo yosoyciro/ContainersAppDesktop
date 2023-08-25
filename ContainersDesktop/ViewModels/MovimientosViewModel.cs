@@ -5,9 +5,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.DTO;
 using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Contracts.Services;
+using ContainersDesktop.Infraestructura.Contracts.Services.Config;
 using ContainersDesktop.Logic.Contracts;
 using ContainersDesktop.Logica.Services;
+using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
 public partial class MovimientosViewModel : ObservableRecipient, INavigationAware
@@ -20,6 +23,11 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IObjetosServicio _objetosServicio;
     private readonly SincronizarServicio _sincronizarServicio;
+    private readonly IConfigRepository<UI_Config> _configRepository;
+
+    //Estilos
+    private Color _gridColor;
+    private Color _comboColor;
 
     private string _cachedSortedColumn = string.Empty;
     private ObjetosListaDTO _objetosListaDTO;
@@ -39,6 +47,8 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     public bool HasCurrent => current is not null;
     public bool EstadoActivo => current?.MOVIM_ID_ESTADO_REG == "A" ? true : false;
     public bool EstadoBaja => current?.MOVIM_ID_ESTADO_REG == "B" ? true : false;
+    public Color GridColor => _gridColor;
+    public Color ComboColor => _comboColor;
 
     [ObservableProperty]
     public ObjetosDTO objeto = null;
@@ -69,12 +79,15 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     public ObservableCollection<AlmacenesDTO> LstAlmacenesActivos { get; } = new();
     #endregion
 
-    public MovimientosViewModel(IMovimientosServicio movimientosServicio, IListasServicio listasServicio, IDispositivosServicio dispositivosServicio, IObjetosServicio objetosServicio)
+    public MovimientosViewModel(IMovimientosServicio movimientosServicio, IListasServicio listasServicio, IDispositivosServicio dispositivosServicio, IObjetosServicio objetosServicio, IConfigRepository<UI_Config> configRepository)
     {
         _movimientosServicio = movimientosServicio;
         _listasServicio = listasServicio;
         _dispositivosServicio = dispositivosServicio;
-        _objetosServicio = objetosServicio;        
+        _objetosServicio = objetosServicio;
+        _configRepository = configRepository;
+
+        CargarConfiguracion().Wait();
     }
     public void OnNavigatedFrom()
     {
@@ -590,6 +603,19 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
         {
             IsBusy = false;
         }
+    }
+
+    #endregion
+
+    #region Configs
+
+    private async Task CargarConfiguracion()
+    {
+        var gridColor = await _configRepository.Leer("GridColor");
+        _gridColor = Colores.HexToColor(gridColor.Valor!);
+
+        var comboColor = await _configRepository.Leer("ComboColor");
+        _comboColor = Colores.HexToColor(comboColor.Valor!);
     }
 
     #endregion

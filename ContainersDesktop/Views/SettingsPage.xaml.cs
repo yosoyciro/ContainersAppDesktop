@@ -2,12 +2,7 @@
 using System.Windows.Input;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI;
 using ContainersDesktop.Comunes.Helpers;
-using ContainersDesktop.Helpers;
-using Microsoft.UI.Xaml.Media;
-using Windows.UI;
-using System.Reflection;
 
 namespace ContainersDesktop.Views;
 
@@ -35,6 +30,9 @@ public sealed partial class SettingsPage : Page
 
         //Color combo
         comboColorPicker.Color = Colores.HexToColor(ViewModel.Configs.FirstOrDefault(x => x.Clave == "ComboColor")?.Valor);
+
+        //Idioma
+        cmbIdiomas.SelectedItem = ViewModel.Lenguaje;
     }
 
     public ICommand GoToDispositivosCommand => new RelayCommand(GoToDispositivosCommand_Execute);
@@ -72,5 +70,10 @@ public sealed partial class SettingsPage : Page
     {
         comboColorPicker.Color = sender.Color;
         await ViewModel.Guardar("ComboColor", sender.Color.ToString());
+    }
+
+    private async void cmbIdiomas_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        await ViewModel.Guardar("Idioma", ViewModel.Lenguaje);
     }
 }

@@ -8,6 +8,7 @@ using CommunityToolkit.WinUI.UI.Controls;
 using Azure;
 using ContainersDesktop.ViewModels;
 using ContainersDesktop.Comunes.Helpers;
+using Microsoft.UI.Xaml.Media;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,6 +29,7 @@ public sealed partial class MovimientosPage : Page
 
     private async void MovimientosContainerPage_Loaded(object sender, RoutedEventArgs e)
     {
+        MovimientosGrid.Background = new SolidColorBrush(ViewModel.GridColor);
         try
         {
             await ViewModel.CargarListasSource();

@@ -1,4 +1,3 @@
-using System;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 using ContainersDesktop.Dominio.Models;
@@ -8,8 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 using ContainersDesktop.Comunes.Helpers;
 using Azure;
 using ContainersDesktop.Helpers;
-using WinUIEx.Messaging;
-using Windows.UI.Popups;
+using Microsoft.UI.Xaml.Media;
 
 namespace ContainersDesktop.Views;
 public sealed partial class DispositivosPage : Page
@@ -27,6 +25,7 @@ public sealed partial class DispositivosPage : Page
 
     private async void DispositivosPage_Loaded(object sender, RoutedEventArgs e)
     {
+        grdDispositivos.Background = new SolidColorBrush(ViewModel.GridColor);
         try
         {
             await ViewModel.CargarSource();

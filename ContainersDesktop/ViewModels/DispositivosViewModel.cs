@@ -1,9 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
+using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Contracts.Services;
+using ContainersDesktop.Infraestructura.Contracts.Services.Config;
 using ContainersDesktop.Logica.Services;
+using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
 public partial class DispositivosViewModel : ObservableRecipient
@@ -12,6 +16,12 @@ public partial class DispositivosViewModel : ObservableRecipient
     private readonly AzureStorageManagement _azureStorageManagement;
     private readonly SincronizarServicio _sincronizarServicio;
     private readonly DispositivosFormViewModel _formViewModel = new();
+    private readonly IConfigRepository<UI_Config> _configRepository;
+
+    //Estilos
+    private Color _gridColor;
+    private Color _comboColor;
+
     public DispositivosFormViewModel FormViewModel => _formViewModel;
 
     private Dispositivos current;
@@ -29,6 +39,8 @@ public partial class DispositivosViewModel : ObservableRecipient
     public bool HasCurrent => current is not null;
     public bool EstadoActivo => current?.DISPOSITIVOS_ID_ESTADO_REG == "A" ? true : false;
     public bool EstadoBaja => current?.DISPOSITIVOS_ID_ESTADO_REG == "B" ? true : false;
+    public Color GridColor => _gridColor;
+    public Color ComboColor => _comboColor;
 
     public ObservableCollection<Dispositivos> Source { get; } = new();
     [ObservableProperty]
@@ -36,11 +48,14 @@ public partial class DispositivosViewModel : ObservableRecipient
     
     private string _cachedSortedColumn = string.Empty;
 
-    public DispositivosViewModel(IDispositivosServicio dispositivosServicio, AzureStorageManagement azureStorageManagement, SincronizarServicio sincronizarServicio)
+    public DispositivosViewModel(IDispositivosServicio dispositivosServicio, AzureStorageManagement azureStorageManagement, SincronizarServicio sincronizarServicio, IConfigRepository<UI_Config> configRepository)
     {
         _dispositivosServicio = dispositivosServicio;
         _azureStorageManagement = azureStorageManagement;
         _sincronizarServicio = sincronizarServicio;
+        _configRepository = configRepository;
+
+        CargarConfiguracion().Wait();
     }
 
     #region CRUD
@@ -198,5 +213,18 @@ public partial class DispositivosViewModel : ObservableRecipient
 
         return Source;
     }
+    #endregion
+
+    #region Configs
+
+    private async Task CargarConfiguracion()
+    {
+        var gridColor = await _configRepository.Leer("GridColor");
+        _gridColor = Colores.HexToColor(gridColor.Valor!);
+
+        var comboColor = await _configRepository.Leer("ComboColor");
+        _comboColor = Colores.HexToColor(comboColor.Valor!);
+    }
+
     #endregion
 }

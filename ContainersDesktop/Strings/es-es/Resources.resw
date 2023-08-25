@@ -63,4 +63,13 @@
   <data name="Settings_Tables.Text" xml:space="preserve">
     <value>Tablas</value>
   </data>
+  <data name="Settings_Combos.Text" xml:space="preserve">
+    <value>Color de fondo para combos</value>
+  </data>
+  <data name="Settings_Grids.Text" xml:space="preserve">
+    <value>Color de fondo para grids</value>
+  </data>
+  <data name="Settings_Idioma.Text" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
 </root>

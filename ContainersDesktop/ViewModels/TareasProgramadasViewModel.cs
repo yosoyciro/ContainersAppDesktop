@@ -4,9 +4,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.DTO;
 using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Contracts.Services;
+using ContainersDesktop.Infraestructura.Contracts.Services.Config;
 using ContainersDesktop.Logic.Contracts;
 using ContainersDesktop.Logica.Services;
+using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
 public partial class TareasProgramadasViewModel : ObservableRecipient, INavigationAware
@@ -19,8 +22,12 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     private readonly IDispositivosServicio _dispositivosServicio;
     private readonly IObjetosServicio _objetosServicio;
     private readonly SincronizarServicio _sincronizarServicio;
+    private readonly IConfigRepository<UI_Config> _configRepository;
+
     private string _cachedSortedColumn = string.Empty;
-    
+    //Estilos
+    private Color _gridColor;
+    private Color _comboColor;
 
     private TareaProgramadaDTO current;
     public TareaProgramadaDTO Current
@@ -37,6 +44,8 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     public bool HasCurrent => current is not null;
     public bool EstadoActivo => current?.TAREAS_PROGRAMADAS_ID_ESTADO_REG == "A" ? true : false;
     public bool EstadoBaja => current?.TAREAS_PROGRAMADAS_ID_ESTADO_REG == "B" ? true : false;
+    public Color GridColor => _gridColor;
+    public Color ComboColor => _comboColor;
 
     private ObjetosListaDTO _objetosListaDTO;
     [ObservableProperty]
@@ -61,13 +70,17 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         , IListasServicio listasServicio
         , IDispositivosServicio dispositivosServicio
         , IObjetosServicio objetosServicio
-        , SincronizarServicio sincronizarServicio)
+        , SincronizarServicio sincronizarServicio,
+        IConfigRepository<UI_Config> configRepository)
     {
         _tareasProgramadasServicio = tareasProgramadasServicio;
         _listasServicio = listasServicio;
         _dispositivosServicio = dispositivosServicio;
-        _objetosServicio = objetosServicio;        
+        _objetosServicio = objetosServicio;
         _sincronizarServicio = sincronizarServicio;
+        _configRepository = configRepository;
+
+        CargarConfiguracion().Wait();
     }
     public void OnNavigatedFrom()
     {
@@ -410,5 +423,18 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             IsBusy = false;
         }
     }
+    #endregion
+
+    #region Configs
+
+    private async Task CargarConfiguracion()
+    {
+        var gridColor = await _configRepository.Leer("GridColor");
+        _gridColor = Colores.HexToColor(gridColor.Valor!);
+
+        var comboColor = await _configRepository.Leer("ComboColor");
+        _comboColor = Colores.HexToColor(comboColor.Valor!);
+    }
+
     #endregion
 }

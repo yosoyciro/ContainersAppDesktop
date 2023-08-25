@@ -10,12 +10,22 @@
     <Page.Resources>
         <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
     </Page.Resources>
+    <ScrollViewer>
     <Grid>
-        <StackPanel
+            <StackPanel
             x:Name="ContentArea">
-            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
-            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock x:Uid="Settings_Theme" />
+                <TextBlock x:Uid="Settings_Idioma" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <ComboBox x:Name="cmbIdiomas"
+                                ItemsSource="{x:Bind ViewModel.Lenguajes}"                                
+                              SelectedItem="{x:Bind ViewModel.Lenguaje, Mode=TwoWay}"
+                              SelectionChanged="cmbIdiomas_SelectionChanged"
+                                Width="150"                              
+                    />
+                </StackPanel>
+            
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <TextBlock x:Uid="Settings_Theme" Style="{ThemeResource SubtitleTextBlockStyle}"/>
 
                 <StackPanel Margin="{StaticResource XSmallTopMargin}">
                     <RadioButton
@@ -60,28 +70,30 @@
                     <Button Width="200" Command="{x:Bind GoToSincronizacionesCommand}" Content="Sincronizaciones"/>
                 </StackPanel>
             </StackPanel>
-
-            <TextBlock x:Uid="Settings_Grids" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            
             <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                <TextBlock Text="Color de fondo" />
+                <TextBlock x:Uid="Settings_Grids" Style="{ThemeResource SubtitleTextBlockStyle}" />
                 <ColorPicker x:Name="colorPicker"
                             ColorChanged="colorPicker_ColorChanged"
                             CornerRadius="1"
-                            Height="230"
-                            Width="180"
-                             HorizontalAlignment="Left"
+                            IsMoreButtonVisible="False"
+                            IsColorChannelTextInputVisible="False"
+                            IsHexInputVisible="False"
+                            IsAlphaEnabled="False"
+                            HorizontalAlignment="Left"
                         />
             </StackPanel>
-
-            <TextBlock x:Uid="Settings_Combos" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            
             <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                <TextBlock Text="Color de fondo" />
+                <TextBlock x:Uid="Settings_Combos" Style="{ThemeResource SubtitleTextBlockStyle}" />
                 <ColorPicker x:Name="comboColorPicker"
                             ColorChanged="comboColorPicker_ColorChanged"
                             CornerRadius="1"
-                            Height="70"
-                            Width="180"
-                             HorizontalAlignment="Left"
+                            IsMoreButtonVisible="False"
+                            IsColorChannelTextInputVisible="False"
+                            IsHexInputVisible="False"
+                            IsAlphaEnabled="False"
+                            HorizontalAlignment="Left"
                         />
             </StackPanel>
 
@@ -98,4 +110,5 @@
             </StackPanel>
         </StackPanel>
     </Grid>
+    </ScrollViewer>
 </Page>

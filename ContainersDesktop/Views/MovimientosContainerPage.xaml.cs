@@ -8,6 +8,7 @@ using CommunityToolkit.WinUI.UI.Controls;
 using Azure;
 using ContainersDesktop.Helpers;
 using ContainersDesktop.ViewModels;
+using Microsoft.UI.Xaml.Media;
 
 namespace ContainersDesktop.Views;
 
@@ -27,6 +28,7 @@ public sealed partial class MovimientosContainerPage : Page
 
     private async void MovimientosContainerPage_Loaded(object sender, RoutedEventArgs e)
     {
+        MovimientosGrid.Background = new SolidColorBrush(ViewModel.GridColor);
         try
         {
             await ViewModel.CargarListasSource();

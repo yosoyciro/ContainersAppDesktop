@@ -12,7 +12,7 @@
 
   <Identity
     Name="26d9726d-22c8-4431-8d21-25b591a66183"
-    Publisher="CN=yosoy"
+    Publisher="CN=Ciro"
     Version="1.0.0.0" />
     
   <mp:PhoneIdentity PhoneProductId="26d9726d-22c8-4431-8d21-25b591a66183" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>

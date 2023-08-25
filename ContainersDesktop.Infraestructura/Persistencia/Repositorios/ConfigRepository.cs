@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ContainersDesktop.Dominio.Models.Base;
-using ContainersDesktop.Dominio.Models.UI_ConfigModels;
+﻿using System.Reflection.Metadata.Ecma335;
 using ContainersDesktop.Infraestructura.Contracts.Services.Config;
 using CoreDesktop.Dominio.Models.Base;
 using Microsoft.EntityFrameworkCore;
@@ -26,17 +21,7 @@ public class ConfigRepository<T> : IConfigRepository<T> where T : ConfigBaseEnti
     {
         try
         {
-            var entidad = _context.Set<T>().FirstOrDefault(x => x.Clave == entity.Clave);
-
-            if (entidad == null)
-            {
-                _context.Set<T>().Add(entity);
-            }
-            else
-            {
-                entidad.Valor = entity.Valor;
-                _context.Set<T>().Update(entidad);
-            }
+            _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync();
         }
         catch (Exception)
@@ -53,7 +38,16 @@ public class ConfigRepository<T> : IConfigRepository<T> where T : ConfigBaseEnti
 
     public async Task<List<T>> LeerTodas()
     {
-        return await _context.Set<T>().ToListAsync();
+        try
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        
 
     }
 }

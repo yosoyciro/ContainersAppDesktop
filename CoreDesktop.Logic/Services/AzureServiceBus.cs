@@ -1,12 +1,10 @@
 ﻿using System.Text;
-using System;
-using System.Threading.Tasks;
 using CoreDesktop.Dominio.Models.Mensajeria;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace CoreDesktop.Infraestructura.Mensajeria.Services;
+namespace CoreDesktop.Logica.Mensajeria.Services;
 public class AzureServiceBus
 {
     private readonly ServiceBusClient _client;
@@ -19,7 +17,7 @@ public class AzureServiceBus
 
     public async Task EnviarMensaje<T>(T @event) where T : Command
     {
-        const string queueName = "unicomcontainerslab";
+        const string queueName = "desktopamobiles";
         var message = JsonConvert.SerializeObject(@event);
         var body = Encoding.UTF8.GetBytes(message);
 

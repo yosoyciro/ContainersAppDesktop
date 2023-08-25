@@ -5,6 +5,7 @@ using ContainersDesktop.Helpers;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 
 namespace ContainersDesktop.Views;
 
@@ -23,7 +24,15 @@ public sealed partial class SincronizacionesPage : Page
 
     private async void SincronizacionesPage_Loaded(object sender, RoutedEventArgs e)
     {
-        await ViewModel.CargarSource();
+        grdSincronizaciones.Background = new SolidColorBrush(ViewModel.GridColor);
+        try
+        {
+            await ViewModel.CargarSource();
+        }
+        catch (Exception ex)
+        {
+            Dialogs.Error(this.XamlRoot, ex.Message);        }
+        
     }
 
     public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
