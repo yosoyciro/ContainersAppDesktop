@@ -2,14 +2,18 @@
 
 namespace CoreDesktop.Dominio.Models.Mensajeria;
 
-public abstract class Mensaje
+public abstract class Message
 {
+    //public Guid Id
+    //{
+    //    get; 
+    //}
     public string TipoMensaje
     {
-        get; protected set;
+        get;
     }
 
-    public Mensaje()
+    public Message()
     {
         TipoMensaje = GetType().Name;
     }

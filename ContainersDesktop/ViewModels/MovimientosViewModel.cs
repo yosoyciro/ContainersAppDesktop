@@ -294,7 +294,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
 
         return new MovimDTO()
         {
-            MOVIM_ID_REG = item.MOVIM_ID_REG,
+            MOVIM_ID_REG = item.ID,
             MOVIM_ID_REG_MOBILE = 0,
             MOVIM_ID_ESTADO_REG = item.MOVIM_ID_ESTADO_REG,
             MOVIM_ID_OBJETO = objeto.MOVIM_ID_OBJETO,
@@ -338,7 +338,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     {
         return new Movim()
         {
-            MOVIM_ID_REG = movimDTO.MOVIM_ID_REG,
+            ID = movimDTO.MOVIM_ID_REG,
             MOVIM_ID_ESTADO_REG = "A",
             MOVIM_ID_REG_MOBILE = 0,
             MOVIM_ID_OBJETO = movimDTO.MOVIM_ID_OBJETO, //LstObjetos.Where(x => x.MOVIM_ID_OBJETO == movimDTO.MOVIM_ID_OBJETO).FirstOrDefault().MOVIM_ID_OBJETO,

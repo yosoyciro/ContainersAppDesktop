@@ -1,8 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Azure.Messaging.ServiceBus;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Dominio.Models.Login;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Contracts.Services.Config;
 using ContainersDesktop.Logica.Services;
+using Windows.Media.Protection.PlayReady;
 
 namespace ContainersDesktop.ViewModels;
 
@@ -10,14 +12,15 @@ public partial class MainViewModel : ObservableRecipient
 {
     private readonly ILocalSettingsService _localSettingsService;
     private readonly IConfigRepository<UI_Default> _defaultConfigRepository;
-    private readonly IConfigRepository<UI_Config> _configRepository;
+    private readonly IConfigRepository<UI_Config> _configRepository;    
     public  Login Login;
     public MainViewModel(ILocalSettingsService localSettingsService, IConfigRepository<UI_Config> configRepository, IConfigRepository<UI_Default> defaultConfigRepository)
     {
         _localSettingsService = localSettingsService;
         _defaultConfigRepository = defaultConfigRepository;
         _configRepository = configRepository;
-        GetUsuarioLogueado().ConfigureAwait(true);
+        GetUsuarioLogueado().ConfigureAwait(true);        
+        
     }
 
     private async Task GetUsuarioLogueado()
@@ -46,4 +49,6 @@ public partial class MainViewModel : ObservableRecipient
             }            
         }
     }
+
+    
 }

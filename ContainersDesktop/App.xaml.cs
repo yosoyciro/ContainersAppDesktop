@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using AutoMapper;
 using ContainersDesktop.Activation;
 using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Core.Services;
@@ -8,6 +10,7 @@ using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Contracts.Services;
 using ContainersDesktop.Infraestructura.Contracts.Services.Config;
 using ContainersDesktop.Infraestructura.Persistencia;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts.Repositories;
 using ContainersDesktop.Infraestructura.Persistencia.Repositorios;
 using ContainersDesktop.Logica.Contracts;
 using ContainersDesktop.Logica.Contracts.Services;
@@ -15,8 +18,15 @@ using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
+using CoreDesktop.Dominio.Models;
+using CoreDesktop.Logic.Contracts;
+using CoreDesktop.Logic.Mapping;
+using CoreDesktop.Logic.Mensajeria.MessageHandlers;
+using CoreDesktop.Logic.Mensajeria.Messages;
+using CoreDesktop.Logic.Services;
 using CoreDesktop.Logic.Workers;
 using CoreDesktop.Logica.Mensajeria.Services;
+using CoreDesktopLogica.Mensajeria.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -80,6 +90,7 @@ public partial class App : Application
             services.AddSingleton<INavigationService, NavigationService>();
 
             // Core Services
+            services.AddTransient(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
             services.AddSingleton<IFileService, FileService>();
             services.AddTransient<IObjetosServicio, ObjetosServicio>();
             services.AddTransient<IListasServicio, ListasServicio>();
@@ -91,13 +102,31 @@ public partial class App : Application
             services.AddTransient<AzureStorageManagement>();
             services.AddTransient<PlayFabServicio>();
             services.AddTransient<SincronizarServicio>();
-            services.AddSingleton<AzureServiceBus>();            
+            services.AddSingleton<AzureServiceBus>();
+            services.AddSingleton<MensajesServicioProcesar>(sp =>
+            {
+                var scoopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+                return new MensajesServicioProcesar(scoopeFactory);
+            });
+            services.AddSingleton<MensajesServicio>();
+            
+
+            services.AddTransient<IMensajeRepository<Mensaje>, MensajeRepository<Mensaje>>();
+
+            //Message handlers
+            services.AddScoped<IMessageHandler<ContainerModificado>, ContainerModificadoHandler>();
+            services.AddScoped<ContainerModificadoHandler>();
+            services.AddScoped<IMessageHandler<TareaProgramadaModificada>, TareaProgramadaModificadaHandler>();
+            services.AddScoped<TareaProgramadaModificadaHandler>();
+            services.AddScoped<IMessageHandler<MovimCreado>, MovimCreadoHandler>();
+            services.AddScoped<MovimCreadoHandler>();
 
             //services.AddHostedService<ServiceBusWorker>();
 
             //Config services
             services.AddTransient<IConfigRepository<UI_Config>, ConfigRepository<UI_Config>>();
             services.AddTransient<IConfigRepository<UI_Default>, ConfigRepository<UI_Default>>();
+            //services.AddTransient(typeof(IConfigRepository<>), typeof(IConfigRepository<>));
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
@@ -125,9 +154,6 @@ public partial class App : Application
             services.AddTransient<TareasProgramadasPage>();
             services.AddTransient<Data2MovieViewModel>();
             services.AddTransient<Data2MoviePage>();    
-            
-            // Forms ViewModels
-            //services.AddTransient<DispositivosFormViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
@@ -153,7 +179,16 @@ public partial class App : Application
             });
 
             //Telemetría de la app
-            services.AddApplicationInsightsTelemetryWorkerService();            
+            services.AddApplicationInsightsTelemetryWorkerService();
+
+            //Automapper
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }).
         Build();
 

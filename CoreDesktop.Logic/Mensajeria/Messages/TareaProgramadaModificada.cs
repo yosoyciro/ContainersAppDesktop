@@ -1,0 +1,82 @@
+﻿using ContainersDesktop.Comunes.Helpers;
+using CoreDesktop.Dominio.Models.Mensajeria;
+
+namespace CoreDesktop.Logic.Mensajeria.Messages;
+public class TareaProgramadaModificada : Message
+{
+    public int TAREAS_PROGRAMADAS_ID_REG
+    {
+        get; set;
+    }
+    public string? TAREAS_PROGRAMADAS_ID_ESTADO_REG
+    {
+        get; set;
+    }
+    public int TAREAS_PROGRAMADAS_OBJETO_ID_REG
+    {
+        get; set;
+    }
+    public string? TAREAS_PROGRAMADAS_FECHA_PROGRAMADA
+    {
+        get; set;
+    }
+    public string? TAREAS_PROGRAMADAS_FECHA_COMPLETADA
+    {
+        get; set;
+    }
+    public int TAREAS_PROGRAMADAS_UBICACION_ORIGEN
+    {
+        get; set;
+    }
+    public int TAREAS_PROGRAMADAS_UBICACION_DESTINO
+    {
+        get; set;
+    }
+    public string? TAREAS_PROGRAMADAS_ORDENADO
+    {
+        get; set;
+    }
+    public int TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG
+    {
+        get; set;
+    }
+    public string? TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
+    {
+        get; set;
+    }
+    public double TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD
+    {
+        get;
+        set;
+    }
+    public double TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD
+    {
+        get;
+        set;
+    }
+
+    public TareaProgramadaModificada(int TAREAS_PROGRAMADAS_ID_REG, 
+        int TAREAS_PROGRAMADAS_OBJETO_ID_REG, 
+        int TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG,
+        double TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD,
+        double TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD,
+        string TAREAS_PROGRAMADAS_FECHA_COMPLETADA, 
+        string TAREAS_PROGRAMADAS_FECHA_PROGRAMADA,
+        string TAREAS_PROGRAMADAS_ORDENADO,
+        int TAREAS_PROGRAMADAS_UBICACION_DESTINO,
+        int TAREAS_PROGRAMADAS_UBICACION_ORIGEN
+        )
+    {
+        this.TAREAS_PROGRAMADAS_ID_REG = TAREAS_PROGRAMADAS_ID_REG;
+        this.TAREAS_PROGRAMADAS_OBJETO_ID_REG= TAREAS_PROGRAMADAS_OBJETO_ID_REG;        
+        this.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG;
+        this.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD;
+        this.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD;
+        this.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
+        this.TAREAS_PROGRAMADAS_FECHA_COMPLETADA = TAREAS_PROGRAMADAS_FECHA_COMPLETADA;
+        this.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = TAREAS_PROGRAMADAS_FECHA_PROGRAMADA;
+        this.TAREAS_PROGRAMADAS_ORDENADO = TAREAS_PROGRAMADAS_ORDENADO;
+        this.TAREAS_PROGRAMADAS_UBICACION_DESTINO = TAREAS_PROGRAMADAS_UBICACION_DESTINO;
+        this.TAREAS_PROGRAMADAS_UBICACION_ORIGEN = TAREAS_PROGRAMADAS_UBICACION_ORIGEN;
+    }
+}

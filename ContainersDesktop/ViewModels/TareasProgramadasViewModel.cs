@@ -248,7 +248,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
 
         return new TareaProgramadaDTO()
         {
-            TAREAS_PROGRAMADAS_ID_REG = item.TAREAS_PROGRAMADAS_ID_REG,
+            TAREAS_PROGRAMADAS_ID_REG = item.ID,
             TAREAS_PROGRAMADAS_ID_ESTADO_REG = item.TAREAS_PROGRAMADAS_ID_ESTADO_REG,
             TAREAS_PROGRAMADAS_OBJETO_ID_REG = item.TAREAS_PROGRAMADAS_OBJETO_ID_REG,
             TAREAS_PROGRAMADAS_OBJETO_MATRICULA = objeto.DESCRIPCION,
@@ -271,7 +271,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     {
         return new TareaProgramada()
         {
-            TAREAS_PROGRAMADAS_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ID_REG,
+            ID = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ID_REG,
             TAREAS_PROGRAMADAS_ID_ESTADO_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ID_ESTADO_REG,
             TAREAS_PROGRAMADAS_OBJETO_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_OBJETO_ID_REG,
             TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA,

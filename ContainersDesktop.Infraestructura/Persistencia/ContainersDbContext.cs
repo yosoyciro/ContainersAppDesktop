@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
+using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.Storage;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
+using CoreDesktop.Dominio.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -18,6 +20,18 @@ public partial class ContainersDbContext : DbContext
     }
 
     public virtual DbSet<UI_Config> UI_CONFIG
+    {
+        get;
+        set;
+    }
+
+    public virtual DbSet<Mensaje> MENSAJES
+    {
+        get;
+        set;
+    }
+
+    public virtual DbSet<Movim> MOVIM
     {
         get;
         set;

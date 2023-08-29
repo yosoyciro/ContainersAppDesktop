@@ -1,15 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
-public class Movim
+public class Movim : BaseEntity
 {
-    [Key]
-    public int MOVIM_ID_REG
-    {
-        get;
-        set;
-    }
-
     public int MOVIM_ID_REG_MOBILE
     {
         get;

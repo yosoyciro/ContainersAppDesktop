@@ -8,6 +8,7 @@ using ContainersDesktop.Infraestructura.Contracts.Services;
 using ContainersDesktop.Infraestructura.Contracts.Services.Config;
 using CoreDesktop.Dominio.Models.Mensajeria;
 using CoreDesktop.Logica.Mensajeria.Services;
+using CoreDesktopLogica.Mensajeria.Messages;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 
@@ -322,8 +323,8 @@ public partial class ContainersGridViewModel : ObservableValidator
         objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
         Source[i] = objetoDTO;
 
-        var mensaje = new ModifiedContainer(objeto);
-        await _azureBus.EnviarMensaje(mensaje);
+        //var mensaje = new ContainerModificado(objeto.OBJ_ID_REG, objeto.OBJ_SIGLAS, objeto.OBJ_SIGLAS_LISTA);
+        //await _azureBus.EnviarMensaje(mensaje);
     }
 
     public async Task BorrarRecuperarRegistro()

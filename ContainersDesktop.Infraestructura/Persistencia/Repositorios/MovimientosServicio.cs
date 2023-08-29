@@ -53,7 +53,7 @@ public class MovimientosServicio : IMovimientosServicio
                     //{
                     var movimObjeto = new Movim()
                     {
-                        MOVIM_ID_REG = query.GetInt32(0),
+                        ID = query.GetInt32(0),
                         MOVIM_ID_ESTADO_REG = query.GetString(1),
                         MOVIM_FECHA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
                         MOVIM_ID_OBJETO = query.GetInt32(3),
@@ -127,7 +127,7 @@ public class MovimientosServicio : IMovimientosServicio
                     //{
                     var movimObjeto = new Movim()
                     {
-                        MOVIM_ID_REG = query.GetInt32(0),
+                        ID = query.GetInt32(0),
                         MOVIM_ID_ESTADO_REG = query.GetString(1),
                         MOVIM_FECHA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
                         MOVIM_ID_OBJETO = query.GetInt32(3),
@@ -198,7 +198,7 @@ public class MovimientosServicio : IMovimientosServicio
                 {                   
                     var movimObjeto = new Movim()
                     {
-                        MOVIM_ID_REG = query.GetInt32(0),
+                        ID = query.GetInt32(0),
                         MOVIM_ID_ESTADO_REG = query.GetString(1),
                         MOVIM_FECHA = query.GetString(2),
                         MOVIM_ID_OBJETO = query.GetInt32(3),
@@ -266,7 +266,7 @@ public class MovimientosServicio : IMovimientosServicio
                     //Verifico si el registro existe
                     SqliteCommand selectCommand = new SqliteCommand("SELECT MOVIM_ID_REG FROM " +
                         " MOVIM WHERE MOVIM_ID_REG_MOBILE = @MOVIM_ID_REG_MOBILE AND MOVIM_ID_DISPOSITIVO = @MOVIM_ID_DISPOSITIVO", db);
-                    selectCommand.Parameters.AddWithValue("@MOVIM_ID_REG_MOBILE", movim.MOVIM_ID_REG);
+                    selectCommand.Parameters.AddWithValue("@MOVIM_ID_REG_MOBILE", movim.ID);
                     selectCommand.Parameters.AddWithValue("@MOVIM_ID_DISPOSITIVO", idDispositivo);
                     SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
 
@@ -274,7 +274,7 @@ public class MovimientosServicio : IMovimientosServicio
                     {
                         using (var cmd = new SqliteCommand(insertCommand, db))
                         {
-                            cmd.Parameters.AddWithValue("@MOVIM_ID_REG_MOBILE", movim.MOVIM_ID_REG);
+                            cmd.Parameters.AddWithValue("@MOVIM_ID_REG_MOBILE", movim.ID);
                             cmd.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", movim.MOVIM_ID_ESTADO_REG);
                             cmd.Parameters.AddWithValue("@MOVIM_ID_DISPOSITIVO", idDispositivo);
                             cmd.Parameters.AddWithValue("@MOVIM_FECHA", movim.MOVIM_FECHA);
@@ -476,7 +476,7 @@ public class MovimientosServicio : IMovimientosServicio
                     "MOVIM_ENTRADA_SALIDA_LISTA=@MOVIM_ENTRADA_SALIDA_LISTA, MOVIM_ENTRADA_SALIDA=@MOVIM_ENTRADA_SALIDA, MOVIM_ALMACEN_LISTA=@MOVIM_ALMACEN_LISTA, " +
                     "MOVIM_ALMACEN=@MOVIM_ALMACEN, MOVIM_PDF=@MOVIM_PDF, MOVIM_FECHA_ACTUALIZACION=@MOVIM_FECHA_ACTUALIZACION " +
                     "WHERE MOVIM_ID_REG=@MOVIM_ID_REG;";
-                updateCommand.Parameters.AddWithValue("@MOVIM_ID_REG", movim.MOVIM_ID_REG);
+                updateCommand.Parameters.AddWithValue("@MOVIM_ID_REG", movim.ID);
                 updateCommand.Parameters.AddWithValue("@MOVIM_ID_DISPOSITIVO", movim.MOVIM_ID_DISPOSITIVO);
                 updateCommand.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", movim.MOVIM_ID_ESTADO_REG);
                 updateCommand.Parameters.AddWithValue("@MOVIM_FECHA", movim.MOVIM_FECHA);
@@ -536,7 +536,7 @@ public class MovimientosServicio : IMovimientosServicio
                 updateCommand.CommandText = "UPDATE MOVIM SET MOVIM_ID_ESTADO_REG=@MOVIM_ID_ESTADO_REG, " +
                     "MOVIM_FECHA_ACTUALIZACION=@MOVIM_FECHA_ACTUALIZACION " +
                     "WHERE MOVIM_ID_REG=@MOVIM_ID_REG;";
-                updateCommand.Parameters.AddWithValue("@MOVIM_ID_REG", movim.MOVIM_ID_REG);
+                updateCommand.Parameters.AddWithValue("@MOVIM_ID_REG", movim.ID);
                 updateCommand.Parameters.AddWithValue("@MOVIM_ID_ESTADO_REG", movim.MOVIM_ID_ESTADO_REG);
                 updateCommand.Parameters.AddWithValue("@MOVIM_FECHA_ACTUALIZACION", movim.MOVIM_FECHA_ACTUALIZACION);
 

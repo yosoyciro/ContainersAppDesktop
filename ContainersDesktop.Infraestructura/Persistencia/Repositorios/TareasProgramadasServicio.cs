@@ -49,7 +49,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                 {
                     var movimObjeto = new TareaProgramada()
                     {
-                        TAREAS_PROGRAMADAS_ID_REG = query.GetInt32(0),
+                        ID = query.GetInt32(0),
                         TAREAS_PROGRAMADAS_OBJETO_ID_REG = query.GetInt32(1),
                         TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
                         TAREAS_PROGRAMADAS_FECHA_COMPLETADA = FormatoFecha.ConvertirAFechaHora(query.GetString(3)),
@@ -99,7 +99,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                 {
                     var movimObjeto = new TareaProgramada()
                     {
-                        TAREAS_PROGRAMADAS_ID_REG = query.GetInt32(0),
+                        ID = query.GetInt32(0),
                         TAREAS_PROGRAMADAS_OBJETO_ID_REG = query.GetInt32(1),
                         TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(query.GetString(2)),
                         TAREAS_PROGRAMADAS_FECHA_COMPLETADA = query.GetString(3) != string.Empty ? FormatoFecha.ConvertirAFechaHora(query.GetString(3)) : string.Empty,
@@ -152,7 +152,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                     {
                         var tareaProgramadaObjeto = new TareaProgramada()
                         {
-                            TAREAS_PROGRAMADAS_ID_REG = query.GetInt32(0),
+                            ID = query.GetInt32(0),
                             TAREAS_PROGRAMADAS_OBJETO_ID_REG = query.GetInt32(1),
                             TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = query.GetString(2),
                             TAREAS_PROGRAMADAS_FECHA_COMPLETADA = query.GetString(3),
@@ -212,7 +212,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                             cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_COMPLETADA", tareaProgramada.TAREAS_PROGRAMADAS_FECHA_COMPLETADA);
                             cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD", tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD);
                             cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD", tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD);
-                            cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", tareaProgramada.TAREAS_PROGRAMADAS_ID_REG);
+                            cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", tareaProgramada.ID);
                             cmd.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION", FormatoFecha.FechaEstandar(DateTime.Now));
                             await cmd.ExecuteNonQueryAsync();
                         }
@@ -302,7 +302,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                     "TAREAS_PROGRAMADAS_UBICACION_DESTINO=@TAREAS_PROGRAMADAS_UBICACION_DESTINO, TAREAS_PROGRAMADAS_ORDENADO=@TAREAS_PROGRAMADAS_ORDENADO, TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG=@TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG, " +
                     "TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION=@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION, TAREAS_PROGRAMADAS_ID_ESTADO_REG=@TAREAS_PROGRAMADAS_ID_ESTADO_REG " +
                     "WHERE TAREAS_PROGRAMADAS_ID_REG=@TAREAS_PROGRAMADAS_ID_REG;";
-                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", tareaProgramada.TAREAS_PROGRAMADAS_ID_REG);
+                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", tareaProgramada.ID);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_OBJETO_ID_REG", tareaProgramada.TAREAS_PROGRAMADAS_OBJETO_ID_REG);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_PROGRAMADA", tareaProgramada.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_COMPLETADA", tareaProgramada.TAREAS_PROGRAMADAS_FECHA_COMPLETADA);
@@ -352,7 +352,7 @@ public class TareasProgramadasServicio : ITareasProgramadasServicio
                 updateCommand.CommandText = "UPDATE TAREAS_PROGRAMADAS SET TAREAS_PROGRAMADAS_ID_ESTADO_REG=@TAREAS_PROGRAMADAS_ID_ESTADO_REG, " +
                     " TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION=@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION " +
                     " WHERE TAREAS_PROGRAMADAS_ID_REG=@TAREAS_PROGRAMADAS_ID_REG;";
-                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", tareaProgramada.TAREAS_PROGRAMADAS_ID_REG);
+                updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_REG", tareaProgramada.ID);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_ID_ESTADO_REG", tareaProgramada.TAREAS_PROGRAMADAS_ID_ESTADO_REG);
                 updateCommand.Parameters.AddWithValue("@TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION", tareaProgramada.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION);
 

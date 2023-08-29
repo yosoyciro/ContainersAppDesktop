@@ -1,13 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
 [Table("TAREAS_PROGRAMADAS")]
-public class TareaProgramada
-{
-    public int TAREAS_PROGRAMADAS_ID_REG
-    {
-        get; set;
-    }
+public class TareaProgramada : BaseEntity
+{    
     public string? TAREAS_PROGRAMADAS_ID_ESTADO_REG
     {
         get; set;
