@@ -4,12 +4,10 @@ using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.DTO;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
-using ContainersDesktop.Infraestructura.Contracts.Services;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
-using CoreDesktop.Dominio.Models.Mensajeria;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using CoreDesktop.Logic.Contracts;
 using CoreDesktop.Logica.Mensajeria.Services;
 using CoreDesktopLogica.Mensajeria.Messages;
-using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
@@ -20,9 +18,9 @@ public partial class ContainersGridViewModel : ObservableValidator
     public ObjetosViewModel ObjetosViewModel => _objetosViewModel;
 
 
-    private readonly IObjetosServicio _objetosServicio;
-    private readonly IListasServicio _listasServicio;
-    private readonly IMovimientosServicio _movimientosServicio;
+    private readonly IServiciosRepositorios<Objeto> _objetosServicio;
+    private readonly IServiciosRepositorios<Lista> _listasServicio;
+    private readonly IServiciosRepositorios<Movim> _movimientosServicio;
     private readonly IConfigRepository<UI_Config> _configRepository;
     private readonly AzureServiceBus _azureBus;
     private string _cachedSortedColumn = string.Empty;
@@ -61,7 +59,7 @@ public partial class ContainersGridViewModel : ObservableValidator
     } = new();
     public ObservableCollection<Movim> Movims { get; } = new();
     public ObservableCollection<MovimDTO> MovimsDTO { get; } = new();
-    public ObservableCollection<Listas> LstListas { get; } = new ObservableCollection<Listas>();
+    public ObservableCollection<Lista> LstListas { get; } = new ObservableCollection<Lista>();
     public ObservableCollection<SiglasDTO> LstSiglas { get; } = new ObservableCollection<SiglasDTO>();
     public ObservableCollection<SiglasDTO> LstSiglasActivos { get; } = new ObservableCollection<SiglasDTO>();
     public ObservableCollection<ModelosDTO> LstModelos { get; } = new ObservableCollection<ModelosDTO>();
@@ -88,15 +86,15 @@ public partial class ContainersGridViewModel : ObservableValidator
     public ObservableCollection<LineasVidaDTO> LstLineasVidaActivos { get; } = new ObservableCollection<LineasVidaDTO>();
 
     #endregion
-    public ContainersGridViewModel(IObjetosServicio objetosServicio, IListasServicio listasServicio, IMovimientosServicio movimientosServicio, IConfigRepository<UI_Config> configRepository, AzureServiceBus azureBus)
+    public ContainersGridViewModel(IConfigRepository<UI_Config> configRepository, AzureServiceBus azureBus, IServiciosRepositorios<Objeto> objetosServicio, IServiciosRepositorios<Lista> listasServicio, IServiciosRepositorios<Movim> movimientosServicio)
     {
+        _configRepository = configRepository;        
+        _azureBus = azureBus;
         _objetosServicio = objetosServicio;
         _listasServicio = listasServicio;
         _movimientosServicio = movimientosServicio;
-        _configRepository = configRepository;
 
         CargarConfiguracion().Wait();
-        _azureBus = azureBus;
     }
 
     #region Listas y source
@@ -107,7 +105,7 @@ public partial class ContainersGridViewModel : ObservableValidator
             LstListas.Clear();
 
             //Cargo Listas
-            var listas = await _listasServicio.ObtenerListas();
+            var listas = await _listasServicio.GetAsync();
             if (listas.Any())
             {
                 foreach (var item in listas)
@@ -118,177 +116,177 @@ public partial class ContainersGridViewModel : ObservableValidator
 
             //Siglas
             var lstSiglas = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1000 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1000 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstSiglas)
             {
-                LstSiglas.Add(new SiglasDTO() { OBJ_SIGLAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstSiglas.Add(new SiglasDTO() { OBJ_SIGLAS = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstSiglasActivos.Add(new SiglasDTO() { OBJ_SIGLAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstSiglasActivos.Add(new SiglasDTO() { OBJ_SIGLAS = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //Modelos
             var lstModelos = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1100 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1100 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstModelos)
             {
-                LstModelos.Add(new ModelosDTO() { OBJ_MODELO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstModelos.Add(new ModelosDTO() { OBJ_MODELO = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstModelosActivos.Add(new ModelosDTO() { OBJ_MODELO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstModelosActivos.Add(new ModelosDTO() { OBJ_MODELO = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //Variantes
             var lstVariantes = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1200 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1200 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstVariantes)
             {
-                LstVariantes.Add(new VariantesDTO() { OBJ_VARIANTE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstVariantes.Add(new VariantesDTO() { OBJ_VARIANTE = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstVariantesActivos.Add(new VariantesDTO() { OBJ_VARIANTE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstVariantesActivos.Add(new VariantesDTO() { OBJ_VARIANTE = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //Tipos
             var lstTipos = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1300 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1300 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstTipos)
             {
-                LstTipos.Add(new TiposDTO() { OBJ_TIPO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstTipos.Add(new TiposDTO() { OBJ_TIPO = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstTiposActivos.Add(new TiposDTO() { OBJ_TIPO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstTiposActivos.Add(new TiposDTO() { OBJ_TIPO = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //Propietarios
             var lstPropietarios = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1400 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1400 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstPropietarios)
             {
-                LstPropietarios.Add(new PropietariosDTO() { OBJ_PROPIETARIO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstPropietarios.Add(new PropietariosDTO() { OBJ_PROPIETARIO = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstPropietariosActivos.Add(new PropietariosDTO() { OBJ_PROPIETARIO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstPropietariosActivos.Add(new PropietariosDTO() { OBJ_PROPIETARIO = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //TARA
             var lstTara = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1500 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1500 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstTara)
             {
-                LstTara.Add(new TaraDTO() { OBJ_TARA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstTara.Add(new TaraDTO() { OBJ_TARA = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstTaraActivos.Add(new TaraDTO() { OBJ_TARA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstTaraActivos.Add(new TaraDTO() { OBJ_TARA = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //PMP
             var lstPmp = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1600 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1600 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstPmp)
             {
-                LstPmp.Add(new PmpDTO() { OBJ_PMP = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstPmp.Add(new PmpDTO() { OBJ_PMP = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
 
-                    LstPmpActivos.Add(new PmpDTO() { OBJ_PMP = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstPmpActivos.Add(new PmpDTO() { OBJ_PMP = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 {
                 }
             }
 
             //Altura Exterior
             var lstAlturasExterior = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1700 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1700 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstAlturasExterior)
             {
-                LstAlturasExterior.Add(new AlturasExteriorDTO() { OBJ_ALTURA_EXTERIOR = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstAlturasExterior.Add(new AlturasExteriorDTO() { OBJ_ALTURA_EXTERIOR = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstAlturasExteriorActivos.Add(new AlturasExteriorDTO() { OBJ_ALTURA_EXTERIOR = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstAlturasExteriorActivos.Add(new AlturasExteriorDTO() { OBJ_ALTURA_EXTERIOR = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //Cuello Cisne
             var lstCuellosCisne = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1800 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1800 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstCuellosCisne)
             {
-                LstCuellosCisne.Add(new CuellosCisneDTO() { OBJ_CUELLO_CISNE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstCuellosCisne.Add(new CuellosCisneDTO() { OBJ_CUELLO_CISNE = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstCuellosCisneActivos.Add(new CuellosCisneDTO() { OBJ_CUELLO_CISNE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstCuellosCisneActivos.Add(new CuellosCisneDTO() { OBJ_CUELLO_CISNE = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
 
             }
 
             //Barras
             var lstBarras = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 1900 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 1900 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstBarras)
             {
-                LstBarras.Add(new BarrasDTO() { OBJ_BARRAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstBarras.Add(new BarrasDTO() { OBJ_BARRAS = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstBarrasActivos.Add(new BarrasDTO() { OBJ_BARRAS = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstBarrasActivos.Add(new BarrasDTO() { OBJ_BARRAS = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //Cables
             var lstCables = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 2000 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 2000 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstCables)
             {
-                LstCables.Add(new CablesDTO() { OBJ_CABLES = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstCables.Add(new CablesDTO() { OBJ_CABLES = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstCablesActivos.Add(new CablesDTO() { OBJ_CABLES = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstCablesActivos.Add(new CablesDTO() { OBJ_CABLES = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //Lineas vida
             var lstLineasVida = LstListas
-                .Where(x => (x.LISTAS_ID_LISTA == 2100 || x.LISTAS_ID_REG == 1))
+                .Where(x => (x.LISTAS_ID_LISTA == 2100 || x.ID == 1))
                 .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN)
                 .ToList();
             foreach (var item in lstLineasVida)
             {
-                LstLineasVida.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstLineasVida.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 if (item.LISTAS_ID_ESTADO_REG == "A")
                 {
-                    LstLineasVidaActivos.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                    LstLineasVidaActivos.Add(new LineasVidaDTO() { OBJ_LINEA_VIDA = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 }
             }
 
             //Source
             Source.Clear();
-            var data = await _objetosServicio.ObtenerObjetos();
+            var data = await _objetosServicio.GetAsync();
             if (data.Any())
             {
                 foreach (var item in data)
@@ -308,7 +306,7 @@ public partial class ContainersGridViewModel : ObservableValidator
     public async Task CrearObjeto(ObjetosListaDTO objetoDTO)
     {
         var objeto = GenerarObjeto(objetoDTO);
-        objetoDTO.OBJ_ID_REG = await _objetosServicio.CrearObjeto(objeto);
+        objetoDTO.OBJ_ID_REG = await _objetosServicio.AddAsync(objeto);
         objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objeto.OBJ_INSPEC_CSC);
         objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
         Source.Add(objetoDTO);
@@ -316,15 +314,23 @@ public partial class ContainersGridViewModel : ObservableValidator
 
     public async Task ActualizarObjeto(ObjetosListaDTO objetoDTO)
     {
-        var objeto = GenerarObjeto(objetoDTO);
-        await _objetosServicio.ActualizarObjeto(objeto);
-        var i = Source.IndexOf(objetoDTO);
-        objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objetoDTO.OBJ_INSPEC_CSC);
-        objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
-        Source[i] = objetoDTO;
+        try
+        {
+            var objeto = GenerarObjeto(objetoDTO);
+            await _objetosServicio.UpdateAsync(objeto);
+            var i = Source.IndexOf(objetoDTO);
+            objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objetoDTO.OBJ_INSPEC_CSC);
+            objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
+            Source[i] = objetoDTO;
 
-        //var mensaje = new ContainerModificado(objeto.OBJ_ID_REG, objeto.OBJ_SIGLAS, objeto.OBJ_SIGLAS_LISTA);
-        //await _azureBus.EnviarMensaje(mensaje);
+            var mensaje = new ContainerModificado(objeto);
+            await _azureBus.EnviarMensaje(mensaje);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        
     }
 
     public async Task BorrarRecuperarRegistro()
@@ -332,7 +338,7 @@ public partial class ContainersGridViewModel : ObservableValidator
         var accion = EstadoActivo ? "B" : "A";
         SelectedObjeto.OBJ_ID_ESTADO_REG = accion;
         SelectedObjeto.OBJ_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
-        await _objetosServicio.BorrarRecuperarRegistro(GenerarObjeto(SelectedObjeto));
+        await _objetosServicio.DeleteRecover(GenerarObjeto(SelectedObjeto));
 
         //Actualizo Source
         var i = Source.IndexOf(SelectedObjeto);        
@@ -585,11 +591,11 @@ public partial class ContainersGridViewModel : ObservableValidator
     #endregion
 
     #region Mapeos
-    private ObjetosListaDTO GenerarDTO(Objetos objeto)
+    private ObjetosListaDTO GenerarDTO(Objeto objeto)
     {
         return new ObjetosListaDTO()
         {
-            OBJ_ID_REG = objeto.OBJ_ID_REG,
+            OBJ_ID_REG = objeto.ID,
             OBJ_ID_ESTADO_REG = objeto.OBJ_ID_ESTADO_REG,
             OBJ_MATRICULA = objeto.OBJ_MATRICULA,
             OBJ_ID_OBJETO = objeto.OBJ_ID_OBJETO,
@@ -601,7 +607,7 @@ public partial class ContainersGridViewModel : ObservableValidator
             OBJ_VARIANTE_DESCRIPCION = LstVariantes.FirstOrDefault(x => x.OBJ_VARIANTE == objeto.OBJ_VARIANTE).DESCRIPCION,
             OBJ_TIPO = objeto.OBJ_TIPO,
             OBJ_TIPO_DESCRIPCION = LstTipos.FirstOrDefault(x => x.OBJ_TIPO == objeto.OBJ_TIPO).DESCRIPCION,
-            OBJ_INSPEC_CSC = objeto.OBJ_INSPEC_CSC,
+            OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objeto.OBJ_INSPEC_CSC),
             OBJ_PROPIETARIO = objeto.OBJ_PROPIETARIO,
             OBJ_PROPIETARIO_DESCRIPCION = LstPropietarios.FirstOrDefault(x => x.OBJ_PROPIETARIO == objeto.OBJ_PROPIETARIO).DESCRIPCION,
             OBJ_TARA = objeto.OBJ_TARA,
@@ -620,16 +626,16 @@ public partial class ContainersGridViewModel : ObservableValidator
             OBJ_LINEA_VIDA = objeto.OBJ_LINEA_VIDA,
             OBJ_LINEA_VIDA_DESCRIPCION = LstLineasVida.FirstOrDefault(x => x.OBJ_LINEA_VIDA == objeto.OBJ_LINEA_VIDA).DESCRIPCION,
             OBJ_OBSERVACIONES = objeto.OBJ_OBSERVACIONES,
-            OBJ_FECHA_ACTUALIZACION = objeto.OBJ_FECHA_ACTUALIZACION,
+            OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objeto.OBJ_FECHA_ACTUALIZACION),
             OBJ_COLOR = objeto.OBJ_COLOR,
         };
     }
 
-    private Objetos GenerarObjeto(ObjetosListaDTO objetoDTO)
+    private Objeto GenerarObjeto(ObjetosListaDTO objetoDTO)
     {
-        return new Objetos()
+        return new Objeto()
         {
-            OBJ_ID_REG = objetoDTO.OBJ_ID_REG,
+            ID = objetoDTO.OBJ_ID_REG,
             OBJ_ID_ESTADO_REG = objetoDTO.OBJ_ID_ESTADO_REG,
             OBJ_MATRICULA = objetoDTO.OBJ_MATRICULA,
             OBJ_ID_OBJETO = 0,
@@ -641,7 +647,7 @@ public partial class ContainersGridViewModel : ObservableValidator
             OBJ_VARIANTE_LISTA = LstVariantes.FirstOrDefault(x => x.OBJ_VARIANTE == objetoDTO.OBJ_VARIANTE).LISTAS_ID_LISTA,
             OBJ_TIPO = objetoDTO.OBJ_TIPO,
             OBJ_TIPO_LISTA = LstTipos.FirstOrDefault(x => x.OBJ_TIPO == objetoDTO.OBJ_TIPO).LISTAS_ID_LISTA,
-            OBJ_INSPEC_CSC = objetoDTO.OBJ_INSPEC_CSC,
+            OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objetoDTO.OBJ_INSPEC_CSC),
             OBJ_PROPIETARIO = objetoDTO.OBJ_PROPIETARIO,
             OBJ_PROPIETARIO_LISTA = LstPropietarios.FirstOrDefault(x => x.OBJ_PROPIETARIO == objetoDTO.OBJ_PROPIETARIO).LISTAS_ID_LISTA,
             OBJ_TARA = objetoDTO.OBJ_TARA,

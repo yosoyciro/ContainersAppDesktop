@@ -16,13 +16,13 @@ public class Movim : BaseEntity
         set;
     }
 
-    public string MOVIM_ID_ESTADO_REG
+    public string? MOVIM_ID_ESTADO_REG
     {
         get;
         set;
     }
 
-    public string MOVIM_FECHA
+    public string? MOVIM_FECHA
     {
         get;
         set;
@@ -94,25 +94,25 @@ public class Movim : BaseEntity
         set;
     }
 
-    public string MOVIM_CAMION_ID
+    public string? MOVIM_CAMION_ID
     {
         get;
         set;
     }
 
-    public string MOVIM_REMOLQUE_ID
+    public string? MOVIM_REMOLQUE_ID
     {
         get;
         set;
     }
 
-    public string MOVIM_ALBARAN_ID
+    public string? MOVIM_ALBARAN_ID
     {
         get;
         set;
     }
 
-    public string MOVIM_OBSERVACIONES
+    public string? MOVIM_OBSERVACIONES
     {
         get;
         set;
@@ -142,13 +142,13 @@ public class Movim : BaseEntity
         set;
     }
 
-    public string MOVIM_PDF
+    public string? MOVIM_PDF
     {
         get;
         set;
     }
 
-    public string MOVIM_FECHA_ACTUALIZACION
+    public string? MOVIM_FECHA_ACTUALIZACION
     {
         get;
         set;

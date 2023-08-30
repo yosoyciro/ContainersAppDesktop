@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Dominio.Models.Login;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Services;
 using Windows.Media.Protection.PlayReady;
 

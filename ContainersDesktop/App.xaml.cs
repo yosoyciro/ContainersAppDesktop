@@ -7,10 +7,8 @@ using ContainersDesktop.Core.Services;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.Storage;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
-using ContainersDesktop.Infraestructura.Contracts.Services;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
 using ContainersDesktop.Infraestructura.Persistencia;
-using ContainersDesktop.Infraestructura.Persistencia.Contracts.Repositories;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Infraestructura.Persistencia.Repositorios;
 using ContainersDesktop.Logica.Contracts;
 using ContainersDesktop.Logica.Contracts.Services;
@@ -20,6 +18,7 @@ using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
 using CoreDesktop.Dominio.Models;
 using CoreDesktop.Logic.Contracts;
+using CoreDesktop.Logic.Implementaciones;
 using CoreDesktop.Logic.Mapping;
 using CoreDesktop.Logic.Mensajeria.MessageHandlers;
 using CoreDesktop.Logic.Mensajeria.Messages;
@@ -69,9 +68,6 @@ public partial class App : Application
     {
         InitializeComponent();
 
-        //Inicio Database
-        InicializarDB.InicializarBase();
-
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
@@ -90,17 +86,11 @@ public partial class App : Application
             services.AddSingleton<INavigationService, NavigationService>();
 
             // Core Services
-            services.AddTransient(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
+            services.AddScoped(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
+            services.AddScoped(typeof(IServiciosRepositorios<>), typeof(ServiciosRepositorios<>));
             services.AddSingleton<IFileService, FileService>();
-            services.AddTransient<IObjetosServicio, ObjetosServicio>();
-            services.AddTransient<IListasServicio, ListasServicio>();
-            services.AddTransient<IClaListServicio, ClaListServicio>();
-            services.AddTransient<IDispositivosServicio, DispositivosServicio>();
-            services.AddTransient<IMovimientosServicio, MovimientosServicio>();
-            services.AddTransient<ISincronizacionServicio, SincronizacionServicio>();
-            services.AddTransient<ITareasProgramadasServicio, TareasProgramadasServicio>();
-            services.AddTransient<AzureStorageManagement>();
-            services.AddTransient<PlayFabServicio>();
+            services.AddSingleton<AzureStorageManagement>();
+            services.AddSingleton<PlayFabServicio>();
             services.AddTransient<SincronizarServicio>();
             services.AddSingleton<AzureServiceBus>();
             services.AddSingleton<MensajesServicioProcesar>(sp =>

@@ -1,14 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
-public class Sincronizaciones
-{
-    [Key]
-    public int SINCRONIZACIONES_ID_REG
-    {
-        get; set;
-    }
-
+public class Sincronizacion : BaseEntity
+{    
 	public string SINCRONIZACIONES_FECHA_HORA_INICIO
     {
         get; set;

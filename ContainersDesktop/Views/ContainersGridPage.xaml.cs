@@ -219,9 +219,16 @@ public sealed partial class ContainersGridPage : Page
         nuevoObjeto.OBJ_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now.Date);
         nuevoObjeto.OBJ_COLOR = Colores.ColorToHex(colorPicker.Color);
 
-        await ViewModel.ActualizarObjeto(nuevoObjeto);
+        try
+        {
+            await ViewModel.ActualizarObjeto(nuevoObjeto);
 
-        grdContainers.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+            grdContainers.ItemsSource = ViewModel.ApplyFilter(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);
+        }
+        catch (Exception ex)
+        {
+            await Dialogs.Error(this.XamlRoot, ex.Message);
+        }        
     }
 
     private async Task AgregarObjeto()

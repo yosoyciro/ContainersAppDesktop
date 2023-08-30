@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ContainersDesktop.Infraestructura.Persistencia.Configurations;
-public class TareaProgramadaConfig : IEntityTypeConfiguration<TareaProgramada>
+public class TareasProgramadasConfig : IEntityTypeConfiguration<TareaProgramada>
 {
     public void Configure(EntityTypeBuilder<TareaProgramada> builder)
     {

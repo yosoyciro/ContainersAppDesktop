@@ -4,15 +4,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
-using ContainersDesktop.Infraestructura.Contracts.Services;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Services;
+using CoreDesktop.Logic.Contracts;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
 public partial class DispositivosViewModel : ObservableRecipient
 {    
-    private readonly IDispositivosServicio _dispositivosServicio;
+    private readonly IServiciosRepositorios<Dispositivo> _dispositivosServicio;
     private readonly AzureStorageManagement _azureStorageManagement;
     private readonly SincronizarServicio _sincronizarServicio;
     private readonly DispositivosFormViewModel _formViewModel = new();
@@ -24,8 +24,8 @@ public partial class DispositivosViewModel : ObservableRecipient
 
     public DispositivosFormViewModel FormViewModel => _formViewModel;
 
-    private Dispositivos current;
-    public Dispositivos SelectedDispositivo
+    private Dispositivo current;
+    public Dispositivo SelectedDispositivo
     {
         get => current;
         set
@@ -42,13 +42,13 @@ public partial class DispositivosViewModel : ObservableRecipient
     public Color GridColor => _gridColor;
     public Color ComboColor => _comboColor;
 
-    public ObservableCollection<Dispositivos> Source { get; } = new();
+    public ObservableCollection<Dispositivo> Source { get; } = new();
     [ObservableProperty]
     public bool isBusy = false;
     
     private string _cachedSortedColumn = string.Empty;
 
-    public DispositivosViewModel(IDispositivosServicio dispositivosServicio, AzureStorageManagement azureStorageManagement, SincronizarServicio sincronizarServicio, IConfigRepository<UI_Config> configRepository)
+    public DispositivosViewModel(IServiciosRepositorios<Dispositivo> dispositivosServicio, AzureStorageManagement azureStorageManagement, SincronizarServicio sincronizarServicio, IConfigRepository<UI_Config> configRepository)
     {
         _dispositivosServicio = dispositivosServicio;
         _azureStorageManagement = azureStorageManagement;
@@ -62,7 +62,7 @@ public partial class DispositivosViewModel : ObservableRecipient
     public async Task CargarSource()
     {
         Source.Clear();
-        var data = await _dispositivosServicio.ObtenerDispositivos();
+        var data = await _dispositivosServicio.GetAsync();
 
         foreach (var item in data)
         {
@@ -70,19 +70,19 @@ public partial class DispositivosViewModel : ObservableRecipient
         }
     }
 
-    public async Task CrearDispositivo(Dispositivos dispositivo)
+    public async Task CrearDispositivo(Dispositivo dispositivo)
     {
         
-        dispositivo.DISPOSITIVOS_ID_REG = await _dispositivosServicio.CrearDispositivo(dispositivo);
-        if (dispositivo.DISPOSITIVOS_ID_REG > 0)
+        dispositivo.ID = await _dispositivosServicio.AddAsync(dispositivo);
+        if (dispositivo.ID > 0)
         {
             Source.Add(dispositivo);
         }        
     }
 
-    public async Task ActualizarDispositivo(Dispositivos dispositivo)
+    public async Task ActualizarDispositivo(Dispositivo dispositivo)
     {
-        await _dispositivosServicio.ActualizarDispositivo(dispositivo);
+        await _dispositivosServicio.UpdateAsync(dispositivo);
 
         //Actualizo Source
         var i = Source.IndexOf(dispositivo);        
@@ -92,7 +92,7 @@ public partial class DispositivosViewModel : ObservableRecipient
     public async Task BorrarRecuperarDispositivo()
     {
         var accion = EstadoActivo ? "B" : "A";
-        await _dispositivosServicio.BorrarRecuperarDispositivo(SelectedDispositivo.DISPOSITIVOS_ID_REG, accion);
+        await _dispositivosServicio.DeleteRecover(SelectedDispositivo);
 
         //Actualizo Source
         var i = Source.IndexOf(SelectedDispositivo);
@@ -100,17 +100,17 @@ public partial class DispositivosViewModel : ObservableRecipient
         Source[i] = SelectedDispositivo;
     }
 
-    public async Task<bool> ExisteContainer(string container, string plataforma)
-    {
-        if (plataforma == "local")
-        {
-            return await _dispositivosServicio.ExisteContainer(container);
-        }
-        else
-        {
-            return _azureStorageManagement.ExisteContainer(container);
-        }
-    }
+    //public async Task<bool> ExisteContainer(string container, string plataforma)
+    //{
+    //    if (plataforma == "local")
+    //    {
+    //        return await _dispositivosServicio.ExisteContainer(container);
+    //    }
+    //    else
+    //    {
+    //        return _azureStorageManagement.ExisteContainer(container);
+    //    }
+    //}
 
     #endregion
 
@@ -142,9 +142,9 @@ public partial class DispositivosViewModel : ObservableRecipient
     #endregion
 
     #region Ordenamiento y filtro
-    public ObservableCollection<Dispositivos> ApplyFilter(string? filter, bool verTodos)
+    public ObservableCollection<Dispositivo> ApplyFilter(string? filter, bool verTodos)
     {
-        return new ObservableCollection<Dispositivos>(Source.Where(x =>
+        return new ObservableCollection<Dispositivo>(Source.Where(x =>
             (string.IsNullOrEmpty(filter) || x.DISPOSITIVOS_DESCRIP.Contains(filter, StringComparison.OrdinalIgnoreCase)) &&
             (verTodos || x.DISPOSITIVOS_ID_ESTADO_REG == "A")
         ));
@@ -163,7 +163,7 @@ public partial class DispositivosViewModel : ObservableRecipient
         }
     }
 
-    public ObservableCollection<Dispositivos> SortData(string sortBy, bool ascending)
+    public ObservableCollection<Dispositivo> SortData(string sortBy, bool ascending)
     {
         _cachedSortedColumn = sortBy;
         switch (sortBy)
@@ -171,27 +171,27 @@ public partial class DispositivosViewModel : ObservableRecipient
             case "Id":
                 if (ascending)
                 {
-                    return new ObservableCollection<Dispositivos>(from item in Source
-                                                             orderby item.DISPOSITIVOS_ID_REG ascending
+                    return new ObservableCollection<Dispositivo>(from item in Source
+                                                             orderby item.ID ascending
                                                              select item);
                 }
                 else
                 {
-                    return new ObservableCollection<Dispositivos>(from item in Source
-                                                             orderby item.DISPOSITIVOS_ID_REG descending
+                    return new ObservableCollection<Dispositivo>(from item in Source
+                                                             orderby item.ID descending
                                                              select item);
                 }
 
             case "Descripcion":
                 if (ascending)
                 {
-                    return new ObservableCollection<Dispositivos>(from item in Source
+                    return new ObservableCollection<Dispositivo>(from item in Source
                                                              orderby item.DISPOSITIVOS_DESCRIP ascending
                                                              select item);
                 }
                 else
                 {
-                    return new ObservableCollection<Dispositivos>(from item in Source
+                    return new ObservableCollection<Dispositivo>(from item in Source
                                                              orderby item.DISPOSITIVOS_DESCRIP descending
                                                              select item);
                 }
@@ -199,13 +199,13 @@ public partial class DispositivosViewModel : ObservableRecipient
             case "Container":
                 if (ascending)
                 {
-                    return new ObservableCollection<Dispositivos>(from item in Source
+                    return new ObservableCollection<Dispositivo>(from item in Source
                                                              orderby item.DISPOSITIVOS_CONTAINER ascending
                                                              select item);
                 }
                 else
                 {
-                    return new ObservableCollection<Dispositivos>(from item in Source
+                    return new ObservableCollection<Dispositivo>(from item in Source
                                                              orderby item.DISPOSITIVOS_CONTAINER descending
                                                              select item);
                 }            

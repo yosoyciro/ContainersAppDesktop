@@ -3,7 +3,7 @@ using AutoMapper;
 using Azure.Core;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
-using ContainersDesktop.Infraestructura.Persistencia.Contracts.Repositories;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using CoreDesktop.Logic.Contracts;
 using CoreDesktop.Logic.Mensajeria.Messages;
 using Microsoft.Azure.Amqp.Encoding;

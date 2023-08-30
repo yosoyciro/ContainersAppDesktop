@@ -13,28 +13,48 @@ public partial class ContainersDbContext : DbContext
     {
     }
 
-    public virtual DbSet<UI_Default> UI_DEFAULT
+    public virtual DbSet<UI_Default> UI_Default { get; set; }
+
+    public virtual DbSet<UI_Config> UI_Config { get; set; }
+
+    public virtual DbSet<Mensaje> Mensajes
     {
-        get;
-        set;
+        get; set;
     }
 
-    public virtual DbSet<UI_Config> UI_CONFIG
+    public virtual DbSet<Movim> Movim
     {
-        get;
-        set;
+        get; set;
     }
 
-    public virtual DbSet<Mensaje> MENSAJES
+    public virtual DbSet<ClaList> ClaList
     {
-        get;
-        set;
+        get; set;
     }
 
-    public virtual DbSet<Movim> MOVIM
+    public virtual DbSet<Lista> Listas
     {
-        get;
-        set;
+        get; set;
+    }
+
+    public virtual DbSet<TareaProgramada> TareasProgramadas
+    {
+        get; set;
+    }
+
+    public virtual DbSet<Objeto> Containers
+    {
+        get; set;
+    }
+
+    public virtual DbSet<Sincronizacion> Sincronizaciones
+    {
+        get; set;
+    }
+
+    public virtual DbSet<Dispositivo> Dispositivos
+    {
+        get; set;
     }
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)        

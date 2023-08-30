@@ -1,13 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
-public class Objetos
-{
-    [Key]
-    public int OBJ_ID_REG
-    {
-        get; set;
-    }
+public class Objeto : BaseEntity
+{   
     public string? OBJ_MATRICULA
     {
         get; set;

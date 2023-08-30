@@ -8,7 +8,7 @@ using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models.Login;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Helpers;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Contracts.Services;
 using ContainersDesktop.Logica.Services;
 using Microsoft.UI.Xaml;

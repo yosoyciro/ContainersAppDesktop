@@ -7,6 +7,11 @@ public static class FormatoFecha
 {
     public static string ConvertirAFechaCorta(string fechaEstandar)
     {
+        if (string.IsNullOrEmpty(fechaEstandar))
+        {
+            return string.Empty;
+        }
+
         CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
         var fecha = Convert.ToDateTime(fechaEstandar);
         return fecha.Date.ToString(currentCulture.DateTimeFormat.ShortDatePattern);
@@ -19,6 +24,11 @@ public static class FormatoFecha
 
     public static string ConvertirAFechaHora(string fechaEstandar)
     {
+        if (string.IsNullOrEmpty(fechaEstandar))
+        {
+            return string.Empty;
+        }
+
         CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
         var fechaCulture = Convert.ToDateTime(fechaEstandar);
         var fecha = fechaCulture.ToString(currentCulture.DateTimeFormat.ShortDatePattern);

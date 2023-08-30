@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ContainersDesktop.Dominio.Models.Base;
-using ContainersDesktop.Infraestructura.Persistencia.Contracts.Repositories;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using CoreDesktop.Dominio.Models;
 using Microsoft.EntityFrameworkCore;
 

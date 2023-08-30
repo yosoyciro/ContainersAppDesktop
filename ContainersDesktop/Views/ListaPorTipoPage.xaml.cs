@@ -52,7 +52,7 @@ public sealed partial class ListaPorTipoPage : Page
         AgregarDialog.PrimaryButtonText = "Confirmar";
         AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
         
-        AgregarDialog.DataContext = new Listas() 
+        AgregarDialog.DataContext = new Lista() 
         { 
             LISTAS_ID_ESTADO_REG = "A",    
             LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
@@ -113,9 +113,9 @@ public sealed partial class ListaPorTipoPage : Page
                     var line = reader.ReadLine();
                     var values = line.Split(i == 0 ? ',' : ';');
 
-                    Listas lista = new()
+                    Lista lista = new()
                     {
-                        LISTAS_ID_LISTA = ViewModel.claLista.CLALIST_ID_REG,
+                        LISTAS_ID_LISTA = ViewModel.claLista.ID,
                         LISTAS_ID_LISTA_ORDEN = int.Parse(values[0]),
                         LISTAS_ID_LISTA_DESCRIP = values[1],
                         LISTAS_ID_ESTADO_REG = "A",
@@ -157,7 +157,7 @@ public sealed partial class ListaPorTipoPage : Page
 
     private async Task AgregarRegistro()
     {
-        var lista = AgregarDialog.DataContext as Listas;
+        var lista = AgregarDialog.DataContext as Lista;
         lista.LISTAS_ID_LISTA_ORDEN = ViewModel.FormViewModel.Orden;
         lista.LISTAS_ID_LISTA_DESCRIP = ViewModel.FormViewModel.Descripcion;
         await ViewModel.AgregarLista(lista);
@@ -168,7 +168,7 @@ public sealed partial class ListaPorTipoPage : Page
 
     private async Task ModificarRegistro()
     {
-        var lista = AgregarDialog.DataContext as Listas;
+        var lista = AgregarDialog.DataContext as Lista;
         lista.LISTAS_ID_LISTA_ORDEN = ViewModel.FormViewModel.Orden;
         lista.LISTAS_ID_LISTA_DESCRIP = ViewModel.FormViewModel.Descripcion;
         lista.LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);

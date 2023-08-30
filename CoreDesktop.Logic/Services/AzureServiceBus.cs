@@ -3,15 +3,18 @@ using CoreDesktop.Dominio.Models.Mensajeria;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace CoreDesktop.Logica.Mensajeria.Services;
 public class AzureServiceBus
 {
     private readonly ServiceBusClient _client;
+    private readonly ILogger<AzureServiceBus> _logger;
 
-    public AzureServiceBus(IConfiguration config)
+    public AzureServiceBus(IConfiguration config, ILogger<AzureServiceBus> logger)
     {
         _client = new ServiceBusClient(config.GetConnectionString("ServiceBusKey"));
+        _logger = logger;
     }
 
     public async Task<ServiceBusClient> GetInstance()
@@ -21,25 +24,25 @@ public class AzureServiceBus
 
 
     public async Task EnviarMensaje<T>(T @message) where T : Message
-    {
-        const string queueName = "desktopamobiles";
-        var mensaje = JsonConvert.SerializeObject(message);
-        var body = Encoding.UTF8.GetBytes(mensaje);
-
-        ServiceBusSender sender = _client.CreateSender(queueName);
-        ServiceBusMessage messageBus = new ServiceBusMessage(body);
+    {        
         try
         {
+            const string queueName = "datos-a-mobiles";
+            var mensaje = JsonConvert.SerializeObject(message);
+            var body = Encoding.UTF8.GetBytes(mensaje);
+
+            ServiceBusSender sender = _client.CreateSender(queueName);
+            ServiceBusMessage messageBus = new ServiceBusMessage(body);
+
             await sender.SendMessageAsync(messageBus);
-            Console.WriteLine("Message sent to the queue successfully.");
+            _logger.LogInformation("Message sent to the queue successfully.");
+
+            await sender.DisposeAsync();        
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex.Message);
             throw;
-        }
-        finally
-        {
-            await sender.DisposeAsync();
-        }
+        }          
     }
 }

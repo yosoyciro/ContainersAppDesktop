@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Dominio.Models;
-using ContainersDesktop.Infraestructura.Contracts.Services;
+using CoreDesktop.Logic.Contracts;
 
 namespace ContainersDesktop.ViewModels;
 public partial class TiposListaDetailsViewModel : ObservableRecipient
 {
-    private readonly IClaListServicio _claListServicio;
+    private readonly IServiciosRepositorios<ClaList> _claListServicio;
     [ObservableProperty]
     public string filter;
     public ObservableCollection<ClaList> Items { get; set; } = new();
@@ -23,7 +23,7 @@ public partial class TiposListaDetailsViewModel : ObservableRecipient
     }
     public bool HasCurrent => current is not null;
 
-    public TiposListaDetailsViewModel(IClaListServicio claListServicio)
+    public TiposListaDetailsViewModel(IServiciosRepositorios<ClaList> claListServicio)
     {
         _claListServicio = claListServicio;
     }
@@ -32,7 +32,7 @@ public partial class TiposListaDetailsViewModel : ObservableRecipient
     {
         Items.Clear();
 
-        var data = await _claListServicio.ObtenerClaListas();
+        var data = await _claListServicio.GetAsync();
 
         foreach (var item in data.OrderBy(x => x.CLALIST_DESCRIP).Where(x => x.CLALIST_ID_ESTADO_REG == "A" && !string.IsNullOrEmpty(x.CLALIST_DESCRIP)))
         {
@@ -49,13 +49,14 @@ public partial class TiposListaDetailsViewModel : ObservableRecipient
 
     public async Task BorrarLista()
     {
-        await _claListServicio.BorrarClaLista(SelectedClaList.CLALIST_ID_REG);
+
+        await _claListServicio.DeleteRecover(SelectedClaList);
         Items.Remove(SelectedClaList);
     }
 
     public async Task AgregarLista(ClaList claList)
     {
-        await _claListServicio.CrearClaLista(claList);
+        await _claListServicio.AddAsync(claList);
         Items.Add(claList);
     }
 }

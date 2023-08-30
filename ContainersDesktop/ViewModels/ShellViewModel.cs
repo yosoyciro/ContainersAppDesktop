@@ -1,10 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Contracts.Services;
-using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
-using CoreDesktop.Dominio.Models;
 using CoreDesktop.Logic.Services;
 using CoreDesktop.Logica.Mensajeria.Services;
 using Microsoft.Extensions.Logging;
@@ -18,7 +15,6 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
     private readonly ILogger<ShellViewModel> _logger;
     private readonly MensajesServicio _mensajesServicio;
     private readonly AzureServiceBus _azureServiceBus;
-
     private ServiceBusClient _serviceBusClient;
 
     [ObservableProperty]
@@ -80,27 +76,17 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
         processor.ProcessMessageAsync += Processor_ProcessMessageAsync;
         processor.ProcessErrorAsync += Processor_ProcessErrorAsync;
         await processor.StartProcessingAsync();
-
-        //Thread.Sleep(5000);
     }
 
     private async Task Processor_ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
         var message = arg.Message;
-        //Console.WriteLine("Received Processor Message: " + message.Body);
-        //await arg.CompleteMessageAsync(message);
-
-        //while (true)
-        //{
-        //    if (message == null)
-        //        break;
-
-            var result = await _mensajesServicio.Guardar(message);
-            if (result)
-            {
-                await arg.CompleteMessageAsync(message);
-            }
-        //}
+        //Console.WriteLine("Received Processor Message: " + message.Body);        
+        var result = await _mensajesServicio.Guardar(message);
+        if (result)
+        {
+            await arg.CompleteMessageAsync(message);
+        }
     }
 
     private Task Processor_ProcessErrorAsync(ProcessErrorEventArgs arg)

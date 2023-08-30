@@ -1,6 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using ContainersDesktop.Dominio.Models.UI_ConfigModels;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+﻿using ContainersDesktop.Dominio.Models.UI_ConfigModels;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 
 namespace CoreDesktop.Logic.Services;
 public class ConfigService

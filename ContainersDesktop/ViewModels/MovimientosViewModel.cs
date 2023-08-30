@@ -6,10 +6,10 @@ using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.DTO;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
-using ContainersDesktop.Infraestructura.Contracts.Services;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logic.Contracts;
 using ContainersDesktop.Logica.Services;
+using CoreDesktop.Logic.Contracts;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
@@ -18,10 +18,10 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     private MovimientosFormViewModel _formViewModel = new();
     public MovimientosFormViewModel FormViewModel => _formViewModel;
 
-    private readonly IMovimientosServicio _movimientosServicio;
-    private readonly IListasServicio _listasServicio;
-    private readonly IDispositivosServicio _dispositivosServicio;
-    private readonly IObjetosServicio _objetosServicio;
+    private readonly IServiciosRepositorios<Movim> _movimientosServicio;
+    private readonly IServiciosRepositorios<Lista> _listasServicio;
+    private readonly IServiciosRepositorios<Dispositivo> _dispositivosServicio;
+    private readonly IServiciosRepositorios<Objeto> _objetosServicio;
     private readonly SincronizarServicio _sincronizarServicio;
     private readonly IConfigRepository<UI_Config> _configRepository;
 
@@ -58,7 +58,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     #region Observable Collections
     public ObservableCollection<MovimDTO> Items
     { get; } = new();
-    public ObservableCollection<Listas> LstListas { get; } = new();
+    public ObservableCollection<Lista> LstListas { get; } = new();
     public ObservableCollection<DispositivosDTO> LstDispositivos { get; } = new();
     public ObservableCollection<DispositivosDTO> LstDispositivosActivos { get; } = new();
     public ObservableCollection<ObjetosDTO> LstObjetos { get; } = new();
@@ -79,7 +79,12 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     public ObservableCollection<AlmacenesDTO> LstAlmacenesActivos { get; } = new();
     #endregion
 
-    public MovimientosViewModel(IMovimientosServicio movimientosServicio, IListasServicio listasServicio, IDispositivosServicio dispositivosServicio, IObjetosServicio objetosServicio, IConfigRepository<UI_Config> configRepository)
+    public MovimientosViewModel(
+        IServiciosRepositorios<Movim> movimientosServicio, 
+        IServiciosRepositorios<Lista> listasServicio, 
+        IServiciosRepositorios<Dispositivo> dispositivosServicio, 
+        IServiciosRepositorios<Objeto> objetosServicio, 
+        IConfigRepository<UI_Config> configRepository)
     {
         _movimientosServicio = movimientosServicio;
         _listasServicio = listasServicio;
@@ -105,7 +110,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
         Current.MOVIM_ID_ESTADO_REG = accion;
         Current.MOVIM_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
         var movim = GenerarMovim(Current);
-        await _movimientosServicio.BorrarRecuperarRegistro(movim);
+        await _movimientosServicio.DeleteRecover(movim);
 
         //Actualizo Source
         var i = Items.IndexOf(Current);        
@@ -116,7 +121,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     public async Task AgregarMovimiento(MovimDTO movimDTO)
     {
         var movim = GenerarMovim(movimDTO);
-        movimDTO.MOVIM_ID_REG = await _movimientosServicio.CrearMovimiento(movim);
+        movimDTO.MOVIM_ID_REG = await _movimientosServicio.AddAsync(movim);
         movimDTO.MOVIM_FECHA = FormatoFecha.ConvertirAFechaHora(movimDTO.MOVIM_FECHA);
         Items.Add(movimDTO);
     }
@@ -126,7 +131,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
         try
         {
             var movim = GenerarMovim(movimDTO);
-            await _movimientosServicio.ActualizarMovimiento(movim);
+            await _movimientosServicio.UpdateAsync(movim);
             var i = Items.IndexOf(movimDTO);
             movimDTO.MOVIM_FECHA = FormatoFecha.ConvertirAFechaHora(movimDTO.MOVIM_FECHA);
             Items[i] = movimDTO;
@@ -145,7 +150,7 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     {
         //Cargo Listas
         LstListas.Clear();
-        var listas = await _listasServicio.ObtenerListas();
+        var listas = await _listasServicio.GetAsync();
         if (listas.Any())
         {
             foreach (var item in listas)
@@ -156,102 +161,102 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
 
         //Dispositivos
         LstDispositivos.Clear();
-        var dispositivos = await _dispositivosServicio.ObtenerDispositivos();
+        var dispositivos = await _dispositivosServicio.GetAsync();
         if (dispositivos.Any())
         {
             foreach (var item in dispositivos)
             {
-                LstDispositivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.DISPOSITIVOS_ID_REG, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
+                LstDispositivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
                 if (item.DISPOSITIVOS_ID_ESTADO_REG == "A")
                 {
-                    LstDispositivosActivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.DISPOSITIVOS_ID_REG, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
+                    LstDispositivosActivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
                 }
             }
         }
 
         //Objetos
         LstObjetos.Clear();
-        var objetos = await _objetosServicio.ObtenerObjetos();
+        var objetos = await _objetosServicio.GetAsync();
         if (objetos.Any())
         {
             foreach (var item in objetos)
             {
-                LstObjetos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.OBJ_ID_REG, DESCRIPCION = item.OBJ_MATRICULA });
+                LstObjetos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.ID, DESCRIPCION = item.OBJ_MATRICULA });
                 if (item.OBJ_ID_ESTADO_REG == "A")
                 {
-                    LstObjetosActivos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.OBJ_ID_REG, DESCRIPCION = item.OBJ_MATRICULA });
+                    LstObjetosActivos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.ID, DESCRIPCION = item.OBJ_MATRICULA });
                 }
             }
         }
 
         //Listas relacionadas
-        var lstTipoMovimiento = LstListas.Where(x => x.LISTAS_ID_LISTA == 3000 || x.LISTAS_ID_REG == 1).ToList();
+        var lstTipoMovimiento = LstListas.Where(x => x.LISTAS_ID_LISTA == 3000 || x.ID == 1).ToList();
         foreach (var item in lstTipoMovimiento)
         {
-            LstTiposMovimiento.Add(new TiposMovimientoDTO() { MOVIM_TIPO_MOVIM = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+            LstTiposMovimiento.Add(new TiposMovimientoDTO() { MOVIM_TIPO_MOVIM = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
-                LstTiposMovimientoActivos.Add(new TiposMovimientoDTO() { MOVIM_TIPO_MOVIM = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstTiposMovimientoActivos.Add(new TiposMovimientoDTO() { MOVIM_TIPO_MOVIM = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
         }
 
-        var lstPesos = LstListas.Where(x => x.LISTAS_ID_LISTA == 3100 || x.LISTAS_ID_REG == 1).ToList();
+        var lstPesos = LstListas.Where(x => x.LISTAS_ID_LISTA == 3100 || x.ID == 1).ToList();
         foreach (var item in lstPesos)
         {
-            LstPesos.Add(new PesosDTO() { MOVIM_PESO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+            LstPesos.Add(new PesosDTO() { MOVIM_PESO = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
-                LstPesosActivos.Add(new PesosDTO() { MOVIM_PESO = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstPesosActivos.Add(new PesosDTO() { MOVIM_PESO = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
         }
 
-        var lstTransportistas = LstListas.Where(x => x.LISTAS_ID_LISTA == 3200 || x.LISTAS_ID_REG == 1).ToList();
+        var lstTransportistas = LstListas.Where(x => x.LISTAS_ID_LISTA == 3200 || x.ID == 1).ToList();
         foreach (var item in lstTransportistas)
         {
-            LstTransportistas.Add(new TransportistasDTO() { MOVIM_TRANSPORTISTA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+            LstTransportistas.Add(new TransportistasDTO() { MOVIM_TRANSPORTISTA = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
-                LstTransportistasActivos.Add(new TransportistasDTO() { MOVIM_TRANSPORTISTA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstTransportistasActivos.Add(new TransportistasDTO() { MOVIM_TRANSPORTISTA = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
         }
 
-        var lstClientes = LstListas.Where(x => x.LISTAS_ID_LISTA == 3300 || x.LISTAS_ID_REG == 1).ToList();
+        var lstClientes = LstListas.Where(x => x.LISTAS_ID_LISTA == 3300 || x.ID == 1).ToList();
         foreach (var item in lstClientes)
         {
-            LstClientes.Add(new ClientesDTO() { MOVIM_CLIENTE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+            LstClientes.Add(new ClientesDTO() { MOVIM_CLIENTE = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
-                LstClientesActivos.Add(new ClientesDTO() { MOVIM_CLIENTE = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstClientesActivos.Add(new ClientesDTO() { MOVIM_CLIENTE = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
         }
 
-        var lstChoferes = LstListas.Where(x => x.LISTAS_ID_LISTA == 3400 || x.LISTAS_ID_REG == 1).ToList();
+        var lstChoferes = LstListas.Where(x => x.LISTAS_ID_LISTA == 3400 || x.ID == 1).ToList();
         foreach (var item in lstChoferes)
         {
-            LstChoferes.Add(new ChoferesDTO() { MOVIM_CHOFER = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+            LstChoferes.Add(new ChoferesDTO() { MOVIM_CHOFER = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
-                LstChoferesActivos.Add(new ChoferesDTO() { MOVIM_CHOFER = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstChoferesActivos.Add(new ChoferesDTO() { MOVIM_CHOFER = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
         }
 
-        var lstEntradaSalida = LstListas.Where(x => x.LISTAS_ID_LISTA == 3500 || x.LISTAS_ID_REG == 1).ToList();
+        var lstEntradaSalida = LstListas.Where(x => x.LISTAS_ID_LISTA == 3500 || x.ID == 1).ToList();
         foreach (var item in lstEntradaSalida)
         {
-            LstEntradaSalida.Add(new EntradaSalidaDTO() { MOVIM_ENTRADA_SALIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+            LstEntradaSalida.Add(new EntradaSalidaDTO() { MOVIM_ENTRADA_SALIDA = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
-                LstEntradaSalidaActivos.Add(new EntradaSalidaDTO() { MOVIM_ENTRADA_SALIDA = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstEntradaSalidaActivos.Add(new EntradaSalidaDTO() { MOVIM_ENTRADA_SALIDA = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
         }
 
-        var lstAlmacenes = LstListas.Where(x => x.LISTAS_ID_LISTA == 3600 || x.LISTAS_ID_REG == 1).ToList();
+        var lstAlmacenes = LstListas.Where(x => x.LISTAS_ID_LISTA == 3600 || x.ID == 1).ToList();
         foreach (var item in lstAlmacenes)
         {
-            LstAlmacenes.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+            LstAlmacenes.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
-                LstAlmacenesActivos.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstAlmacenesActivos.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
         }
 
@@ -266,7 +271,14 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
         }
 
         Items.Clear();
-        var data = Objeto != null ? await _movimientosServicio.ObtenerMovimientosObjeto(Objeto.MOVIM_ID_OBJETO) : await _movimientosServicio.ObtenerMovimientosTodos();
+
+        var movimientos = await _movimientosServicio.GetAsync();
+        if (Objeto != null)
+        {
+            movimientos = movimientos.Where(x => x.MOVIM_ID_OBJETO == Objeto.MOVIM_ID_OBJETO).ToList();
+        }
+
+        var data = movimientos;
         if (data.Any())
         {
             foreach (var item in data)

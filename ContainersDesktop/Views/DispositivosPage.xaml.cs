@@ -49,7 +49,7 @@ public sealed partial class DispositivosPage : Page
     {
         AgregarDialog.Title = "Agregar dispositivo";
         AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
-        AgregarDialog.DataContext = new Dispositivos()
+        AgregarDialog.DataContext = new Dispositivo()
         {
             DISPOSITIVOS_ID_ESTADO_REG = "A",
             DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
@@ -115,7 +115,7 @@ public sealed partial class DispositivosPage : Page
 
     private async Task AgregarRegistro()
     {
-        var dispositivo = AgregarDialog.DataContext as Dispositivos;
+        var dispositivo = AgregarDialog.DataContext as Dispositivo;
         dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
         dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
 
@@ -125,7 +125,7 @@ public sealed partial class DispositivosPage : Page
 
     private async Task ModificarRegistro()
     {
-        var dispositivo = AgregarDialog.DataContext as Dispositivos;
+        var dispositivo = AgregarDialog.DataContext as Dispositivo;
         dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
         dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
 

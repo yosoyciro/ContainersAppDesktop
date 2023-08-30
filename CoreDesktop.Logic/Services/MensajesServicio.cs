@@ -2,7 +2,7 @@
 using CoreDesktop.Dominio.Models;
 using Azure.Messaging.ServiceBus;
 using System.Text;
-using ContainersDesktop.Infraestructura.Persistencia.Contracts.Repositories;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 
 namespace CoreDesktop.Logic.Services;
 public class MensajesServicio

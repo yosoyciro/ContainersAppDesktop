@@ -1,6 +1,6 @@
 ﻿using ContainersDesktop.Dominio.Models.Base;
 
-namespace ContainersDesktop.Infraestructura.Persistencia.Contracts.Repositories;
+namespace ContainersDesktop.Infraestructura.Persistencia.Contracts;
 public interface IAsyncRepository<T> where T : BaseEntity
 {
     Task<int> AddAsync(T entity);

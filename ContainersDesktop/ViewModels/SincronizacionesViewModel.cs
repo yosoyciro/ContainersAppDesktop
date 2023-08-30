@@ -4,15 +4,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
-using ContainersDesktop.Infraestructura.Contracts.Services;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Services;
+using CoreDesktop.Logic.Contracts;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
 public partial class SincronizacionesViewModel : ObservableRecipient
 {
-    private readonly ISincronizacionServicio _sincronizacionServicio; 
+    private readonly IServiciosRepositorios<Sincronizacion> _sincronizacionServicio; 
     private readonly SincronizarServicio _sincronizarServicio;
     private readonly IConfigRepository<UI_Config> _configRepository;
 
@@ -20,8 +20,8 @@ public partial class SincronizacionesViewModel : ObservableRecipient
     private Color _gridColor;
     private Color _comboColor;
 
-    private Sincronizaciones current;
-    public Sincronizaciones Current
+    private Sincronizacion current;
+    public Sincronizacion Current
     {
         get => current;
         set
@@ -34,12 +34,16 @@ public partial class SincronizacionesViewModel : ObservableRecipient
     public Color GridColor => _gridColor;
     public Color ComboColor => _comboColor;
 
-    public ObservableCollection<Sincronizaciones> Source { get; } = new();
+    public ObservableCollection<Sincronizacion> Source { get; } = new();
     private string _cachedSortedColumn = string.Empty;
     [ObservableProperty]
     public bool isBusy = false;
 
-    public SincronizacionesViewModel(ISincronizacionServicio sincronizacionServicio, SincronizarServicio sincronizarServicio, IConfigRepository<UI_Config> configRepository)
+    public SincronizacionesViewModel(
+        IServiciosRepositorios<Sincronizacion> sincronizacionServicio, 
+        SincronizarServicio sincronizarServicio, 
+        IConfigRepository<UI_Config> configRepository
+        )
     {
         _sincronizacionServicio = sincronizacionServicio;
         _sincronizarServicio = sincronizarServicio;
@@ -51,7 +55,7 @@ public partial class SincronizacionesViewModel : ObservableRecipient
     public async Task CargarSource()
     {
         Source.Clear();
-        var data = await _sincronizacionServicio.ObtenerSincronizaciones();
+        var data = await _sincronizacionServicio.GetAsync();
 
         foreach (var item in data)
         {

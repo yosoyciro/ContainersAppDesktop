@@ -1,15 +1,18 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using System.Collections.Generic;
 using ContainersDesktop.Dominio.Models.Base;
-using ContainersDesktop.Infraestructura.Persistencia.Contracts.Repositories;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Windows.Data.Xml.Dom;
 
 namespace ContainersDesktop.Infraestructura.Persistencia.Repositorios;
 public class AsyncRepository<T> : IAsyncRepository<T> where T : BaseEntity
 {
     private readonly ContainersDbContext _context;
+    private readonly DbSet<T> _dbSet;
     public AsyncRepository(ContainersDbContext context)
     {
         _context = context;
+        _dbSet = _context.Set<T>();
     }
 
     public async Task<int> AddAsync(T entity)
@@ -42,24 +45,63 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : BaseEntity
 
     public Task<List<T>> GetAsync()
     {
-        return _context.Set<T>().ToListAsync();
+        try
+        {
+            return _context.Set<T>().AsNoTracking().ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }        
     }
 
-    public Task<T?> GetByIdAsync(int id)
+    public async Task<T?> GetByIdAsync(int id)
     {
-        return _context.Set<T>().FirstOrDefaultAsync(x => x.ID == id);
+        return await _context.Set<T>().FindAsync(id);
     }
 
     public async Task<int> UpdateAsync(T entity)
     {
         try
         {
-            _context.Set<T>().Update(entity);
+            //_context.Set<T>().Update(entity);
+            var keys = GetPrimaryKeys(_context, entity);
+
+            bool tracked = _context.Entry(entity).State != EntityState.Detached;
+
+            if (tracked)
+                return 0;
+
+            if (keys != null)
+            {
+
+                var oldValues = _dbSet.Find(keys);
+
+                _context.Entry(oldValues).CurrentValues.SetValues(entity);
+            }
+            else
+            {
+                _dbSet.Attach(entity);
+                _context.Entry(entity).State = EntityState.Modified;
+            }
+
             return await _context.SaveChangesAsync();
         }
         catch (Exception)
         {
             throw;
         }
+    }
+
+    private static object[] GetPrimaryKeys<T>(DbContext context, T value)
+    {
+        var keyNames = context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties
+               .Select(x => x.Name).ToArray();
+        var result = new object[keyNames.Length];
+        for (int i = 0; i < keyNames.Length; i++)
+        {
+            result[i] = typeof(T).GetProperty(keyNames[i])?.GetValue(value);
+        }
+        return result;
     }
 }

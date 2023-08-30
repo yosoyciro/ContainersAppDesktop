@@ -5,10 +5,10 @@ using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.DTO;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
-using ContainersDesktop.Infraestructura.Contracts.Services;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logic.Contracts;
 using ContainersDesktop.Logica.Services;
+using CoreDesktop.Logic.Contracts;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
@@ -17,10 +17,10 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     private readonly TareasProgramadasFormViewModel _formViewModel = new();
     public TareasProgramadasFormViewModel FormViewModel => _formViewModel;
 
-    private readonly ITareasProgramadasServicio _tareasProgramadasServicio;
-    private readonly IListasServicio _listasServicio;
-    private readonly IDispositivosServicio _dispositivosServicio;
-    private readonly IObjetosServicio _objetosServicio;
+    private readonly IServiciosRepositorios<TareaProgramada> _tareasProgramadasServicio;
+    private readonly IServiciosRepositorios<Lista> _listasServicio;
+    private readonly IServiciosRepositorios<Dispositivo> _dispositivosServicio;
+    private readonly IServiciosRepositorios<Objeto> _objetosServicio;
     private readonly SincronizarServicio _sincronizarServicio;
     private readonly IConfigRepository<UI_Config> _configRepository;
 
@@ -56,7 +56,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     #region Observable Collections
     private readonly ObservableCollection<TareaProgramadaDTO> _items = new();
     public ObservableCollection<TareaProgramadaDTO> Items => _items;    
-    public ObservableCollection<Listas> LstListas { get; } = new();
+    public ObservableCollection<Lista> LstListas { get; } = new();
     public ObservableCollection<DispositivosDTO> LstDispositivos { get; } = new();
     public ObservableCollection<DispositivosDTO> LstDispositivosActivos { get; } = new();
     public ObservableCollection<ObjetosDTO> LstObjetos { get; } = new();
@@ -65,20 +65,14 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     public ObservableCollection<AlmacenesDTO> LstAlmacenesActivos { get; } = new();
     #endregion
 
-    public TareasProgramadasViewModel(
-        ITareasProgramadasServicio tareasProgramadasServicio
-        , IListasServicio listasServicio
-        , IDispositivosServicio dispositivosServicio
-        , IObjetosServicio objetosServicio
-        , SincronizarServicio sincronizarServicio,
-        IConfigRepository<UI_Config> configRepository)
+    public TareasProgramadasViewModel(SincronizarServicio sincronizarServicio, IConfigRepository<UI_Config> configRepository, IServiciosRepositorios<TareaProgramada> tareasProgramadasServicio, IServiciosRepositorios<Lista> listasServicio, IServiciosRepositorios<Dispositivo> dispositivosServicio, IServiciosRepositorios<Objeto> objetosServicio)
     {
         _tareasProgramadasServicio = tareasProgramadasServicio;
-        _listasServicio = listasServicio;
-        _dispositivosServicio = dispositivosServicio;
-        _objetosServicio = objetosServicio;
         _sincronizarServicio = sincronizarServicio;
         _configRepository = configRepository;
+        _listasServicio = listasServicio;
+        _dispositivosServicio = dispositivosServicio;        
+        _objetosServicio = objetosServicio;
 
         CargarConfiguracion().Wait();
     }
@@ -96,7 +90,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     {
         //Cargo Listas
         LstListas.Clear();
-        var listas = await _listasServicio.ObtenerListas();
+        var listas = await _listasServicio.GetAsync();
         if (listas.Any())
         {
             foreach (var item in listas)
@@ -107,42 +101,42 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
 
         //Dispositivos
         LstDispositivos.Clear();
-        var dispositivos = await _dispositivosServicio.ObtenerDispositivos();
+        var dispositivos = await _dispositivosServicio.GetAsync();
         if (dispositivos.Any())
         {
             foreach (var item in dispositivos)
             {
-                LstDispositivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.DISPOSITIVOS_ID_REG, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
+                LstDispositivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
                 if (item.DISPOSITIVOS_ID_ESTADO_REG == "A")
                 {
-                    LstDispositivosActivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.DISPOSITIVOS_ID_REG, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
+                    LstDispositivosActivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
                 }
             }
         }
 
         //Objetos
         LstObjetos.Clear();
-        var objetos = await _objetosServicio.ObtenerObjetos();
+        var objetos = await _objetosServicio.GetAsync();
         if (objetos.Any())
         {
             foreach (var item in objetos)
             {
-                LstObjetos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.OBJ_ID_REG, DESCRIPCION = item.OBJ_MATRICULA });
+                LstObjetos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.ID, DESCRIPCION = item.OBJ_MATRICULA });
                 if (item.OBJ_ID_ESTADO_REG == "A")
                 {
-                    LstObjetosActivos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.OBJ_ID_REG, DESCRIPCION = item.OBJ_MATRICULA });
+                    LstObjetosActivos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.ID, DESCRIPCION = item.OBJ_MATRICULA });
                 }
             }
         }
 
         //Ubicaciones
-        var lstUbicaciones = LstListas.Where(x => x.LISTAS_ID_LISTA == 3600 || x.LISTAS_ID_REG == 1).ToList();
+        var lstUbicaciones = LstListas.Where(x => x.LISTAS_ID_LISTA == 3600 || x.ID == 1).ToList();
         foreach (var item in lstUbicaciones)
         {
-            LstAlmacenes.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+            LstAlmacenes.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             if (item.LISTAS_ID_ESTADO_REG == "A")
             {
-                LstAlmacenesActivos.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
+                LstAlmacenesActivos.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 //LstUbicacionesOrigen.Add(new UbicacionOrigenDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 //LstUbicacionesDestino.Add(new UbicacionDestinoDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
             }
@@ -159,7 +153,15 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         }
 
         _items.Clear();
-        var data = Objeto != null ? await _tareasProgramadasServicio.ObtenerPorObjeto(Objeto.MOVIM_ID_OBJETO) : await _tareasProgramadasServicio.ObtenerTodos();
+
+        var tareasProgramadas = await _tareasProgramadasServicio.GetAsync();
+
+        if (Objeto is not null)
+        {
+            tareasProgramadas = tareasProgramadas.Where(x => x.TAREAS_PROGRAMADAS_OBJETO_ID_REG == Objeto.MOVIM_ID_OBJETO).ToList();
+        }
+
+        var data = tareasProgramadas;
         if (data.Any())
         {
             foreach (var item in data)
@@ -178,7 +180,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         try
         {
             var tareaProgramada = MapDTOToSource(dto);
-            dto.TAREAS_PROGRAMADAS_ID_REG = await _tareasProgramadasServicio.Agregar(tareaProgramada);
+            dto.TAREAS_PROGRAMADAS_ID_REG = await _tareasProgramadasServicio.AddAsync(tareaProgramada);
             dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
             _items.Add(dto);
         }
@@ -193,7 +195,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         try
         {            
             var tareaProgramada = MapDTOToSource(dto);
-            await _tareasProgramadasServicio.Modificar(tareaProgramada);
+            await _tareasProgramadasServicio.UpdateAsync(tareaProgramada);
 
             var i = _items.IndexOf(Current);
             dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
@@ -222,7 +224,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         try
         {
             var tareaProgramada = MapDTOToSource(Current);
-            await _tareasProgramadasServicio.BorrarRecuperarRegistro(tareaProgramada);
+            await _tareasProgramadasServicio.DeleteRecover(tareaProgramada);
 
             //Actualizo Source
             var i = Items.IndexOf(Current);
@@ -252,8 +254,8 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             TAREAS_PROGRAMADAS_ID_ESTADO_REG = item.TAREAS_PROGRAMADAS_ID_ESTADO_REG,
             TAREAS_PROGRAMADAS_OBJETO_ID_REG = item.TAREAS_PROGRAMADAS_OBJETO_ID_REG,
             TAREAS_PROGRAMADAS_OBJETO_MATRICULA = objeto.DESCRIPCION,
-            TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = item.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA,
-            TAREAS_PROGRAMADAS_FECHA_COMPLETADA = item.TAREAS_PROGRAMADAS_FECHA_COMPLETADA,
+            TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(item.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA),
+            TAREAS_PROGRAMADAS_FECHA_COMPLETADA = FormatoFecha.ConvertirAFechaHora(item.TAREAS_PROGRAMADAS_FECHA_COMPLETADA),
             TAREAS_PROGRAMADAS_UBICACION_ORIGEN = item.TAREAS_PROGRAMADAS_UBICACION_ORIGEN,
             TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION = ubicacionOrigen.DESCRIPCION,
             TAREAS_PROGRAMADAS_UBICACION_DESTINO = item.TAREAS_PROGRAMADAS_UBICACION_DESTINO,

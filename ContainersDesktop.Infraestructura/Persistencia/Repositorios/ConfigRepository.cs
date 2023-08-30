@@ -1,5 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
-using ContainersDesktop.Infraestructura.Contracts.Services.Config;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using CoreDesktop.Dominio.Models.Base;
 using Microsoft.EntityFrameworkCore;
 

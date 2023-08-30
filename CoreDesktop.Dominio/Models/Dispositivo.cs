@@ -1,15 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
-public class Dispositivos
-{
-    [Key]
-    public int DISPOSITIVOS_ID_REG
-    {
-        get;
-        set;
-    }
-
+public class Dispositivo : BaseEntity
+{    
     public string DISPOSITIVOS_ID_ESTADO_REG
     {
         get;
