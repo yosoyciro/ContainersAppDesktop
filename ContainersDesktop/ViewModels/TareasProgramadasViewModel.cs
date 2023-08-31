@@ -41,6 +41,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             OnPropertyChanged(nameof(EstadoBaja));
         }
     }
+
     public bool HasCurrent => current is not null;
     public bool EstadoActivo => current?.TAREAS_PROGRAMADAS_ID_ESTADO_REG == "A" ? true : false;
     public bool EstadoBaja => current?.TAREAS_PROGRAMADAS_ID_ESTADO_REG == "B" ? true : false;

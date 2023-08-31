@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using AutoMapper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.DTO;
@@ -18,11 +19,13 @@ public partial class ContainersGridViewModel : ObservableValidator
     public ObjetosViewModel ObjetosViewModel => _objetosViewModel;
 
 
-    private readonly IServiciosRepositorios<Objeto> _objetosServicio;
-    private readonly IServiciosRepositorios<Lista> _listasServicio;
-    private readonly IServiciosRepositorios<Movim> _movimientosServicio;
+    private readonly IAsyncRepository<Objeto> _objetosServicio;
+    private readonly IAsyncRepository<Lista> _listasServicio;
+    private readonly IAsyncRepository<Movim> _movimientosServicio;
     private readonly IConfigRepository<UI_Config> _configRepository;
     private readonly AzureServiceBus _azureBus;
+    private readonly IMapper _mapper;
+
     private string _cachedSortedColumn = string.Empty;
 
     //Estilos
@@ -86,15 +89,22 @@ public partial class ContainersGridViewModel : ObservableValidator
     public ObservableCollection<LineasVidaDTO> LstLineasVidaActivos { get; } = new ObservableCollection<LineasVidaDTO>();
 
     #endregion
-    public ContainersGridViewModel(IConfigRepository<UI_Config> configRepository, AzureServiceBus azureBus, IServiciosRepositorios<Objeto> objetosServicio, IServiciosRepositorios<Lista> listasServicio, IServiciosRepositorios<Movim> movimientosServicio)
+    public ContainersGridViewModel(
+        IConfigRepository<UI_Config> configRepository,
+        AzureServiceBus azureBus,
+        IAsyncRepository<Objeto> objetosServicio,
+        IAsyncRepository<Lista> listasServicio,
+        IAsyncRepository<Movim> movimientosServicio,
+        IMapper mapper)
     {
-        _configRepository = configRepository;        
+        _configRepository = configRepository;
         _azureBus = azureBus;
         _objetosServicio = objetosServicio;
         _listasServicio = listasServicio;
         _movimientosServicio = movimientosServicio;
 
         CargarConfiguracion().Wait();
+        _mapper = mapper;
     }
 
     #region Listas y source
@@ -291,7 +301,9 @@ public partial class ContainersGridViewModel : ObservableValidator
             {
                 foreach (var item in data)
                 {
-                    Source.Add(GenerarDTO(item));
+                    var objetoDTO = _mapper.Map<ObjetosListaDTO>(item);
+                    CargarDescripciones(objetoDTO);
+                    Source.Add(objetoDTO);
                 }
             }
         }
@@ -300,24 +312,55 @@ public partial class ContainersGridViewModel : ObservableValidator
             throw;
         }        
     }
+
+    private void CargarDescripciones(ObjetosListaDTO objeto)
+    {
+        objeto.OBJ_SIGLAS_DESCRIPCION = LstSiglas.FirstOrDefault(x => x.OBJ_SIGLAS == objeto.OBJ_SIGLAS).DESCRIPCION;
+        objeto.OBJ_MODELO_DESCRIPCION = LstModelos.FirstOrDefault(x => x.OBJ_MODELO == objeto.OBJ_MODELO).DESCRIPCION;
+        objeto.OBJ_VARIANTE_DESCRIPCION = LstVariantes.FirstOrDefault(x => x.OBJ_VARIANTE == objeto.OBJ_VARIANTE).DESCRIPCION;
+        objeto.OBJ_TIPO_DESCRIPCION = LstTipos.FirstOrDefault(x => x.OBJ_TIPO == objeto.OBJ_TIPO).DESCRIPCION;
+        objeto.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objeto.OBJ_INSPEC_CSC);
+        objeto.OBJ_PROPIETARIO_DESCRIPCION = LstPropietarios.FirstOrDefault(x => x.OBJ_PROPIETARIO == objeto.OBJ_PROPIETARIO).DESCRIPCION;
+        objeto.OBJ_TARA_DESCRIPCION = LstTara.FirstOrDefault(x => x.OBJ_TARA == objeto.OBJ_TARA).DESCRIPCION;
+        objeto.OBJ_PMP_DESCRIPCION = LstPmp.FirstOrDefault(x => x.OBJ_PMP == objeto.OBJ_PMP).DESCRIPCION;
+        objeto.OBJ_ALTURA_EXTERIOR_DESCRIPCION = LstAlturasExterior.FirstOrDefault(x => x.OBJ_ALTURA_EXTERIOR == objeto.OBJ_ALTURA_EXTERIOR).DESCRIPCION;
+        objeto.OBJ_CUELLO_CISNE_DESCRIPCION = LstCuellosCisne.FirstOrDefault(x => x.OBJ_CUELLO_CISNE == objeto.OBJ_CUELLO_CISNE).DESCRIPCION;
+        objeto.OBJ_BARRAS_DESCRIPCION = LstBarras.FirstOrDefault(x => x.OBJ_BARRAS == objeto.OBJ_BARRAS).DESCRIPCION;
+        objeto.OBJ_CABLES_DESCRIPCION = LstCables.FirstOrDefault(x => x.OBJ_CABLES == objeto.OBJ_CABLES).DESCRIPCION;
+        objeto.OBJ_LINEA_VIDA_DESCRIPCION = LstLineasVida.FirstOrDefault(x => x.OBJ_LINEA_VIDA == objeto.OBJ_LINEA_VIDA).DESCRIPCION;
+        objeto.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objeto.OBJ_FECHA_ACTUALIZACION);
+        objeto.OBJ_COLOR = objeto.OBJ_COLOR;
+    }
     #endregion
 
     #region CRUD
     public async Task CrearObjeto(ObjetosListaDTO objetoDTO)
     {
-        var objeto = GenerarObjeto(objetoDTO);
-        objetoDTO.OBJ_ID_REG = await _objetosServicio.AddAsync(objeto);
-        objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objeto.OBJ_INSPEC_CSC);
-        objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
-        Source.Add(objetoDTO);
+        try
+        {
+            var objeto = _mapper.Map<Objeto>(objetoDTO);
+            objetoDTO.OBJ_ID_REG = await _objetosServicio.AddAsync(objeto);
+
+            objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objeto.OBJ_INSPEC_CSC);
+            objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
+            Source.Add(objetoDTO);
+
+            var mensaje = new ContainerCreado(objeto);
+            await _azureBus.EnviarMensaje(mensaje);
+        }
+        catch (Exception)
+        {
+            throw;
+        }        
     }
 
     public async Task ActualizarObjeto(ObjetosListaDTO objetoDTO)
     {
         try
         {
-            var objeto = GenerarObjeto(objetoDTO);
+            var objeto = (Objeto)_mapper.Map(objetoDTO, typeof(ObjetosListaDTO), typeof(Objeto));
             await _objetosServicio.UpdateAsync(objeto);
+
             var i = Source.IndexOf(objetoDTO);
             objetoDTO.OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objetoDTO.OBJ_INSPEC_CSC);
             objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
@@ -335,15 +378,29 @@ public partial class ContainersGridViewModel : ObservableValidator
 
     public async Task BorrarRecuperarRegistro()
     {
-        var accion = EstadoActivo ? "B" : "A";
-        SelectedObjeto.OBJ_ID_ESTADO_REG = accion;
-        SelectedObjeto.OBJ_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
-        await _objetosServicio.DeleteRecover(GenerarObjeto(SelectedObjeto));
+        try
+        {
+            var accion = EstadoActivo ? "B" : "A";
+            SelectedObjeto.OBJ_ID_ESTADO_REG = accion;
+            SelectedObjeto.OBJ_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
 
-        //Actualizo Source
-        var i = Source.IndexOf(SelectedObjeto);        
-        Source[i] = SelectedObjeto;
-        Source[i].OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(SelectedObjeto.OBJ_FECHA_ACTUALIZACION);
+            var objeto = (Objeto)_mapper.Map(SelectedObjeto, typeof(ObjetosListaDTO), typeof(Objeto));
+            await _objetosServicio.UpdateAsync(objeto);
+
+            var mensaje = new ContainerModificado(objeto);
+            await _azureBus.EnviarMensaje(mensaje);
+
+            //Actualizo Source
+            var i = Source.IndexOf(SelectedObjeto);
+            Source[i] = SelectedObjeto;
+            Source[i].OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(SelectedObjeto.OBJ_FECHA_ACTUALIZACION);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        
     }
 
     #endregion
@@ -591,85 +648,85 @@ public partial class ContainersGridViewModel : ObservableValidator
     #endregion
 
     #region Mapeos
-    private ObjetosListaDTO GenerarDTO(Objeto objeto)
-    {
-        return new ObjetosListaDTO()
-        {
-            OBJ_ID_REG = objeto.ID,
-            OBJ_ID_ESTADO_REG = objeto.OBJ_ID_ESTADO_REG,
-            OBJ_MATRICULA = objeto.OBJ_MATRICULA,
-            OBJ_ID_OBJETO = objeto.OBJ_ID_OBJETO,
-            OBJ_SIGLAS = objeto.OBJ_SIGLAS,
-            OBJ_SIGLAS_DESCRIPCION = LstSiglas.FirstOrDefault(x => x.OBJ_SIGLAS == objeto.OBJ_SIGLAS).DESCRIPCION,
-            OBJ_MODELO = objeto.OBJ_MODELO,
-            OBJ_MODELO_DESCRIPCION = LstModelos.FirstOrDefault(x => x.OBJ_MODELO == objeto.OBJ_MODELO).DESCRIPCION,
-            OBJ_VARIANTE = objeto.OBJ_VARIANTE,
-            OBJ_VARIANTE_DESCRIPCION = LstVariantes.FirstOrDefault(x => x.OBJ_VARIANTE == objeto.OBJ_VARIANTE).DESCRIPCION,
-            OBJ_TIPO = objeto.OBJ_TIPO,
-            OBJ_TIPO_DESCRIPCION = LstTipos.FirstOrDefault(x => x.OBJ_TIPO == objeto.OBJ_TIPO).DESCRIPCION,
-            OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objeto.OBJ_INSPEC_CSC),
-            OBJ_PROPIETARIO = objeto.OBJ_PROPIETARIO,
-            OBJ_PROPIETARIO_DESCRIPCION = LstPropietarios.FirstOrDefault(x => x.OBJ_PROPIETARIO == objeto.OBJ_PROPIETARIO).DESCRIPCION,
-            OBJ_TARA = objeto.OBJ_TARA,
-            OBJ_TARA_DESCRIPCION = LstTara.FirstOrDefault(x => x.OBJ_TARA == objeto.OBJ_TARA).DESCRIPCION,
-            OBJ_PMP = objeto.OBJ_PMP,
-            OBJ_PMP_DESCRIPCION = LstPmp.FirstOrDefault(x => x.OBJ_PMP == objeto.OBJ_PMP).DESCRIPCION,
-            OBJ_CARGA_UTIL = objeto.OBJ_CARGA_UTIL,
-            OBJ_ALTURA_EXTERIOR = objeto.OBJ_ALTURA_EXTERIOR,
-            OBJ_ALTURA_EXTERIOR_DESCRIPCION = LstAlturasExterior.FirstOrDefault(x => x.OBJ_ALTURA_EXTERIOR == objeto.OBJ_ALTURA_EXTERIOR).DESCRIPCION,
-            OBJ_CUELLO_CISNE = objeto.OBJ_CUELLO_CISNE,
-            OBJ_CUELLO_CISNE_DESCRIPCION = LstCuellosCisne.FirstOrDefault(x => x.OBJ_CUELLO_CISNE == objeto.OBJ_CUELLO_CISNE).DESCRIPCION,
-            OBJ_BARRAS = objeto.OBJ_BARRAS,
-            OBJ_BARRAS_DESCRIPCION = LstBarras.FirstOrDefault(x => x.OBJ_BARRAS == objeto.OBJ_BARRAS).DESCRIPCION,
-            OBJ_CABLES = objeto.OBJ_CABLES,
-            OBJ_CABLES_DESCRIPCION = LstCables.FirstOrDefault(x => x.OBJ_CABLES == objeto.OBJ_CABLES).DESCRIPCION,
-            OBJ_LINEA_VIDA = objeto.OBJ_LINEA_VIDA,
-            OBJ_LINEA_VIDA_DESCRIPCION = LstLineasVida.FirstOrDefault(x => x.OBJ_LINEA_VIDA == objeto.OBJ_LINEA_VIDA).DESCRIPCION,
-            OBJ_OBSERVACIONES = objeto.OBJ_OBSERVACIONES,
-            OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objeto.OBJ_FECHA_ACTUALIZACION),
-            OBJ_COLOR = objeto.OBJ_COLOR,
-        };
-    }
+    //private ObjetosListaDTO GenerarDTO(Objeto objeto)
+    //{
+    //    return new ObjetosListaDTO()
+    //    {
+    //        OBJ_ID_REG = objeto.ID,
+    //        OBJ_ID_ESTADO_REG = objeto.OBJ_ID_ESTADO_REG,
+    //        OBJ_MATRICULA = objeto.OBJ_MATRICULA,
+    //        OBJ_ID_OBJETO = objeto.OBJ_ID_OBJETO,
+    //        OBJ_SIGLAS = objeto.OBJ_SIGLAS,
+    //        OBJ_SIGLAS_DESCRIPCION = LstSiglas.FirstOrDefault(x => x.OBJ_SIGLAS == objeto.OBJ_SIGLAS).DESCRIPCION,
+    //        OBJ_MODELO = objeto.OBJ_MODELO,
+    //        OBJ_MODELO_DESCRIPCION = LstModelos.FirstOrDefault(x => x.OBJ_MODELO == objeto.OBJ_MODELO).DESCRIPCION,
+    //        OBJ_VARIANTE = objeto.OBJ_VARIANTE,
+    //        OBJ_VARIANTE_DESCRIPCION = LstVariantes.FirstOrDefault(x => x.OBJ_VARIANTE == objeto.OBJ_VARIANTE).DESCRIPCION,
+    //        OBJ_TIPO = objeto.OBJ_TIPO,
+    //        OBJ_TIPO_DESCRIPCION = LstTipos.FirstOrDefault(x => x.OBJ_TIPO == objeto.OBJ_TIPO).DESCRIPCION,
+    //        OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objeto.OBJ_INSPEC_CSC),
+    //        OBJ_PROPIETARIO = objeto.OBJ_PROPIETARIO,
+    //        OBJ_PROPIETARIO_DESCRIPCION = LstPropietarios.FirstOrDefault(x => x.OBJ_PROPIETARIO == objeto.OBJ_PROPIETARIO).DESCRIPCION,
+    //        OBJ_TARA = objeto.OBJ_TARA,
+    //        OBJ_TARA_DESCRIPCION = LstTara.FirstOrDefault(x => x.OBJ_TARA == objeto.OBJ_TARA).DESCRIPCION,
+    //        OBJ_PMP = objeto.OBJ_PMP,
+    //        OBJ_PMP_DESCRIPCION = LstPmp.FirstOrDefault(x => x.OBJ_PMP == objeto.OBJ_PMP).DESCRIPCION,
+    //        OBJ_CARGA_UTIL = objeto.OBJ_CARGA_UTIL,
+    //        OBJ_ALTURA_EXTERIOR = objeto.OBJ_ALTURA_EXTERIOR,
+    //        OBJ_ALTURA_EXTERIOR_DESCRIPCION = LstAlturasExterior.FirstOrDefault(x => x.OBJ_ALTURA_EXTERIOR == objeto.OBJ_ALTURA_EXTERIOR).DESCRIPCION,
+    //        OBJ_CUELLO_CISNE = objeto.OBJ_CUELLO_CISNE,
+    //        OBJ_CUELLO_CISNE_DESCRIPCION = LstCuellosCisne.FirstOrDefault(x => x.OBJ_CUELLO_CISNE == objeto.OBJ_CUELLO_CISNE).DESCRIPCION,
+    //        OBJ_BARRAS = objeto.OBJ_BARRAS,
+    //        OBJ_BARRAS_DESCRIPCION = LstBarras.FirstOrDefault(x => x.OBJ_BARRAS == objeto.OBJ_BARRAS).DESCRIPCION,
+    //        OBJ_CABLES = objeto.OBJ_CABLES,
+    //        OBJ_CABLES_DESCRIPCION = LstCables.FirstOrDefault(x => x.OBJ_CABLES == objeto.OBJ_CABLES).DESCRIPCION,
+    //        OBJ_LINEA_VIDA = objeto.OBJ_LINEA_VIDA,
+    //        OBJ_LINEA_VIDA_DESCRIPCION = LstLineasVida.FirstOrDefault(x => x.OBJ_LINEA_VIDA == objeto.OBJ_LINEA_VIDA).DESCRIPCION,
+    //        OBJ_OBSERVACIONES = objeto.OBJ_OBSERVACIONES,
+    //        OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objeto.OBJ_FECHA_ACTUALIZACION),
+    //        OBJ_COLOR = objeto.OBJ_COLOR,
+    //    };
+    //}
 
-    private Objeto GenerarObjeto(ObjetosListaDTO objetoDTO)
-    {
-        return new Objeto()
-        {
-            ID = objetoDTO.OBJ_ID_REG,
-            OBJ_ID_ESTADO_REG = objetoDTO.OBJ_ID_ESTADO_REG,
-            OBJ_MATRICULA = objetoDTO.OBJ_MATRICULA,
-            OBJ_ID_OBJETO = 0,
-            OBJ_SIGLAS = objetoDTO.OBJ_SIGLAS,
-            OBJ_SIGLAS_LISTA = LstSiglas.FirstOrDefault(x => x.OBJ_SIGLAS == objetoDTO.OBJ_SIGLAS).LISTAS_ID_LISTA,
-            OBJ_MODELO = objetoDTO.OBJ_MODELO,
-            OBJ_MODELO_LISTA = LstModelos.FirstOrDefault(x => x.OBJ_MODELO == objetoDTO.OBJ_MODELO).LISTAS_ID_LISTA,
-            OBJ_VARIANTE = objetoDTO.OBJ_VARIANTE,
-            OBJ_VARIANTE_LISTA = LstVariantes.FirstOrDefault(x => x.OBJ_VARIANTE == objetoDTO.OBJ_VARIANTE).LISTAS_ID_LISTA,
-            OBJ_TIPO = objetoDTO.OBJ_TIPO,
-            OBJ_TIPO_LISTA = LstTipos.FirstOrDefault(x => x.OBJ_TIPO == objetoDTO.OBJ_TIPO).LISTAS_ID_LISTA,
-            OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objetoDTO.OBJ_INSPEC_CSC),
-            OBJ_PROPIETARIO = objetoDTO.OBJ_PROPIETARIO,
-            OBJ_PROPIETARIO_LISTA = LstPropietarios.FirstOrDefault(x => x.OBJ_PROPIETARIO == objetoDTO.OBJ_PROPIETARIO).LISTAS_ID_LISTA,
-            OBJ_TARA = objetoDTO.OBJ_TARA,
-            OBJ_TARA_LISTA = LstTara.FirstOrDefault(x => x.OBJ_TARA == objetoDTO.OBJ_TARA).LISTAS_ID_LISTA,
-            OBJ_PMP = objetoDTO.OBJ_PMP,
-            OBJ_PMP_LISTA = LstPmp.FirstOrDefault(x => x.OBJ_PMP == objetoDTO.OBJ_PMP).LISTAS_ID_LISTA,
-            OBJ_CARGA_UTIL = objetoDTO.OBJ_CARGA_UTIL,
-            OBJ_ALTURA_EXTERIOR = objetoDTO.OBJ_ALTURA_EXTERIOR,
-            OBJ_ALTURA_EXTERIOR_LISTA = LstAlturasExterior.FirstOrDefault(x => x.OBJ_ALTURA_EXTERIOR == objetoDTO.OBJ_ALTURA_EXTERIOR).LISTAS_ID_LISTA,
-            OBJ_CUELLO_CISNE = objetoDTO.OBJ_CUELLO_CISNE,
-            OBJ_CUELLO_CISNE_LISTA = LstCuellosCisne.FirstOrDefault(x => x.OBJ_CUELLO_CISNE == objetoDTO.OBJ_CUELLO_CISNE).LISTAS_ID_LISTA,
-            OBJ_BARRAS = objetoDTO.OBJ_BARRAS,
-            OBJ_BARRAS_LISTA = LstBarras.FirstOrDefault(x => x.OBJ_BARRAS == objetoDTO.OBJ_BARRAS).LISTAS_ID_LISTA,
-            OBJ_CABLES = objetoDTO.OBJ_CABLES,
-            OBJ_CABLES_LISTA = LstCables.FirstOrDefault(x => x.OBJ_CABLES == objetoDTO.OBJ_CABLES).LISTAS_ID_LISTA,
-            OBJ_LINEA_VIDA = objetoDTO.OBJ_LINEA_VIDA,
-            OBJ_LINEA_VIDA_LISTA = LstLineasVida.FirstOrDefault(x => x.OBJ_LINEA_VIDA == objetoDTO.OBJ_LINEA_VIDA).LISTAS_ID_LISTA,
-            OBJ_OBSERVACIONES = objetoDTO.OBJ_OBSERVACIONES,
-            OBJ_FECHA_ACTUALIZACION = objetoDTO.OBJ_FECHA_ACTUALIZACION,
-            OBJ_COLOR = objetoDTO.OBJ_COLOR,
-        };
-    }
+    //private Objeto GenerarObjeto(ObjetosListaDTO objetoDTO)
+    //{
+    //    return new Objeto()
+    //    {
+    //        ID = objetoDTO.OBJ_ID_REG,
+    //        OBJ_ID_ESTADO_REG = objetoDTO.OBJ_ID_ESTADO_REG,
+    //        OBJ_MATRICULA = objetoDTO.OBJ_MATRICULA,
+    //        OBJ_ID_OBJETO = 0,
+    //        OBJ_SIGLAS = objetoDTO.OBJ_SIGLAS,
+    //        OBJ_SIGLAS_LISTA = LstSiglas.FirstOrDefault(x => x.OBJ_SIGLAS == objetoDTO.OBJ_SIGLAS).LISTAS_ID_LISTA,
+    //        OBJ_MODELO = objetoDTO.OBJ_MODELO,
+    //        OBJ_MODELO_LISTA = LstModelos.FirstOrDefault(x => x.OBJ_MODELO == objetoDTO.OBJ_MODELO).LISTAS_ID_LISTA,
+    //        OBJ_VARIANTE = objetoDTO.OBJ_VARIANTE,
+    //        OBJ_VARIANTE_LISTA = LstVariantes.FirstOrDefault(x => x.OBJ_VARIANTE == objetoDTO.OBJ_VARIANTE).LISTAS_ID_LISTA,
+    //        OBJ_TIPO = objetoDTO.OBJ_TIPO,
+    //        OBJ_TIPO_LISTA = LstTipos.FirstOrDefault(x => x.OBJ_TIPO == objetoDTO.OBJ_TIPO).LISTAS_ID_LISTA,
+    //        OBJ_INSPEC_CSC = FormatoFecha.ConvertirAFechaCorta(objetoDTO.OBJ_INSPEC_CSC),
+    //        OBJ_PROPIETARIO = objetoDTO.OBJ_PROPIETARIO,
+    //        OBJ_PROPIETARIO_LISTA = LstPropietarios.FirstOrDefault(x => x.OBJ_PROPIETARIO == objetoDTO.OBJ_PROPIETARIO).LISTAS_ID_LISTA,
+    //        OBJ_TARA = objetoDTO.OBJ_TARA,
+    //        OBJ_TARA_LISTA = LstTara.FirstOrDefault(x => x.OBJ_TARA == objetoDTO.OBJ_TARA).LISTAS_ID_LISTA,
+    //        OBJ_PMP = objetoDTO.OBJ_PMP,
+    //        OBJ_PMP_LISTA = LstPmp.FirstOrDefault(x => x.OBJ_PMP == objetoDTO.OBJ_PMP).LISTAS_ID_LISTA,
+    //        OBJ_CARGA_UTIL = objetoDTO.OBJ_CARGA_UTIL,
+    //        OBJ_ALTURA_EXTERIOR = objetoDTO.OBJ_ALTURA_EXTERIOR,
+    //        OBJ_ALTURA_EXTERIOR_LISTA = LstAlturasExterior.FirstOrDefault(x => x.OBJ_ALTURA_EXTERIOR == objetoDTO.OBJ_ALTURA_EXTERIOR).LISTAS_ID_LISTA,
+    //        OBJ_CUELLO_CISNE = objetoDTO.OBJ_CUELLO_CISNE,
+    //        OBJ_CUELLO_CISNE_LISTA = LstCuellosCisne.FirstOrDefault(x => x.OBJ_CUELLO_CISNE == objetoDTO.OBJ_CUELLO_CISNE).LISTAS_ID_LISTA,
+    //        OBJ_BARRAS = objetoDTO.OBJ_BARRAS,
+    //        OBJ_BARRAS_LISTA = LstBarras.FirstOrDefault(x => x.OBJ_BARRAS == objetoDTO.OBJ_BARRAS).LISTAS_ID_LISTA,
+    //        OBJ_CABLES = objetoDTO.OBJ_CABLES,
+    //        OBJ_CABLES_LISTA = LstCables.FirstOrDefault(x => x.OBJ_CABLES == objetoDTO.OBJ_CABLES).LISTAS_ID_LISTA,
+    //        OBJ_LINEA_VIDA = objetoDTO.OBJ_LINEA_VIDA,
+    //        OBJ_LINEA_VIDA_LISTA = LstLineasVida.FirstOrDefault(x => x.OBJ_LINEA_VIDA == objetoDTO.OBJ_LINEA_VIDA).LISTAS_ID_LISTA,
+    //        OBJ_OBSERVACIONES = objetoDTO.OBJ_OBSERVACIONES,
+    //        OBJ_FECHA_ACTUALIZACION = objetoDTO.OBJ_FECHA_ACTUALIZACION,
+    //        OBJ_COLOR = objetoDTO.OBJ_COLOR,
+    //    };
+    //}
     #endregion
 
     #region Configs

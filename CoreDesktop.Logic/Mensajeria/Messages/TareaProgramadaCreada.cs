@@ -1,8 +1,9 @@
-﻿using ContainersDesktop.Dominio.Models;
+﻿using ContainersDesktop.Comunes.Helpers;
+using ContainersDesktop.Dominio.Models;
 using CoreDesktop.Dominio.Models.Mensajeria;
 
 namespace CoreDesktop.Logic.Mensajeria.Messages;
-public class TareaProgramadaModificada : Message
+public class TareaProgramadaCreada : Message
 {
     public int TAREAS_PROGRAMADAS_ID_REG
     {
@@ -55,7 +56,7 @@ public class TareaProgramadaModificada : Message
         set;
     }
 
-    public TareaProgramadaModificada(TareaProgramada tarea)
+    public TareaProgramadaCreada(TareaProgramada tarea)
     {
         this.TAREAS_PROGRAMADAS_ID_REG = 0; // tarea.TAREAS_PROGRAMADAS_ID_REG;
         this.TAREAS_PROGRAMADAS_OBJETO_ID_REG = tarea.TAREAS_PROGRAMADAS_OBJETO_ID_REG;

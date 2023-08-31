@@ -1,6 +1,7 @@
 ﻿using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using CoreDesktop.Logic.Services;
 
 namespace ContainersDesktop.Logica.Services;
 public class SincronizarServicio
@@ -8,12 +9,14 @@ public class SincronizarServicio
     private readonly IAsyncRepository<Dispositivo> _dispositivosRepo;
     private readonly IAsyncRepository<Sincronizacion> _sincronizacionRepo;
     private readonly AzureStorageManagement _azureStorageManagement;
+    private readonly MensajesServicio _mensajesServicio;
 
-    public SincronizarServicio(AzureStorageManagement azureStorageManagement, IAsyncRepository<Dispositivo> dispositivosRepo, IAsyncRepository<Sincronizacion> sincronizacionRepo)
+    public SincronizarServicio(AzureStorageManagement azureStorageManagement, IAsyncRepository<Dispositivo> dispositivosRepo, IAsyncRepository<Sincronizacion> sincronizacionRepo, MensajesServicio mensajesServicio)
     {
         _azureStorageManagement = azureStorageManagement;
         _dispositivosRepo = dispositivosRepo;
         _sincronizacionRepo = sincronizacionRepo;
+        _mensajesServicio = mensajesServicio;
     }
     public async Task Sincronizar()
     {
@@ -45,6 +48,7 @@ public class SincronizarServicio
                 //        File.Delete(dbDescarga);
                 //    }
                 //}
+                await _mensajesServicio.ProcesarPendientes();
 
                 //Subo al contenedor
                 await _azureStorageManagement.UploadFile(item.DISPOSITIVOS_CONTAINER);

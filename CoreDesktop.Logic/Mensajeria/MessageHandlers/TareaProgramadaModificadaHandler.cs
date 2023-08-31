@@ -6,8 +6,6 @@ using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using CoreDesktop.Logic.Contracts;
 using CoreDesktop.Logic.Mensajeria.Messages;
-using Microsoft.Azure.Amqp.Encoding;
-using Microsoft.Azure.Amqp.Framing;
 
 namespace CoreDesktop.Logic.Mensajeria.MessageHandlers;
 public class TareaProgramadaModificadaHandler : IMessageHandler<TareaProgramadaModificada>
@@ -21,10 +19,11 @@ public class TareaProgramadaModificadaHandler : IMessageHandler<TareaProgramadaM
     }
     public async Task Handle(TareaProgramadaModificada @message)
     {
-        var entidad = await _repository.GetByIdAsync(@message.TAREAS_PROGRAMADAS_ID_REG);
+        //var entidad = await _repository.GetByIdAsync(@message.TAREAS_PROGRAMADAS_ID_REG);
 
-        entidad = (TareaProgramada)_mapper.Map(@message, entidad, typeof(TareaProgramadaModificada), typeof(TareaProgramada));
+        var entidad = (TareaProgramada)_mapper.Map(@message, typeof(TareaProgramadaModificada), typeof(TareaProgramada));
         entidad.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
+
         await _repository.UpdateAsync(entidad);
 
         return;

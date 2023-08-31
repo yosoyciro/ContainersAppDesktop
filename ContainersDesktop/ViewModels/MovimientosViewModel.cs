@@ -80,19 +80,21 @@ public partial class MovimientosViewModel : ObservableRecipient, INavigationAwar
     #endregion
 
     public MovimientosViewModel(
-        IServiciosRepositorios<Movim> movimientosServicio, 
-        IServiciosRepositorios<Lista> listasServicio, 
-        IServiciosRepositorios<Dispositivo> dispositivosServicio, 
-        IServiciosRepositorios<Objeto> objetosServicio, 
-        IConfigRepository<UI_Config> configRepository)
+        IServiciosRepositorios<Movim> movimientosServicio,
+        IServiciosRepositorios<Lista> listasServicio,
+        IServiciosRepositorios<Dispositivo> dispositivosServicio,
+        IServiciosRepositorios<Objeto> objetosServicio,
+        IConfigRepository<UI_Config> configRepository,
+        SincronizarServicio sincronizarServicio)
     {
         _movimientosServicio = movimientosServicio;
         _listasServicio = listasServicio;
         _dispositivosServicio = dispositivosServicio;
         _objetosServicio = objetosServicio;
         _configRepository = configRepository;
+        _sincronizarServicio = sincronizarServicio;
 
-        CargarConfiguracion().Wait();
+        CargarConfiguracion().Wait();        
     }
     public void OnNavigatedFrom()
     {
