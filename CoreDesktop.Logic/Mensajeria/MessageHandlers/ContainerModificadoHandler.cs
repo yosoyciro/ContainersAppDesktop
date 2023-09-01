@@ -1,13 +1,14 @@
 ﻿using ContainersDesktop.Dominio.Models;
-using CoreDesktop.Logic.Contracts;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using CoreDesktop.Logica.Contracts;
 using CoreDesktopLogica.Mensajeria.Messages;
 
-namespace CoreDesktop.Logic.Mensajeria.MessageHandlers;
+namespace CoreDesktop.Logica.Mensajeria.MessageHandlers;
 public class ContainerModificadoHandler : IMessageHandler<ContainerModificado>
 {
-    private readonly IServiciosRepositorios<Objeto> _objetosServicio;
+    private readonly IAsyncRepository<Objeto> _objetosServicio;
 
-    public ContainerModificadoHandler(IServiciosRepositorios<Objeto> objetosServicio)
+    public ContainerModificadoHandler(IAsyncRepository<Objeto> objetosServicio)
     {
         _objetosServicio = objetosServicio;
     }

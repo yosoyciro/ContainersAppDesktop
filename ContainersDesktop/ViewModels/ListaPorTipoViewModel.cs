@@ -2,8 +2,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
-using ContainersDesktop.Logic.Contracts;
-using CoreDesktop.Logic.Contracts;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using ContainersDesktop.Logica.Contracts;
+using CoreDesktop.Logica.Contracts;
 
 namespace ContainersDesktop.ViewModels;
 
@@ -27,16 +28,16 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
         }
     }
     public bool HasCurrent => current is not null;
-    public bool EstadoActivo => current?.LISTAS_ID_ESTADO_REG == "A" ? true : false;
-    public bool EstadoBaja => current?.LISTAS_ID_ESTADO_REG == "B" ? true : false;
+    public bool EstadoActivo => current?.Estado == "A" ? true : false;
+    public bool EstadoBaja => current?.Estado == "B" ? true : false;
 
     public ClaList claLista = new();
-    private readonly IServiciosRepositorios<Lista> _listasServicio;
+    private readonly IAsyncRepository<Lista> _listasRepo;
     private string _cachedSortedColumn = string.Empty;
 
-    public ListaPorTipoViewModel(IServiciosRepositorios<Lista> listasServicio)
+    public ListaPorTipoViewModel(IAsyncRepository<Lista> listasServicio)
     {
-        _listasServicio = listasServicio;
+        _listasRepo = listasServicio;
     }
 
     public void OnNavigatedFrom()
@@ -54,12 +55,13 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
     {
         Source.Clear();
 
-        var data = await _listasServicio.GetAsync();
+        var data = await _listasRepo.GetAsync();
 
         foreach (var item in data
             .Where(x => x.LISTAS_ID_LISTA == claLista!.ID)
             .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN))
         {
+            item.FechaActualizacion = FormatoFecha.ConvertirAFechaHora(item.FechaActualizacion!);
             Source.Add(item);
         }
     }
@@ -67,20 +69,20 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
     public async Task BorrarRecuperarLista()
     {
         var accion = EstadoActivo ? "B" : "A";
-        SelectedLista.LISTAS_ID_ESTADO_REG = accion;
-        SelectedLista.LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
-        await _listasServicio.DeleteRecover(SelectedLista);
+        SelectedLista.Estado = accion;
+        SelectedLista.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
+        await _listasRepo.UpdateAsync(SelectedLista);
 
         //Actualizo Source
         var i = Source.IndexOf(SelectedLista);              
         Source[i] = SelectedLista;
-        Source[i].LISTAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(SelectedLista.LISTAS_FECHA_ACTUALIZACION);
+        Source[i].FechaActualizacion = FormatoFecha.ConvertirAFechaHora(SelectedLista.FechaActualizacion);
     }
 
     public async Task AgregarLista(Lista lista)
     {
         lista.LISTAS_ID_LISTA = claLista.ID;
-        lista.ID = await _listasServicio.AddAsync(lista);
+        lista.ID = await _listasRepo.AddAsync(lista);
         if (lista.ID > 0)
         {
             Source.Add(lista);
@@ -89,7 +91,7 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
 
     public async Task ActualizarLista(Lista lista)
     {
-        await _listasServicio.UpdateAsync(lista);
+        await _listasRepo.UpdateAsync(lista);
         var i = Source.IndexOf(lista);
         Source[i] = lista;
     }
@@ -99,7 +101,7 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
     {
         return new ObservableCollection<Lista>(Source.Where(x =>
             (string.IsNullOrEmpty(filter) || x.LISTAS_ID_LISTA_DESCRIP.Contains(filter, StringComparison.OrdinalIgnoreCase)) &&
-            (verTodos || x.LISTAS_ID_ESTADO_REG == "A")
+            (verTodos || x.Estado == "A")
         ));
     }
 

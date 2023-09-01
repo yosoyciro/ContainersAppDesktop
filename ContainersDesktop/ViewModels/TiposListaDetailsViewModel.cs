@@ -1,12 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Dominio.Models;
-using CoreDesktop.Logic.Contracts;
+using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using CoreDesktop.Logica.Contracts;
 
 namespace ContainersDesktop.ViewModels;
 public partial class TiposListaDetailsViewModel : ObservableRecipient
 {
-    private readonly IServiciosRepositorios<ClaList> _claListServicio;
+    private readonly IAsyncRepository<ClaList> _claListRepo;
     [ObservableProperty]
     public string filter;
     public ObservableCollection<ClaList> Items { get; set; } = new();
@@ -23,18 +24,18 @@ public partial class TiposListaDetailsViewModel : ObservableRecipient
     }
     public bool HasCurrent => current is not null;
 
-    public TiposListaDetailsViewModel(IServiciosRepositorios<ClaList> claListServicio)
+    public TiposListaDetailsViewModel(IAsyncRepository<ClaList> claListServicio)
     {
-        _claListServicio = claListServicio;
+        _claListRepo = claListServicio;
     }
 
     public async Task CargarSource()
     {
         Items.Clear();
 
-        var data = await _claListServicio.GetAsync();
+        var data = await _claListRepo.GetAsync();
 
-        foreach (var item in data.OrderBy(x => x.CLALIST_DESCRIP).Where(x => x.CLALIST_ID_ESTADO_REG == "A" && !string.IsNullOrEmpty(x.CLALIST_DESCRIP)))
+        foreach (var item in data.OrderBy(x => x.CLALIST_DESCRIP).Where(x => x.Estado == "A" && !string.IsNullOrEmpty(x.CLALIST_DESCRIP)))
         {
             Items.Add(item);
         }
@@ -50,13 +51,13 @@ public partial class TiposListaDetailsViewModel : ObservableRecipient
     public async Task BorrarLista()
     {
 
-        await _claListServicio.DeleteRecover(SelectedClaList);
+        await _claListRepo.UpdateAsync(SelectedClaList);
         Items.Remove(SelectedClaList);
     }
 
     public async Task AgregarLista(ClaList claList)
     {
-        await _claListServicio.AddAsync(claList);
+        await _claListRepo.AddAsync(claList);
         Items.Add(claList);
     }
 }

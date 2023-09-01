@@ -12,6 +12,14 @@ public class ClaListConfig : IEntityTypeConfiguration<ClaList>
             .HasColumnName("CLALIST_ID_REG")
             .ValueGeneratedOnAdd();
 
+        builder
+            .Property(x => x.Estado)
+            .HasColumnName("CLALIST_ID_ESTADO_REG");
+
+        builder
+            .Property(x => x.FechaActualizacion)
+            .HasColumnName("CLALIST_FECHA_ACTUALIZACION");
+
         builder.HasKey(x => x.ID);
 
         builder.ToTable("CLALIST");

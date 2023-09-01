@@ -17,13 +17,12 @@ using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
 using CoreDesktop.Dominio.Models;
-using CoreDesktop.Logic.Contracts;
-using CoreDesktop.Logic.Implementaciones;
-using CoreDesktop.Logic.Mapping;
-using CoreDesktop.Logic.Mensajeria.MessageHandlers;
-using CoreDesktop.Logic.Mensajeria.Messages;
-using CoreDesktop.Logic.Services;
-using CoreDesktop.Logic.Workers;
+using CoreDesktop.Logica.Contracts;
+using CoreDesktop.Logica.Mapping;
+using CoreDesktop.Logica.Mensajeria.MessageHandlers;
+using CoreDesktop.Logica.Mensajeria.Messages;
+using CoreDesktop.Logica.Services;
+using CoreDesktop.Logica.Workers;
 using CoreDesktop.Logica.Mensajeria.Services;
 using CoreDesktopLogica.Mensajeria.Messages;
 using Microsoft.EntityFrameworkCore;
@@ -87,7 +86,6 @@ public partial class App : Application
 
             // Core Services
             services.AddScoped(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
-            services.AddScoped(typeof(IServiciosRepositorios<>), typeof(ServiciosRepositorios<>));
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<AzureStorageManagement>();
             services.AddSingleton<PlayFabServicio>();

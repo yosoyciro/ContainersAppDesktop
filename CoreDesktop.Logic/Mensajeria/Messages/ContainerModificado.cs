@@ -147,7 +147,7 @@ public class ContainerModificado : Message
     {
         OBJ_ID_REG = objeto.ID;
         OBJ_MATRICULA = objeto.OBJ_MATRICULA;
-        OBJ_ID_ESTADO_REG = objeto.OBJ_ID_ESTADO_REG;
+        OBJ_ID_ESTADO_REG = objeto.Estado;
         OBJ_SIGLAS_LISTA = objeto.OBJ_SIGLAS_LISTA;
         OBJ_SIGLAS = objeto.OBJ_SIGLAS;
         OBJ_MODELO_LISTA = objeto.OBJ_MODELO_LISTA;
@@ -176,7 +176,7 @@ public class ContainerModificado : Message
         OBJ_LINEA_VIDA_LISTA = objeto.OBJ_LINEA_VIDA_LISTA;
         OBJ_LINEA_VIDA = objeto.OBJ_LINEA_VIDA;
         OBJ_OBSERVACIONES = objeto.OBJ_OBSERVACIONES;
-        OBJ_FECHA_ACTUALIZACION = objeto.OBJ_FECHA_ACTUALIZACION;
+        OBJ_FECHA_ACTUALIZACION = objeto.FechaActualizacion;
         OBJ_COLOR = objeto.OBJ_COLOR;
     }
 }

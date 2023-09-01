@@ -1,14 +1,9 @@
 ﻿using ContainersDesktop.Dominio.Models.Base;
+using CoreDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
-public class Lista : BaseEntity
-{    
-    public string? LISTAS_ID_ESTADO_REG
-    {
-        get;
-        set;
-    }
-
+public class Lista : AuditableEntity
+{      
     public int LISTAS_ID_LISTA
     {
         get;
@@ -25,11 +20,5 @@ public class Lista : BaseEntity
     {
         get;
         set;
-    }
-
-    public string? LISTAS_FECHA_ACTUALIZACION
-    {
-        get;
-        set;
-    }
+    }    
 }

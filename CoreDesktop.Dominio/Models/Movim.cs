@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ContainersDesktop.Dominio.Models.Base;
+using CoreDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
-public class Movim : BaseEntity
+public class Movim : AuditableEntity
 {
     public int MOVIM_ID_REG_MOBILE
     {
@@ -11,12 +12,6 @@ public class Movim : BaseEntity
     }
 
     public int MOVIM_ID_DISPOSITIVO
-    {
-        get;
-        set;
-    }
-
-    public string? MOVIM_ID_ESTADO_REG
     {
         get;
         set;
@@ -143,12 +138,6 @@ public class Movim : BaseEntity
     }
 
     public string? MOVIM_PDF
-    {
-        get;
-        set;
-    }
-
-    public string? MOVIM_FECHA_ACTUALIZACION
     {
         get;
         set;

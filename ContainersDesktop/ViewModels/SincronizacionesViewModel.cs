@@ -6,13 +6,12 @@ using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Services;
-using CoreDesktop.Logic.Contracts;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
 public partial class SincronizacionesViewModel : ObservableRecipient
 {
-    private readonly IServiciosRepositorios<Sincronizacion> _sincronizacionServicio; 
+    private readonly IAsyncRepository<Sincronizacion> _sincronizacionRepo; 
     private readonly SincronizarServicio _sincronizarServicio;
     private readonly IConfigRepository<UI_Config> _configRepository;
 
@@ -40,12 +39,12 @@ public partial class SincronizacionesViewModel : ObservableRecipient
     public bool isBusy = false;
 
     public SincronizacionesViewModel(
-        IServiciosRepositorios<Sincronizacion> sincronizacionServicio, 
+        IAsyncRepository<Sincronizacion> sincronizacionServicio, 
         SincronizarServicio sincronizarServicio, 
         IConfigRepository<UI_Config> configRepository
         )
     {
-        _sincronizacionServicio = sincronizacionServicio;
+        _sincronizacionRepo = sincronizacionServicio;
         _sincronizarServicio = sincronizarServicio;
         _configRepository = configRepository;
 
@@ -55,7 +54,7 @@ public partial class SincronizacionesViewModel : ObservableRecipient
     public async Task CargarSource()
     {
         Source.Clear();
-        var data = await _sincronizacionServicio.GetAsync();
+        var data = await _sincronizacionRepo.GetAsync();
 
         foreach (var item in data)
         {

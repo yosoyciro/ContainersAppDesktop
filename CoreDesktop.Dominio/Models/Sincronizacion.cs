@@ -3,12 +3,12 @@
 namespace ContainersDesktop.Dominio.Models;
 public class Sincronizacion : BaseEntity
 {    
-	public string SINCRONIZACIONES_FECHA_HORA_INICIO
+	public string? SINCRONIZACIONES_FECHA_HORA_INICIO
     {
         get; set;
     }
 
-	public string SINCRONIZACIONES_FECHA_HORA_FIN
+	public string? SINCRONIZACIONES_FECHA_HORA_FIN
     {
         get; set;
     }
@@ -18,7 +18,7 @@ public class Sincronizacion : BaseEntity
         get; set;
     }
 
-	public string SINCRONIZACIONES_RESULTADO
+	public string? SINCRONIZACIONES_RESULTADO
     {
         get; set;
     }

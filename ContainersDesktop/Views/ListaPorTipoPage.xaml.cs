@@ -54,8 +54,7 @@ public sealed partial class ListaPorTipoPage : Page
         
         AgregarDialog.DataContext = new Lista() 
         { 
-            LISTAS_ID_ESTADO_REG = "A",    
-            LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
+            Estado = "A",    
         };
 
         ViewModel.FormViewModel.Orden = ViewModel.Source.OrderByDescending(x => x.LISTAS_ID_LISTA_ORDEN).FirstOrDefault().LISTAS_ID_LISTA_ORDEN + 1;
@@ -118,8 +117,7 @@ public sealed partial class ListaPorTipoPage : Page
                         LISTAS_ID_LISTA = ViewModel.claLista.ID,
                         LISTAS_ID_LISTA_ORDEN = int.Parse(values[0]),
                         LISTAS_ID_LISTA_DESCRIP = values[1],
-                        LISTAS_ID_ESTADO_REG = "A",
-                        LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
+                        Estado = "A",
                     };
                     await ViewModel.AgregarLista(lista);
 
@@ -171,7 +169,6 @@ public sealed partial class ListaPorTipoPage : Page
         var lista = AgregarDialog.DataContext as Lista;
         lista.LISTAS_ID_LISTA_ORDEN = ViewModel.FormViewModel.Orden;
         lista.LISTAS_ID_LISTA_DESCRIP = ViewModel.FormViewModel.Descripcion;
-        lista.LISTAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
         await ViewModel.ActualizarLista(lista);
 
         grdListaPorTipo.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text, chkMostrarTodos.IsChecked ?? false);

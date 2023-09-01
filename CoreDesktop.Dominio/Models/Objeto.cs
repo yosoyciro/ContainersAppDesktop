@@ -1,18 +1,14 @@
 ﻿using ContainersDesktop.Dominio.Models.Base;
+using CoreDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
-public class Objeto : BaseEntity
+public class Objeto : AuditableEntity
 {   
     public string? OBJ_MATRICULA
     {
         get; set;
     }
 
-    public string? OBJ_ID_ESTADO_REG
-    {
-        get;
-        set;
-    }
     public int OBJ_SIGLAS_LISTA
     {
         get; set;
@@ -128,11 +124,7 @@ public class Objeto : BaseEntity
     {
         get; set;
     }
-    public string? OBJ_FECHA_ACTUALIZACION
-    {
-        get;
-        set;
-    }
+
     public string? OBJ_COLOR
     {
         get; set;

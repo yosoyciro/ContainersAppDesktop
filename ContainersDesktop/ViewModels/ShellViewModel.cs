@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Views;
-using CoreDesktop.Logic.Services;
+using CoreDesktop.Logica.Services;
 using CoreDesktop.Logica.Mensajeria.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Navigation;

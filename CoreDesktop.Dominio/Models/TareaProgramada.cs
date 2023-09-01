@@ -1,12 +1,9 @@
 ﻿using ContainersDesktop.Dominio.Models.Base;
+using CoreDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
-public class TareaProgramada : BaseEntity
-{    
-    public string? TAREAS_PROGRAMADAS_ID_ESTADO_REG
-    {
-        get; set;
-    }
+public class TareaProgramada : AuditableEntity
+{        
     public int TAREAS_PROGRAMADAS_OBJETO_ID_REG
     {
         get; set;
@@ -35,10 +32,7 @@ public class TareaProgramada : BaseEntity
     {
         get; set;
     }
-    public string? TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
-    {
-        get; set;
-    }
+    
     public double TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD
     {
         get;

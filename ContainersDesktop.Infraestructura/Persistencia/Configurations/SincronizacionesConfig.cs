@@ -10,7 +10,7 @@ public class SincronizacionesConfig : IEntityTypeConfiguration<Sincronizacion>
         builder
             .Property(x => x.ID)
             .HasColumnName("SINCRONIZACIONES_ID_REG")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedOnAdd();       
 
         builder.HasKey(x => x.ID);
 

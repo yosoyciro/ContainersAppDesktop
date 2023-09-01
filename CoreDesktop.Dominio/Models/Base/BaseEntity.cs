@@ -8,5 +8,5 @@ public abstract class BaseEntity
     {
         get;
         set;
-    }
+    }    
 }

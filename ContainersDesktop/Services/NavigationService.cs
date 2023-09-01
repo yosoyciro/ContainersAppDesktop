@@ -2,7 +2,7 @@
 
 using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Helpers;
-using ContainersDesktop.Logic.Contracts;
+using ContainersDesktop.Logica.Contracts;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 

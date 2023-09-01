@@ -1,10 +1,10 @@
 ﻿using CoreDesktop.Dominio.Models;
-using CoreDesktop.Logic.Contracts;
+using CoreDesktop.Logica.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace CoreDesktop.Logic.Services;
+namespace CoreDesktop.Logica.Services;
 public class MensajesServicioProcesar
 {
     private readonly IServiceScopeFactory _scopeFactory;

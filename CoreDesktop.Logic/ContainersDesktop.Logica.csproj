@@ -24,4 +24,8 @@
     <ProjectReference Include="..\ContainersDesktop.Infraestructura\ContainersDesktop.Infraestructura.csproj" />
     <ProjectReference Include="..\CoreDesktop.Dominio\ContainersDesktop.Dominio.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Implementaciones\" />
+  </ItemGroup>
 </Project>

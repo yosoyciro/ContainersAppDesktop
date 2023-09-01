@@ -1,7 +1,7 @@
 ﻿using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
-using CoreDesktop.Logic.Services;
+using CoreDesktop.Logica.Services;
 
 namespace ContainersDesktop.Logica.Services;
 public class SincronizarServicio
@@ -29,7 +29,7 @@ public class SincronizarServicio
         {
             var dispositivos = await _dispositivosRepo.GetAsync();
 
-            foreach (var item in dispositivos.Where(x => x.DISPOSITIVOS_ID_ESTADO_REG == "A" && !string.IsNullOrEmpty(x.DISPOSITIVOS_CONTAINER)))
+            foreach (var item in dispositivos.Where(x => x.Estado == "A" && !string.IsNullOrEmpty(x.DISPOSITIVOS_CONTAINER)))
             {
                 idDispositivo = item.ID;
                 fechaHoraInicio = DateTime.Now;

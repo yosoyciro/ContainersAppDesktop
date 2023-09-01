@@ -59,6 +59,7 @@ public sealed partial class TareasProgramadasPage : Page
 
         dlgFormulario.DataContext = new TareaProgramadaDTO()
         {
+            TAREAS_PROGRAMADAS_ID_ESTADO_REG = "A",
             TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = 0,
             TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = 0,
             TAREAS_PROGRAMADAS_FECHA_COMPLETADA = string.Empty,

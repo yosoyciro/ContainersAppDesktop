@@ -4,7 +4,7 @@ using Azure.Messaging.ServiceBus;
 using System.Text;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 
-namespace CoreDesktop.Logic.Services;
+namespace CoreDesktop.Logica.Services;
 public class MensajesServicio
 {
     private readonly IMensajeRepository<Mensaje> _repository;

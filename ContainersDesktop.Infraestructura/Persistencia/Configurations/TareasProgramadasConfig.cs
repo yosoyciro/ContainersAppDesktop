@@ -12,6 +12,14 @@ public class TareasProgramadasConfig : IEntityTypeConfiguration<TareaProgramada>
             .HasColumnName("TAREAS_PROGRAMADAS_ID_REG")
             .ValueGeneratedOnAdd();
 
+        builder
+            .Property(x => x.Estado)
+            .HasColumnName("TAREAS_PROGRAMADAS_ID_ESTADO_REG");
+
+        builder
+            .Property(x => x.FechaActualizacion)
+            .HasColumnName("TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION");
+
         builder.HasKey(x => x.ID);
 
         builder.ToTable("TAREAS_PROGRAMADAS");

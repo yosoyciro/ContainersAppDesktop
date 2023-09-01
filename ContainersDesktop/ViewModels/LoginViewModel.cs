@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Logic.Contracts;
+using ContainersDesktop.Logica.Contracts;
 using ContainersDesktop.Logica.Services;
 using Microsoft.Extensions.Logging;
 

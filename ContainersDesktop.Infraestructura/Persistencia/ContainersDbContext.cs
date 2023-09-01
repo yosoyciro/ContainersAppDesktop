@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
+using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.Storage;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using CoreDesktop.Dominio.Models;
+using CoreDesktop.Dominio.Models.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -70,5 +72,23 @@ public partial class ContainersDbContext : DbContext
         //{
         //    foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         //}
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Entity.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
+                    break;
+                case EntityState.Modified:
+                    entry.Entity.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
+                    break;
+            }
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }

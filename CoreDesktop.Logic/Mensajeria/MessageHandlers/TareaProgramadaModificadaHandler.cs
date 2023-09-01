@@ -4,10 +4,10 @@ using Azure.Core;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
-using CoreDesktop.Logic.Contracts;
-using CoreDesktop.Logic.Mensajeria.Messages;
+using CoreDesktop.Logica.Contracts;
+using CoreDesktop.Logica.Mensajeria.Messages;
 
-namespace CoreDesktop.Logic.Mensajeria.MessageHandlers;
+namespace CoreDesktop.Logica.Mensajeria.MessageHandlers;
 public class TareaProgramadaModificadaHandler : IMessageHandler<TareaProgramadaModificada>
 {
     private readonly IAsyncRepository<TareaProgramada> _repository;
@@ -22,7 +22,7 @@ public class TareaProgramadaModificadaHandler : IMessageHandler<TareaProgramadaM
         //var entidad = await _repository.GetByIdAsync(@message.TAREAS_PROGRAMADAS_ID_REG);
 
         var entidad = (TareaProgramada)_mapper.Map(@message, typeof(TareaProgramadaModificada), typeof(TareaProgramada));
-        entidad.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
+        entidad.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
 
         await _repository.UpdateAsync(entidad);
 

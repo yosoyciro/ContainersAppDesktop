@@ -1,7 +1,7 @@
 ﻿using ContainersDesktop.Dominio.Models;
 using CoreDesktop.Dominio.Models.Mensajeria;
 
-namespace CoreDesktop.Logic.Mensajeria.Messages;
+namespace CoreDesktop.Logica.Mensajeria.Messages;
 public class TareaProgramadaModificada : Message
 {
     public int TAREAS_PROGRAMADAS_ID_REG
@@ -62,7 +62,7 @@ public class TareaProgramadaModificada : Message
         this.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = tarea.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG;
         this.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = tarea.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD;
         this.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = tarea.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD;
-        this.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = tarea.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION;
+        this.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = tarea.FechaActualizacion;
         this.TAREAS_PROGRAMADAS_FECHA_COMPLETADA = tarea.TAREAS_PROGRAMADAS_FECHA_COMPLETADA;
         this.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = tarea.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA;
         this.TAREAS_PROGRAMADAS_ORDENADO = tarea.TAREAS_PROGRAMADAS_ORDENADO;

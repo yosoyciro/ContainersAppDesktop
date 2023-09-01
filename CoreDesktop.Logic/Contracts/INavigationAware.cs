@@ -1,4 +1,4 @@
-﻿namespace ContainersDesktop.Logic.Contracts;
+﻿namespace ContainersDesktop.Logica.Contracts;
 
 public interface INavigationAware
 {

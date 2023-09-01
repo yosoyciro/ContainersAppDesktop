@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using AutoMapper;
 using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
@@ -6,9 +7,11 @@ using ContainersDesktop.Dominio.DTO;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
-using ContainersDesktop.Logic.Contracts;
+using ContainersDesktop.Logica.Contracts;
 using ContainersDesktop.Logica.Services;
-using CoreDesktop.Logic.Contracts;
+using CoreDesktop.Logica.Mensajeria.Messages;
+using CoreDesktop.Logica.Mensajeria.Services;
+using CoreDesktopLogica.Mensajeria.Messages;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
@@ -17,12 +20,14 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     private readonly TareasProgramadasFormViewModel _formViewModel = new();
     public TareasProgramadasFormViewModel FormViewModel => _formViewModel;
 
-    private readonly IServiciosRepositorios<TareaProgramada> _tareasProgramadasServicio;
-    private readonly IServiciosRepositorios<Lista> _listasServicio;
-    private readonly IServiciosRepositorios<Dispositivo> _dispositivosServicio;
-    private readonly IServiciosRepositorios<Objeto> _objetosServicio;
-    private readonly SincronizarServicio _sincronizarServicio;
+    private readonly IAsyncRepository<TareaProgramada> _tareasProgramadasRepo;
+    private readonly IAsyncRepository<Lista> _listasRepo;
+    private readonly IAsyncRepository<Dispositivo> _dispositivosRepo;
+    private readonly IAsyncRepository<Objeto> _objetosRepo;
+    private readonly SincronizarServicio _sincronizarRepo;
     private readonly IConfigRepository<UI_Config> _configRepository;
+    private readonly IMapper _mapper;
+    private readonly AzureServiceBus _azureBus;
 
     private string _cachedSortedColumn = string.Empty;
     //Estilos
@@ -66,14 +71,25 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     public ObservableCollection<AlmacenesDTO> LstAlmacenesActivos { get; } = new();
     #endregion
 
-    public TareasProgramadasViewModel(SincronizarServicio sincronizarServicio, IConfigRepository<UI_Config> configRepository, IServiciosRepositorios<TareaProgramada> tareasProgramadasServicio, IServiciosRepositorios<Lista> listasServicio, IServiciosRepositorios<Dispositivo> dispositivosServicio, IServiciosRepositorios<Objeto> objetosServicio)
+    public TareasProgramadasViewModel(
+        SincronizarServicio sincronizarServicio,
+        IConfigRepository<UI_Config> configRepository,
+        IAsyncRepository<TareaProgramada> tareasProgramadasServicio,
+        IAsyncRepository<Lista> listasServicio,
+        IAsyncRepository<Dispositivo> dispositivosServicio,
+        IAsyncRepository<Objeto> objetosServicio,
+        IMapper mapper
+,
+        AzureServiceBus azureBus)
     {
-        _tareasProgramadasServicio = tareasProgramadasServicio;
-        _sincronizarServicio = sincronizarServicio;
+        _tareasProgramadasRepo = tareasProgramadasServicio;
+        _sincronizarRepo = sincronizarServicio;
         _configRepository = configRepository;
-        _listasServicio = listasServicio;
-        _dispositivosServicio = dispositivosServicio;        
-        _objetosServicio = objetosServicio;
+        _listasRepo = listasServicio;
+        _dispositivosRepo = dispositivosServicio;
+        _objetosRepo = objetosServicio;
+        _mapper = mapper;
+        _azureBus = azureBus;
 
         CargarConfiguracion().Wait();
     }
@@ -91,7 +107,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     {
         //Cargo Listas
         LstListas.Clear();
-        var listas = await _listasServicio.GetAsync();
+        var listas = await _listasRepo.GetAsync();
         if (listas.Any())
         {
             foreach (var item in listas)
@@ -102,13 +118,13 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
 
         //Dispositivos
         LstDispositivos.Clear();
-        var dispositivos = await _dispositivosServicio.GetAsync();
+        var dispositivos = await _dispositivosRepo.GetAsync();
         if (dispositivos.Any())
         {
             foreach (var item in dispositivos)
             {
                 LstDispositivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
-                if (item.DISPOSITIVOS_ID_ESTADO_REG == "A")
+                if (item.Estado == "A")
                 {
                     LstDispositivosActivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
                 }
@@ -117,13 +133,13 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
 
         //Objetos
         LstObjetos.Clear();
-        var objetos = await _objetosServicio.GetAsync();
+        var objetos = await _objetosRepo.GetAsync();
         if (objetos.Any())
         {
             foreach (var item in objetos)
             {
                 LstObjetos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.ID, DESCRIPCION = item.OBJ_MATRICULA });
-                if (item.OBJ_ID_ESTADO_REG == "A")
+                if (item.Estado == "A")
                 {
                     LstObjetosActivos.Add(new ObjetosDTO() { MOVIM_ID_OBJETO = item.ID, DESCRIPCION = item.OBJ_MATRICULA });
                 }
@@ -135,7 +151,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         foreach (var item in lstUbicaciones)
         {
             LstAlmacenes.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
-            if (item.LISTAS_ID_ESTADO_REG == "A")
+            if (item.Estado == "A")
             {
                 LstAlmacenesActivos.Add(new AlmacenesDTO() { MOVIM_ALMACEN = item.ID, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
                 //LstUbicacionesOrigen.Add(new UbicacionOrigenDTO() { MOVIM_ALMACEN = item.LISTAS_ID_REG, DESCRIPCION = item.LISTAS_ID_LISTA_DESCRIP, LISTAS_ID_LISTA = item.LISTAS_ID_LISTA });
@@ -155,7 +171,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
 
         _items.Clear();
 
-        var tareasProgramadas = await _tareasProgramadasServicio.GetAsync();
+        var tareasProgramadas = await _tareasProgramadasRepo.GetAsync();
 
         if (Objeto is not null)
         {
@@ -167,8 +183,9 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         {
             foreach (var item in data)
             {
-                var dto = MapSourceToDTO(item);
-                _items.Add(dto);
+                var tareaProgramadaDTO = _mapper.Map<TareaProgramadaDTO>(item);
+                CargarDescripciones(tareaProgramadaDTO);
+                _items.Add(tareaProgramadaDTO);
             }
         }
     }
@@ -180,10 +197,13 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     {
         try
         {
-            var tareaProgramada = MapDTOToSource(dto);
-            dto.TAREAS_PROGRAMADAS_ID_REG = await _tareasProgramadasServicio.AddAsync(tareaProgramada);
+            var tareaProgramada = _mapper.Map<TareaProgramada>(dto);
+            dto.TAREAS_PROGRAMADAS_ID_REG = await _tareasProgramadasRepo.AddAsync(tareaProgramada);
             dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
             _items.Add(dto);
+
+            var mensaje = new TareaProgramadaCreada(tareaProgramada);
+            await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)
         {
@@ -195,11 +215,11 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     {
         try
         {            
-            var tareaProgramada = MapDTOToSource(dto);
-            await _tareasProgramadasServicio.UpdateAsync(tareaProgramada);
+            var tareaProgramada = (TareaProgramada)_mapper.Map(dto, typeof(TareaProgramadaDTO), typeof(TareaProgramada));
+            await _tareasProgramadasRepo.UpdateAsync(tareaProgramada);
 
             var i = _items.IndexOf(Current);
-            dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
+            Current.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(Current.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
 
             _items[i].TAREAS_PROGRAMADAS_OBJETO_ID_REG = dto.TAREAS_PROGRAMADAS_OBJETO_ID_REG;
             _items[i].TAREAS_PROGRAMADAS_OBJETO_MATRICULA = dto.TAREAS_PROGRAMADAS_OBJETO_MATRICULA;
@@ -209,6 +229,9 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             _items[i].TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = dto.TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION;
             _items[i].TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = dto.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD;
             _items[i].TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = dto.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD;
+
+            var mensaje = new TareaProgramadaModificada(tareaProgramada);
+            await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)
         {
@@ -224,13 +247,16 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
 
         try
         {
-            var tareaProgramada = MapDTOToSource(Current);
-            await _tareasProgramadasServicio.DeleteRecover(tareaProgramada);
+            var tareaProgramada = (TareaProgramada)_mapper.Map(Current, typeof(TareaProgramadaDTO), typeof(TareaProgramada));
+            await _tareasProgramadasRepo.UpdateAsync(tareaProgramada);
 
             //Actualizo Source
             var i = Items.IndexOf(Current);
             Items[i].TAREAS_PROGRAMADAS_ID_ESTADO_REG = accion;
             Items[i].TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(Current.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION);
+
+            var mensaje = new TareaProgramadaModificada(tareaProgramada);
+            await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)
         {
@@ -242,52 +268,63 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     #endregion
 
     #region Mapeos
-    private TareaProgramadaDTO MapSourceToDTO(TareaProgramada item)
-    {
-        var objeto = LstObjetos.Where(x => x.MOVIM_ID_OBJETO == item.TAREAS_PROGRAMADAS_OBJETO_ID_REG).FirstOrDefault();        
-        var dispositivo = LstDispositivos.Where(x => x.MOVIM_ID_DISPOSITIVO == item.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG).FirstOrDefault();
-        var ubicacionOrigen = LstAlmacenes.FirstOrDefault(x => x.MOVIM_ALMACEN == item.TAREAS_PROGRAMADAS_UBICACION_ORIGEN);
-        var ubicacionDestino = LstAlmacenes.FirstOrDefault(x => x.MOVIM_ALMACEN == item.TAREAS_PROGRAMADAS_UBICACION_DESTINO);
 
-        return new TareaProgramadaDTO()
-        {
-            TAREAS_PROGRAMADAS_ID_REG = item.ID,
-            TAREAS_PROGRAMADAS_ID_ESTADO_REG = item.TAREAS_PROGRAMADAS_ID_ESTADO_REG,
-            TAREAS_PROGRAMADAS_OBJETO_ID_REG = item.TAREAS_PROGRAMADAS_OBJETO_ID_REG,
-            TAREAS_PROGRAMADAS_OBJETO_MATRICULA = objeto.DESCRIPCION,
-            TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(item.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA),
-            TAREAS_PROGRAMADAS_FECHA_COMPLETADA = FormatoFecha.ConvertirAFechaHora(item.TAREAS_PROGRAMADAS_FECHA_COMPLETADA),
-            TAREAS_PROGRAMADAS_UBICACION_ORIGEN = item.TAREAS_PROGRAMADAS_UBICACION_ORIGEN,
-            TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION = ubicacionOrigen.DESCRIPCION,
-            TAREAS_PROGRAMADAS_UBICACION_DESTINO = item.TAREAS_PROGRAMADAS_UBICACION_DESTINO,
-            TAREAS_PROGRAMADAS_UBICACION_DESTINO_DESCRIPCION = ubicacionDestino.DESCRIPCION,
-            TAREAS_PROGRAMADAS_ORDENADO = item.TAREAS_PROGRAMADAS_ORDENADO,
-            TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = item.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG,
-            TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = dispositivo.DESCRIPCION,   
-            TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = item.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD,
-            TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = item.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD,
-            TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = item.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
-        };
+    private void CargarDescripciones(TareaProgramadaDTO tareaProgramadaDTO)
+    {
+        tareaProgramadaDTO.TAREAS_PROGRAMADAS_OBJETO_MATRICULA = LstObjetos.FirstOrDefault(x => x.MOVIM_ID_OBJETO == tareaProgramadaDTO.TAREAS_PROGRAMADAS_OBJETO_ID_REG).DESCRIPCION;
+        tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA);
+        tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_COMPLETADA = FormatoFecha.ConvertirAFechaHora(tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_COMPLETADA);
+        tareaProgramadaDTO.TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION = LstAlmacenes.FirstOrDefault(x => x.MOVIM_ALMACEN == tareaProgramadaDTO.TAREAS_PROGRAMADAS_UBICACION_ORIGEN).DESCRIPCION;
+        tareaProgramadaDTO.TAREAS_PROGRAMADAS_UBICACION_DESTINO_DESCRIPCION = LstAlmacenes.FirstOrDefault(x => x.MOVIM_ALMACEN == tareaProgramadaDTO.TAREAS_PROGRAMADAS_UBICACION_DESTINO).DESCRIPCION;
+        tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = LstDispositivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG).DESCRIPCION;
     }
 
-    private TareaProgramada MapDTOToSource(TareaProgramadaDTO tareaProgramadaDTO)
-    {
-        return new TareaProgramada()
-        {
-            ID = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ID_REG,
-            TAREAS_PROGRAMADAS_ID_ESTADO_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ID_ESTADO_REG,
-            TAREAS_PROGRAMADAS_OBJETO_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_OBJETO_ID_REG,
-            TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA,
-            TAREAS_PROGRAMADAS_FECHA_COMPLETADA = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_COMPLETADA,
-            TAREAS_PROGRAMADAS_UBICACION_ORIGEN = tareaProgramadaDTO.TAREAS_PROGRAMADAS_UBICACION_ORIGEN,
-            TAREAS_PROGRAMADAS_UBICACION_DESTINO = tareaProgramadaDTO.TAREAS_PROGRAMADAS_UBICACION_DESTINO,
-            TAREAS_PROGRAMADAS_ORDENADO = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ORDENADO,
-            TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG,
-            TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD,
-            TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD,
-            TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
-        };
-    }
+    //private TareaProgramadaDTO MapSourceToDTO(TareaProgramada item)
+    //{
+    //    var objeto = LstObjetos.Where(x => x.MOVIM_ID_OBJETO == item.TAREAS_PROGRAMADAS_OBJETO_ID_REG).FirstOrDefault();        
+    //    var dispositivo = LstDispositivos.Where(x => x.MOVIM_ID_DISPOSITIVO == item.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG).FirstOrDefault();
+    //    var ubicacionOrigen = LstAlmacenes.FirstOrDefault(x => x.MOVIM_ALMACEN == item.TAREAS_PROGRAMADAS_UBICACION_ORIGEN);
+    //    var ubicacionDestino = LstAlmacenes.FirstOrDefault(x => x.MOVIM_ALMACEN == item.TAREAS_PROGRAMADAS_UBICACION_DESTINO);
+
+    //    return new TareaProgramadaDTO()
+    //    {
+    //        TAREAS_PROGRAMADAS_ID_REG = item.ID,
+    //        TAREAS_PROGRAMADAS_ID_ESTADO_REG = item.TAREAS_PROGRAMADAS_ID_ESTADO_REG,
+    //        TAREAS_PROGRAMADAS_OBJETO_ID_REG = item.TAREAS_PROGRAMADAS_OBJETO_ID_REG,
+    //        TAREAS_PROGRAMADAS_OBJETO_MATRICULA = objeto.DESCRIPCION,
+    //        TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(item.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA),
+    //        TAREAS_PROGRAMADAS_FECHA_COMPLETADA = FormatoFecha.ConvertirAFechaHora(item.TAREAS_PROGRAMADAS_FECHA_COMPLETADA),
+    //        TAREAS_PROGRAMADAS_UBICACION_ORIGEN = item.TAREAS_PROGRAMADAS_UBICACION_ORIGEN,
+    //        TAREAS_PROGRAMADAS_UBICACION_ORIGEN_DESCRIPCION = ubicacionOrigen.DESCRIPCION,
+    //        TAREAS_PROGRAMADAS_UBICACION_DESTINO = item.TAREAS_PROGRAMADAS_UBICACION_DESTINO,
+    //        TAREAS_PROGRAMADAS_UBICACION_DESTINO_DESCRIPCION = ubicacionDestino.DESCRIPCION,
+    //        TAREAS_PROGRAMADAS_ORDENADO = item.TAREAS_PROGRAMADAS_ORDENADO,
+    //        TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = item.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG,
+    //        TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = dispositivo.DESCRIPCION,   
+    //        TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = item.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD,
+    //        TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = item.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD,
+    //        TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = item.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
+    //    };
+    //}
+
+    //private TareaProgramada MapDTOToSource(TareaProgramadaDTO tareaProgramadaDTO)
+    //{
+    //    return new TareaProgramada()
+    //    {
+    //        ID = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ID_REG,
+    //        TAREAS_PROGRAMADAS_ID_ESTADO_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ID_ESTADO_REG,
+    //        TAREAS_PROGRAMADAS_OBJETO_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_OBJETO_ID_REG,
+    //        TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA,
+    //        TAREAS_PROGRAMADAS_FECHA_COMPLETADA = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_COMPLETADA,
+    //        TAREAS_PROGRAMADAS_UBICACION_ORIGEN = tareaProgramadaDTO.TAREAS_PROGRAMADAS_UBICACION_ORIGEN,
+    //        TAREAS_PROGRAMADAS_UBICACION_DESTINO = tareaProgramadaDTO.TAREAS_PROGRAMADAS_UBICACION_DESTINO,
+    //        TAREAS_PROGRAMADAS_ORDENADO = tareaProgramadaDTO.TAREAS_PROGRAMADAS_ORDENADO,
+    //        TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG,
+    //        TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD,
+    //        TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = tareaProgramadaDTO.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD,
+    //        TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = tareaProgramadaDTO.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
+    //    };
+    //}
     #endregion
 
     #region Ordenamiento y filtro
@@ -409,7 +446,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         try
         {
             IsBusy = true;
-            await _sincronizarServicio.Sincronizar();
+            await _sincronizarRepo.Sincronizar();
 
             return true;
         }

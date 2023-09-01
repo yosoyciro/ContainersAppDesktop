@@ -12,6 +12,14 @@ public class MovimConfig : IEntityTypeConfiguration<Movim>
             .HasColumnName("MOVIM_ID_REG")
             .ValueGeneratedOnAdd();
 
+        builder
+            .Property(x => x.Estado)
+            .HasColumnName("MOVIM_ID_ESTADO_REG");
+
+        builder
+            .Property(x => x.FechaActualizacion)
+            .HasColumnName("MOVIM_FECHA_ACTUALIZACION");
+
         builder.HasKey(x => x.ID);
 
         builder.ToTable("MOVIM");

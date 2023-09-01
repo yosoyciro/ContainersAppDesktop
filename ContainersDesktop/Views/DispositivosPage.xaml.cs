@@ -51,8 +51,7 @@ public sealed partial class DispositivosPage : Page
         AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
         AgregarDialog.DataContext = new Dispositivo()
         {
-            DISPOSITIVOS_ID_ESTADO_REG = "A",
-            DISPOSITIVOS_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now),
+            Estado = "A",
         };
 
         //Valores por defecto de los campos
