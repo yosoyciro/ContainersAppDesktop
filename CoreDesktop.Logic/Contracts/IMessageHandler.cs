@@ -1,6 +1,6 @@
 ﻿using CoreDesktop.Dominio.Models.Mensajeria;
 
-namespace CoreDesktop.Logica.Contracts;
+namespace ContainersDesktop.Logica.Contracts;
 public interface IMessageHandler<in TMessage> : IMessageHandler where TMessage : Message
 {
     Task Handle(TMessage @message);

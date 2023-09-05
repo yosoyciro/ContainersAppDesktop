@@ -17,20 +17,18 @@ using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
 using CoreDesktop.Dominio.Models;
-using CoreDesktop.Logica.Contracts;
 using CoreDesktop.Logica.Mapping;
-using CoreDesktop.Logica.Mensajeria.MessageHandlers;
-using CoreDesktop.Logica.Mensajeria.Messages;
 using CoreDesktop.Logica.Services;
 using CoreDesktop.Logica.Workers;
 using CoreDesktop.Logica.Mensajeria.Services;
-using CoreDesktopLogica.Mensajeria.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
+using ContainersDesktop.Logica.Mensajeria.Messages;
+using ContainersDesktop.Logica.Mensajeria.MessageHandlers;
 
 namespace ContainersDesktop;
 

@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using AutoMapper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Contracts;
-using CoreDesktop.Logica.Contracts;
+using ContainersDesktop.Logica.Mensajeria.Messages;
+using CoreDesktop.Logica.Mensajeria.Services;
 
 namespace ContainersDesktop.ViewModels;
 
@@ -32,12 +34,17 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
     public bool EstadoBaja => current?.Estado == "B" ? true : false;
 
     public ClaList claLista = new();
+
     private readonly IAsyncRepository<Lista> _listasRepo;
+    private readonly AzureServiceBus _azureServiceBus;
+    private readonly IMapper _mapper;
     private string _cachedSortedColumn = string.Empty;
 
-    public ListaPorTipoViewModel(IAsyncRepository<Lista> listasServicio)
+    public ListaPorTipoViewModel(IAsyncRepository<Lista> listasServicio, AzureServiceBus azureServiceBus, IMapper mapper)
     {
         _listasRepo = listasServicio;
+        _azureServiceBus = azureServiceBus;
+        _mapper = mapper;
     }
 
     public void OnNavigatedFrom()
@@ -68,32 +75,70 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
 
     public async Task BorrarRecuperarLista()
     {
-        var accion = EstadoActivo ? "B" : "A";
-        SelectedLista.Estado = accion;
-        SelectedLista.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
-        await _listasRepo.UpdateAsync(SelectedLista);
+        try
+        {
+            var accion = EstadoActivo ? "B" : "A";
+            SelectedLista.Estado = accion;
+            SelectedLista.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
+            await _listasRepo.UpdateAsync(SelectedLista);
 
-        //Actualizo Source
-        var i = Source.IndexOf(SelectedLista);              
-        Source[i] = SelectedLista;
-        Source[i].FechaActualizacion = FormatoFecha.ConvertirAFechaHora(SelectedLista.FechaActualizacion);
+            //Actualizo Source
+            var i = Source.IndexOf(SelectedLista);
+            Source[i] = SelectedLista;
+            Source[i].FechaActualizacion = FormatoFecha.ConvertirAFechaHora(SelectedLista.FechaActualizacion);
+
+            //Mensaje a Azure Service Bus
+            var mensaje = _mapper.Map<Lista, ListaModificada>(SelectedLista);
+            await _azureServiceBus.EnviarMensaje(mensaje);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        
     }
 
     public async Task AgregarLista(Lista lista)
     {
-        lista.LISTAS_ID_LISTA = claLista.ID;
-        lista.ID = await _listasRepo.AddAsync(lista);
-        if (lista.ID > 0)
+        try
         {
-            Source.Add(lista);
+            lista.LISTAS_ID_LISTA = claLista.ID;
+            lista.ID = await _listasRepo.AddAsync(lista);
+            if (lista.ID > 0)
+            {
+                Source.Add(lista);
+            }
+
+            //Mensaje a Azure Service Bus
+            var mensaje = _mapper.Map<Lista, ListaCreada>(lista);
+            await _azureServiceBus.EnviarMensaje(mensaje);
         }
+        catch (Exception)
+        {
+
+            throw;
+        }        
     }
 
     public async Task ActualizarLista(Lista lista)
     {
-        await _listasRepo.UpdateAsync(lista);
-        var i = Source.IndexOf(lista);
-        Source[i] = lista;
+        try
+        {
+            await _listasRepo.UpdateAsync(lista);
+            var i = Source.IndexOf(lista);
+            Source[i] = lista;
+
+            //Mensaje a Azure Service Bus
+            var mensaje = _mapper.Map<Lista, ListaModificada>(lista);
+            await _azureServiceBus.EnviarMensaje(mensaje);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        
     }
 
     #region Filtros y ordenamiento

@@ -1,13 +1,11 @@
-﻿using System.DirectoryServices.ActiveDirectory;
-using AutoMapper;
-using Azure.Core;
+﻿using AutoMapper;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
-using CoreDesktop.Logica.Contracts;
-using CoreDesktop.Logica.Mensajeria.Messages;
+using ContainersDesktop.Logica.Contracts;
+using ContainersDesktop.Logica.Mensajeria.Messages;
 
-namespace CoreDesktop.Logica.Mensajeria.MessageHandlers;
+namespace ContainersDesktop.Logica.Mensajeria.MessageHandlers;
 public class TareaProgramadaModificadaHandler : IMessageHandler<TareaProgramadaModificada>
 {
     private readonly IAsyncRepository<TareaProgramada> _repository;

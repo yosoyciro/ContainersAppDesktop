@@ -1,7 +1,7 @@
 ﻿using ContainersDesktop.Dominio.Models;
 using CoreDesktop.Dominio.Models.Mensajeria;
 
-namespace CoreDesktopLogica.Mensajeria.Messages;
+namespace ContainersDesktop.Logica.Mensajeria.Messages;
 public class ContainerModificado : Message
 {
     public int OBJ_ID_REG
@@ -143,40 +143,40 @@ public class ContainerModificado : Message
         get; private set;
     }
 
-    public ContainerModificado(Objeto objeto)
-    {
-        OBJ_ID_REG = objeto.ID;
-        OBJ_MATRICULA = objeto.OBJ_MATRICULA;
-        OBJ_ID_ESTADO_REG = objeto.Estado;
-        OBJ_SIGLAS_LISTA = objeto.OBJ_SIGLAS_LISTA;
-        OBJ_SIGLAS = objeto.OBJ_SIGLAS;
-        OBJ_MODELO_LISTA = objeto.OBJ_MODELO_LISTA;
-        OBJ_MODELO = objeto.OBJ_MODELO;
-        OBJ_ID_OBJETO = objeto.OBJ_ID_OBJETO;
-        OBJ_VARIANTE_LISTA = objeto.OBJ_VARIANTE_LISTA;
-        OBJ_VARIANTE = objeto.OBJ_VARIANTE;
-        OBJ_TIPO_LISTA = objeto.OBJ_TIPO_LISTA;
-        OBJ_TIPO = objeto.OBJ_TIPO;
-        OBJ_INSPEC_CSC = objeto.OBJ_INSPEC_CSC;
-        OBJ_PROPIETARIO_LISTA = objeto.OBJ_PROPIETARIO_LISTA;
-        OBJ_PROPIETARIO = objeto.OBJ_PROPIETARIO;
-        OBJ_TARA_LISTA = objeto.OBJ_TARA_LISTA;
-        OBJ_TARA = objeto.OBJ_TARA;
-        OBJ_PMP_LISTA = objeto.OBJ_PMP_LISTA;
-        OBJ_PMP = objeto.OBJ_PMP;
-        OBJ_CARGA_UTIL = objeto.OBJ_CARGA_UTIL;
-        OBJ_ALTURA_EXTERIOR_LISTA = objeto.OBJ_ALTURA_EXTERIOR_LISTA;
-        OBJ_ALTURA_EXTERIOR = objeto.OBJ_ALTURA_EXTERIOR;
-        OBJ_CUELLO_CISNE_LISTA = objeto.OBJ_CUELLO_CISNE_LISTA;
-        OBJ_CUELLO_CISNE = objeto.OBJ_CUELLO_CISNE;
-        OBJ_BARRAS_LISTA = objeto.OBJ_BARRAS_LISTA;
-        OBJ_BARRAS = objeto.OBJ_BARRAS;
-        OBJ_CABLES_LISTA = objeto.OBJ_CABLES_LISTA;
-        OBJ_CABLES = objeto.OBJ_CABLES;
-        OBJ_LINEA_VIDA_LISTA = objeto.OBJ_LINEA_VIDA_LISTA;
-        OBJ_LINEA_VIDA = objeto.OBJ_LINEA_VIDA;
-        OBJ_OBSERVACIONES = objeto.OBJ_OBSERVACIONES;
-        OBJ_FECHA_ACTUALIZACION = objeto.FechaActualizacion;
-        OBJ_COLOR = objeto.OBJ_COLOR;
-    }
+    //public ContainerModificado(Objeto objeto)
+    //{
+    //    OBJ_ID_REG = objeto.ID;
+    //    OBJ_MATRICULA = objeto.OBJ_MATRICULA;
+    //    OBJ_ID_ESTADO_REG = objeto.Estado;
+    //    OBJ_SIGLAS_LISTA = objeto.OBJ_SIGLAS_LISTA;
+    //    OBJ_SIGLAS = objeto.OBJ_SIGLAS;
+    //    OBJ_MODELO_LISTA = objeto.OBJ_MODELO_LISTA;
+    //    OBJ_MODELO = objeto.OBJ_MODELO;
+    //    OBJ_ID_OBJETO = objeto.OBJ_ID_OBJETO;
+    //    OBJ_VARIANTE_LISTA = objeto.OBJ_VARIANTE_LISTA;
+    //    OBJ_VARIANTE = objeto.OBJ_VARIANTE;
+    //    OBJ_TIPO_LISTA = objeto.OBJ_TIPO_LISTA;
+    //    OBJ_TIPO = objeto.OBJ_TIPO;
+    //    OBJ_INSPEC_CSC = objeto.OBJ_INSPEC_CSC;
+    //    OBJ_PROPIETARIO_LISTA = objeto.OBJ_PROPIETARIO_LISTA;
+    //    OBJ_PROPIETARIO = objeto.OBJ_PROPIETARIO;
+    //    OBJ_TARA_LISTA = objeto.OBJ_TARA_LISTA;
+    //    OBJ_TARA = objeto.OBJ_TARA;
+    //    OBJ_PMP_LISTA = objeto.OBJ_PMP_LISTA;
+    //    OBJ_PMP = objeto.OBJ_PMP;
+    //    OBJ_CARGA_UTIL = objeto.OBJ_CARGA_UTIL;
+    //    OBJ_ALTURA_EXTERIOR_LISTA = objeto.OBJ_ALTURA_EXTERIOR_LISTA;
+    //    OBJ_ALTURA_EXTERIOR = objeto.OBJ_ALTURA_EXTERIOR;
+    //    OBJ_CUELLO_CISNE_LISTA = objeto.OBJ_CUELLO_CISNE_LISTA;
+    //    OBJ_CUELLO_CISNE = objeto.OBJ_CUELLO_CISNE;
+    //    OBJ_BARRAS_LISTA = objeto.OBJ_BARRAS_LISTA;
+    //    OBJ_BARRAS = objeto.OBJ_BARRAS;
+    //    OBJ_CABLES_LISTA = objeto.OBJ_CABLES_LISTA;
+    //    OBJ_CABLES = objeto.OBJ_CABLES;
+    //    OBJ_LINEA_VIDA_LISTA = objeto.OBJ_LINEA_VIDA_LISTA;
+    //    OBJ_LINEA_VIDA = objeto.OBJ_LINEA_VIDA;
+    //    OBJ_OBSERVACIONES = objeto.OBJ_OBSERVACIONES;
+    //    OBJ_FECHA_ACTUALIZACION = objeto.FechaActualizacion;
+    //    OBJ_COLOR = objeto.OBJ_COLOR;
+    //}
 }

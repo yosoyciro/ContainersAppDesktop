@@ -114,22 +114,38 @@ public sealed partial class DispositivosPage : Page
 
     private async Task AgregarRegistro()
     {
-        var dispositivo = AgregarDialog.DataContext as Dispositivo;
-        dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
-        dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
+        try
+        {
+            var dispositivo = AgregarDialog.DataContext as Dispositivo;
+            dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
+            dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
 
-        await ViewModel.CrearDispositivo(dispositivo);
-        grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+            await ViewModel.CrearDispositivo(dispositivo);
+            grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+        }
+        catch (Exception ex)
+        {
+            AgregarDialog.Hide();
+            await Dialogs.Error(this.XamlRoot, ex.Message);
+        }
+        
     }
 
     private async Task ModificarRegistro()
     {
-        var dispositivo = AgregarDialog.DataContext as Dispositivo;
-        dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
-        dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
+        try
+        {
+            var dispositivo = AgregarDialog.DataContext as Dispositivo;
+            dispositivo.DISPOSITIVOS_DESCRIP = ViewModel.FormViewModel.Descripcion;
+            dispositivo.DISPOSITIVOS_CONTAINER = ViewModel.FormViewModel.Container;
 
-        await ViewModel.ActualizarDispositivo(dispositivo);
-        grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+            await ViewModel.ActualizarDispositivo(dispositivo);
+            grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
+        }
+        catch (Exception ex)
+        {
+            await Dialogs.Error(this.XamlRoot, ex.Message);
+        }        
     }
 
     #endregion

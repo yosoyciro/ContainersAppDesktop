@@ -6,8 +6,8 @@ using ContainersDesktop.Dominio.DTO;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using ContainersDesktop.Logica.Mensajeria.Messages;
 using CoreDesktop.Logica.Mensajeria.Services;
-using CoreDesktopLogica.Mensajeria.Messages;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
@@ -344,7 +344,7 @@ public partial class ContainersGridViewModel : ObservableValidator
             objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
             Source.Add(objetoDTO);
 
-            var mensaje = new ContainerCreado(objeto);
+            var mensaje = _mapper.Map<ContainerCreado>(objetoDTO);
             await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)
@@ -365,14 +365,13 @@ public partial class ContainersGridViewModel : ObservableValidator
             objetoDTO.OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(objetoDTO.OBJ_FECHA_ACTUALIZACION);
             Source[i] = objetoDTO;
 
-            var mensaje = new ContainerModificado(objeto);
+            var mensaje = _mapper.Map<ContainerModificado>(objetoDTO);
             await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)
         {
             throw;
-        }
-        
+        }        
     }
 
     public async Task BorrarRecuperarRegistro()
@@ -391,7 +390,7 @@ public partial class ContainersGridViewModel : ObservableValidator
             Source[i] = SelectedObjeto;
             Source[i].OBJ_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(SelectedObjeto.OBJ_FECHA_ACTUALIZACION);
 
-            var mensaje = new ContainerModificado(objeto);
+            var mensaje = _mapper.Map<ContainerModificado>(SelectedObjeto);
             await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)

@@ -1,5 +1,5 @@
-﻿using CoreDesktop.Dominio.Models;
-using CoreDesktop.Logica.Contracts;
+﻿using ContainersDesktop.Logica.Contracts;
+using CoreDesktop.Dominio.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -23,11 +23,11 @@ public class MensajesServicioProcesar
                 dynamic data = JObject.Parse(mensaje.MENSAJES_BODY!);
                 var tipoMensaje = data.TipoMensaje;
                 //result.
-                Type tipoMensajeType = Type.GetType($"CoreDesktop.Logic.Mensajeria.Messages.{tipoMensaje}, ContainersDesktop.Logica");
+                Type tipoMensajeType = Type.GetType($"ContainersDesktop.Logica.Mensajeria.Messages.{tipoMensaje}, ContainersDesktop.Logica");
                 var mensajeObject = JsonConvert.DeserializeObject(mensaje.MENSAJES_BODY, tipoMensajeType);
 
                 //var text = Encoding.UTF8.GetString(body);
-                Type handlerType = Type.GetType($"CoreDesktop.Logic.Mensajeria.MessageHandlers.{tipoMensaje}Handler, ContainersDesktop.Logica");
+                Type handlerType = Type.GetType($"ContainersDesktop.Logica.Mensajeria.MessageHandlers.{tipoMensaje}Handler, ContainersDesktop.Logica");
                 var handler = scoope.ServiceProvider.GetService(handlerType);
 
                 var concreteType = typeof(IMessageHandler<>).MakeGenericType(tipoMensajeType);

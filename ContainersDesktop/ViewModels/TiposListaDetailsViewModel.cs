@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
-using CoreDesktop.Logica.Contracts;
 
 namespace ContainersDesktop.ViewModels;
 public partial class TiposListaDetailsViewModel : ObservableRecipient

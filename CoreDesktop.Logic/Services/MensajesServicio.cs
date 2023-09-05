@@ -35,14 +35,23 @@ public class MensajesServicio
 
     public async Task ProcesarPendientes()
     {
-        var mensajes = await _repository.GetAll();
-
-        foreach (var mensaje in mensajes)
+        try
         {
-            if (await _mensajesServicioProcesar.ProcesarMensaje(mensaje))
+            var mensajes = await _repository.GetAll();
+
+            foreach (var mensaje in mensajes)
             {
-                await _repository.DeleteAsync(mensaje);
+                if (await _mensajesServicioProcesar.ProcesarMensaje(mensaje))
+                {
+                    await _repository.DeleteAsync(mensaje);
+                }
             }
         }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        
     }
 }

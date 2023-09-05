@@ -1,7 +1,7 @@
 ﻿using ContainersDesktop.Dominio.Models;
 using CoreDesktop.Dominio.Models.Mensajeria;
 
-namespace CoreDesktop.Logica.Mensajeria.Messages;
+namespace ContainersDesktop.Logica.Mensajeria.Messages;
 public class MovimCreado : Message
 {
     public int MOVIM_ID_REG

@@ -8,10 +8,9 @@ using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Contracts;
+using ContainersDesktop.Logica.Mensajeria.Messages;
 using ContainersDesktop.Logica.Services;
-using CoreDesktop.Logica.Mensajeria.Messages;
 using CoreDesktop.Logica.Mensajeria.Services;
-using CoreDesktopLogica.Mensajeria.Messages;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
@@ -202,7 +201,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA = FormatoFecha.ConvertirAFechaHora(dto.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA!);
             _items.Add(dto);
 
-            var mensaje = new TareaProgramadaCreada(tareaProgramada);
+            var mensaje = _mapper.Map<TareaProgramadaCreada>(tareaProgramada);
             await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)
@@ -230,7 +229,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             _items[i].TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = dto.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD;
             _items[i].TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = dto.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD;
 
-            var mensaje = new TareaProgramadaModificada(tareaProgramada);
+            var mensaje = _mapper.Map<TareaProgramadaModificada>(tareaProgramada);
             await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)
@@ -255,7 +254,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             Items[i].TAREAS_PROGRAMADAS_ID_ESTADO_REG = accion;
             Items[i].TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(Current.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION);
 
-            var mensaje = new TareaProgramadaModificada(tareaProgramada);
+            var mensaje = _mapper.Map<TareaProgramadaModificada>(tareaProgramada);
             await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)

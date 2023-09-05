@@ -1,11 +1,14 @@
 ﻿using System.Collections.ObjectModel;
+using AutoMapper;
 using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using ContainersDesktop.Logica.Mensajeria.Messages;
 using ContainersDesktop.Logica.Services;
+using CoreDesktop.Logica.Mensajeria.Services;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
@@ -16,6 +19,8 @@ public partial class DispositivosViewModel : ObservableRecipient
     private readonly SincronizarServicio _sincronizarServicio;
     private readonly DispositivosFormViewModel _formViewModel = new();
     private readonly IConfigRepository<UI_Config> _configRepository;
+    private readonly IMapper _mapper;
+    private readonly AzureServiceBus _azureServiceBus;
 
     //Estilos
     private Color _gridColor;
@@ -47,7 +52,7 @@ public partial class DispositivosViewModel : ObservableRecipient
     
     private string _cachedSortedColumn = string.Empty;
 
-    public DispositivosViewModel(IAsyncRepository<Dispositivo> dispositivosServicio, AzureStorageManagement azureStorageManagement, SincronizarServicio sincronizarServicio, IConfigRepository<UI_Config> configRepository)
+    public DispositivosViewModel(IAsyncRepository<Dispositivo> dispositivosServicio, AzureStorageManagement azureStorageManagement, SincronizarServicio sincronizarServicio, IConfigRepository<UI_Config> configRepository, IMapper mapper, AzureServiceBus serviceBus)
     {
         _dispositivosRepo = dispositivosServicio;
         _azureStorageManagement = azureStorageManagement;
@@ -55,6 +60,8 @@ public partial class DispositivosViewModel : ObservableRecipient
         _configRepository = configRepository;
 
         CargarConfiguracion().Wait();
+        _mapper = mapper;
+        _azureServiceBus = serviceBus;
     }
 
     #region CRUD
@@ -65,51 +72,105 @@ public partial class DispositivosViewModel : ObservableRecipient
 
         foreach (var item in data)
         {
+            item.FechaActualizacion = FormatoFecha.ConvertirAFechaHora(item.FechaActualizacion);
             Source.Add(item);
         }
     }
 
     public async Task CrearDispositivo(Dispositivo dispositivo)
     {
-        
-        dispositivo.ID = await _dispositivosRepo.AddAsync(dispositivo);
-        if (dispositivo.ID > 0)
+        try
         {
-            Source.Add(dispositivo);
-        }        
+            await ContainerEsValido(dispositivo.DISPOSITIVOS_CONTAINER!);
+
+            dispositivo.ID = await _dispositivosRepo.AddAsync(dispositivo);
+            if (dispositivo.ID > 0)
+            {
+                dispositivo.FechaActualizacion = FormatoFecha.ConvertirAFechaHora(dispositivo.FechaActualizacion);
+                Source.Add(dispositivo);
+            }
+
+            //Mensaje a Azure Service Bus
+            var mensaje = _mapper.Map<Dispositivo, DispositivoCreado>(dispositivo);
+            await _azureServiceBus.EnviarMensaje(mensaje);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
 
     public async Task ActualizarDispositivo(Dispositivo dispositivo)
     {
-        await _dispositivosRepo.UpdateAsync(dispositivo);
+        try
+        {
+            await _dispositivosRepo.UpdateAsync(dispositivo);
 
-        //Actualizo Source
-        var i = Source.IndexOf(dispositivo);        
-        Source[i] = dispositivo;
+            //Actualizo Source
+            var i = Source.IndexOf(dispositivo);
+            Source[i] = dispositivo;
+
+            //Mensaje a Azure Service Bus
+            var mensaje = _mapper.Map<Dispositivo, DispositivoModificado>(dispositivo);
+            await _azureServiceBus.EnviarMensaje(mensaje);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }        
     }
 
     public async Task BorrarRecuperarDispositivo()
     {
-        var accion = EstadoActivo ? "B" : "A";
-        await _dispositivosRepo.UpdateAsync(SelectedDispositivo);
+        try
+        {
+            var accion = EstadoActivo ? "B" : "A";
+            await _dispositivosRepo.UpdateAsync(SelectedDispositivo);
 
-        //Actualizo Source
-        var i = Source.IndexOf(SelectedDispositivo);
-        SelectedDispositivo.Estado = accion;
-        Source[i] = SelectedDispositivo;
+            //Actualizo Source
+            var i = Source.IndexOf(SelectedDispositivo);
+            SelectedDispositivo.Estado = accion;
+            Source[i] = SelectedDispositivo;
+
+            //Mensaje a Azure Service Bus
+            var mensaje = _mapper.Map<Dispositivo, DispositivoModificado>(SelectedDispositivo);
+            await _azureServiceBus.EnviarMensaje(mensaje);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        
     }
 
-    //public async Task<bool> ExisteContainer(string container, string plataforma)
-    //{
-    //    if (plataforma == "local")
-    //    {
-    //        return await _dispositivosServicio.ExisteContainer(container);
-    //    }
-    //    else
-    //    {
-    //        return _azureStorageManagement.ExisteContainer(container);
-    //    }
-    //}
+    private async Task ContainerEsValido(string container)
+    {
+        bool existeLocal = false;
+        var dispositivos = await _dispositivosRepo.GetAsync();
+
+        foreach (var item in dispositivos)
+        {
+            if (item.DISPOSITIVOS_CONTAINER == container)
+            {
+                existeLocal = true;
+                break;
+            }
+        }
+
+        if (existeLocal)
+        {
+            throw new Exception("El container ya se encuentra asignado a otro dispositivo");
+        }
+
+        var existeAzure = _azureStorageManagement.ExisteContainer(container);
+        if (!existeAzure)
+        {
+            throw new Exception("El container no existe en Azure");
+        }
+    }
 
     #endregion
 

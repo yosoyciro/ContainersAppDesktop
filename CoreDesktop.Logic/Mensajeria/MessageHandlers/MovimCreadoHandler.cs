@@ -2,10 +2,10 @@
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
-using CoreDesktop.Logica.Contracts;
-using CoreDesktop.Logica.Mensajeria.Messages;
+using ContainersDesktop.Logica.Contracts;
+using ContainersDesktop.Logica.Mensajeria.Messages;
 
-namespace CoreDesktop.Logica.Mensajeria.MessageHandlers;
+namespace ContainersDesktop.Logica.Mensajeria.MessageHandlers;
 public class MovimCreadoHandler : IMessageHandler<MovimCreado>
 {
     private readonly IAsyncRepository<Movim> _repository;
@@ -18,7 +18,6 @@ public class MovimCreadoHandler : IMessageHandler<MovimCreado>
     public async Task Handle(MovimCreado @message)
     {
         var entidad = _mapper.Map<Movim>(@message);        
-        entidad.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
         await _repository.AddAsync(entidad);
 
         return;
