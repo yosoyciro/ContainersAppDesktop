@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Data;
+using System.Runtime.CompilerServices;
 using AutoMapper;
 using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -10,6 +12,8 @@ using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Contracts;
 using ContainersDesktop.Logica.Mensajeria.Messages;
 using ContainersDesktop.Logica.Services;
+using ContainersDesktop.Logica.Specification.Implementaciones;
+using CoreDesktop.Dominio.Models;
 using CoreDesktop.Logica.Mensajeria.Services;
 using Windows.UI;
 
@@ -23,6 +27,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     private readonly IAsyncRepository<Lista> _listasRepo;
     private readonly IAsyncRepository<Dispositivo> _dispositivosRepo;
     private readonly IAsyncRepository<Objeto> _objetosRepo;
+    private readonly IAsyncRepository<DispCalendar> _dispCalendarRepo;
     private readonly SincronizarServicio _sincronizarRepo;
     private readonly IConfigRepository<UI_Config> _configRepository;
     private readonly IMapper _mapper;
@@ -34,6 +39,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     private Color _comboColor;
 
     private TareaProgramadaDTO current;
+
     public TareaProgramadaDTO Current
     {
         get => current;
@@ -68,7 +74,10 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     public ObservableCollection<ObjetosDTO> LstObjetosActivos { get; } = new();
     public ObservableCollection<AlmacenesDTO> LstAlmacenes { get; } = new();
     public ObservableCollection<AlmacenesDTO> LstAlmacenesActivos { get; } = new();
-    #endregion
+    //private readonly List<int> _lstHoras = new();
+    public List<int> LstHoras { get; } = new();
+    public SafeObservableCollection<DateTimeOffset> LstFechasDisponibles { get; } = new();
+    #endregion    
 
     public TareasProgramadasViewModel(
         SincronizarServicio sincronizarServicio,
@@ -79,7 +88,8 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         IAsyncRepository<Objeto> objetosServicio,
         IMapper mapper
 ,
-        AzureServiceBus azureBus)
+        AzureServiceBus azureBus,
+        IAsyncRepository<DispCalendar> dispCalendarRepo)
     {
         _tareasProgramadasRepo = tareasProgramadasServicio;
         _sincronizarRepo = sincronizarServicio;
@@ -89,8 +99,9 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         _objetosRepo = objetosServicio;
         _mapper = mapper;
         _azureBus = azureBus;
+        _dispCalendarRepo = dispCalendarRepo;
 
-        CargarConfiguracion().Wait();
+        CargarConfiguracion().Wait();        
     }
     public void OnNavigatedFrom()
     {
@@ -473,6 +484,66 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
 
         var comboColor = await _configRepository.Leer("ComboColor");
         _comboColor = Colores.HexToColor(comboColor.Valor!);
+    }
+
+    #endregion
+
+    #region Fechas y horas
+    public async Task CargarFechasYHoras(int idDispositivo)
+    {
+        LstHoras.Clear();
+        LstFechasDisponibles.Clear();
+
+        var spec = new DispCalendarFechasHorasDispositivoSpec(idDispositivo);
+        var dispCalendar = await _dispCalendarRepo.GetAllWithSpecsAsync(spec);
+        if (dispCalendar.Count == 0)
+        {
+            for (int i = 0; i < 24; i++)
+            {
+                LstHoras.Add(i);
+            }
+
+            return;
+        }
+
+        foreach (var item in dispCalendar)
+        {
+            var fecha = DateTime.Parse(item.DISP_CALENDAR_FECHA);
+            if (!string.IsNullOrEmpty(item.DISP_CALENDAR_FECHA) && fecha >= DateTime.Now.Date)
+            {
+                LstFechasDisponibles.Add(Convert.ToDateTime(item!.DISP_CALENDAR_FECHA));
+
+                if (item.DISP_CALENDAR_00 == 1) LstHoras.Add(0);
+                if (item.DISP_CALENDAR_01 == 1) LstHoras.Add(1);
+                if (item.DISP_CALENDAR_02 == 1) LstHoras.Add(2);
+                if (item.DISP_CALENDAR_03 == 1) LstHoras.Add(3);
+                if (item.DISP_CALENDAR_04 == 1) LstHoras.Add(4);
+                if (item.DISP_CALENDAR_05 == 1) LstHoras.Add(5);
+                if (item.DISP_CALENDAR_06 == 1) LstHoras.Add(6);
+                if (item.DISP_CALENDAR_07 == 1) LstHoras.Add(7);
+                if (item.DISP_CALENDAR_08 == 1) LstHoras.Add(8);
+                if (item.DISP_CALENDAR_09 == 1) LstHoras.Add(9);
+                if (item.DISP_CALENDAR_10 == 1) LstHoras.Add(10);
+                if (item.DISP_CALENDAR_11 == 1) LstHoras.Add(11);
+                if (item.DISP_CALENDAR_12 == 1) LstHoras.Add(12);
+                if (item.DISP_CALENDAR_13 == 1) LstHoras.Add(13);
+                if (item.DISP_CALENDAR_14 == 1) LstHoras.Add(14);
+                if (item.DISP_CALENDAR_15 == 1) LstHoras.Add(15);
+                if (item.DISP_CALENDAR_16 == 1) LstHoras.Add(16);
+                if (item.DISP_CALENDAR_17 == 1) LstHoras.Add(17);
+                if (item.DISP_CALENDAR_18 == 1) LstHoras.Add(18);
+                if (item.DISP_CALENDAR_19 == 1) LstHoras.Add(19);
+                if (item.DISP_CALENDAR_20 == 1) LstHoras.Add(20);
+                if (item.DISP_CALENDAR_21 == 1) LstHoras.Add(21);
+                if (item.DISP_CALENDAR_22 == 1) LstHoras.Add(22);
+                if (item.DISP_CALENDAR_23 == 1) LstHoras.Add(23);
+            }
+        }           
+    }
+
+    public List<int> ObtenerHoras()
+    {
+        return new List<int>(LstHoras);
     }
 
     #endregion

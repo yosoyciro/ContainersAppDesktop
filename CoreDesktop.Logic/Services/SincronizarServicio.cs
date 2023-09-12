@@ -1,7 +1,10 @@
 ﻿using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models.Storage;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using CoreDesktop.Logica.Services;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Logica.Services;
 public class SincronizarServicio
@@ -10,13 +13,24 @@ public class SincronizarServicio
     private readonly IAsyncRepository<Sincronizacion> _sincronizacionRepo;
     private readonly AzureStorageManagement _azureStorageManagement;
     private readonly MensajesServicio _mensajesServicio;
+    private readonly ILogger<SincronizarServicio> _logger;
+    private readonly string _dbName = string.Empty;
+    private readonly string _dbNameSubida = string.Empty;
+    private readonly string _dbFolder = string.Empty;
+    private readonly string _dbFullPath = string.Empty;
+    
 
-    public SincronizarServicio(AzureStorageManagement azureStorageManagement, IAsyncRepository<Dispositivo> dispositivosRepo, IAsyncRepository<Sincronizacion> sincronizacionRepo, MensajesServicio mensajesServicio)
+    public SincronizarServicio(AzureStorageManagement azureStorageManagement, IAsyncRepository<Dispositivo> dispositivosRepo, IAsyncRepository<Sincronizacion> sincronizacionRepo, MensajesServicio mensajesServicio, ILogger<SincronizarServicio> logger, IOptions<Settings> settings)
     {
         _azureStorageManagement = azureStorageManagement;
         _dispositivosRepo = dispositivosRepo;
         _sincronizacionRepo = sincronizacionRepo;
         _mensajesServicio = mensajesServicio;
+        _dbFolder = settings.Value.DBFolder;
+        _dbName = settings.Value.DBName;
+        _dbNameSubida = settings.Value.DBNameSubida;
+        _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFolder}\\{_dbName}";
+        _logger = logger;
     }
     public async Task Sincronizar()
     {
@@ -24,9 +38,14 @@ public class SincronizarServicio
         var fechaHoraInicio = DateTime.Now;
         var fechaHoraFin = DateTime.Now;
         var idDispositivo = 0;
+        var dbSubidaFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFolder}\\{_dbNameSubida}";
+
         //Subo Base
         try
         {
+            //Preparo la base a subir            
+            File.Copy(_dbFullPath, dbSubidaFullPath);
+
             var dispositivos = await _dispositivosRepo.GetAsync();
 
             foreach (var item in dispositivos.Where(x => x.Estado == "A" && !string.IsNullOrEmpty(x.DISPOSITIVOS_CONTAINER)))
@@ -51,7 +70,7 @@ public class SincronizarServicio
                 await _mensajesServicio.ProcesarPendientes();
 
                 //Subo al contenedor
-                await _azureStorageManagement.UploadFile(item.DISPOSITIVOS_CONTAINER);
+                await _azureStorageManagement.UploadFile(item.DISPOSITIVOS_CONTAINER!, _dbNameSubida, dbSubidaFullPath);
                 
                 fechaHoraFin = DateTime.Now;
 
@@ -78,7 +97,14 @@ public class SincronizarServicio
             };
             await _sincronizacionRepo.AddAsync(sincronizacion);
 
+            // Log
+            _logger.LogError(ex.Message);
+
             throw;
+        }
+        finally
+        {
+            File.Delete(dbSubidaFullPath);
         }
     }
 }

@@ -5,14 +5,12 @@ using Microsoft.UI.Xaml.Controls;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.DTO;
 using CommunityToolkit.WinUI.UI.Controls;
-using ContainersDesktop.Dominio.Models;
 using Microsoft.UI.Xaml;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
 using Azure;
 using ContainersDesktop.Helpers;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Input;
+using System.Diagnostics;
 
 namespace ContainersDesktop.Views;
 
@@ -66,13 +64,15 @@ public sealed partial class TareasProgramadasPage : Page
             TAREAS_PROGRAMADAS_ORDENADO = string.Empty,            
         };
 
+        await ViewModel.CargarFechasYHoras(ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO > 0).MOVIM_ID_DISPOSITIVO);
+
         ViewModel.FormViewModel.Objeto = ViewModel.LstObjetosActivos.FirstOrDefault();
-        ViewModel.FormViewModel.FechaProgramada = DateTime.Now.Date;
-        ViewModel.FormViewModel.HoraProgramada = new TimeSpan(ViewModel.FormViewModel.FechaProgramada.Hour, ViewModel.FormViewModel.FechaProgramada.Minute, 0);
+        ViewModel.FormViewModel.FechaProgramada = ViewModel.LstFechasDisponibles.Count > 0 ? ViewModel.LstFechasDisponibles.FirstOrDefault() : ViewModel.FormViewModel.FechaHoy;
+        ViewModel.FormViewModel.HoraProgramada = ViewModel.LstHoras.FirstOrDefault(); //new TimeSpan(ViewModel.LstHoras.FirstOrDefault(), 0, 0);
         ViewModel.FormViewModel.UbicacionOrigen =  ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0);
         ViewModel.FormViewModel.UbicacionDestino = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0);
         ViewModel.FormViewModel.Dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO > 0);
-
+       
         await dlgFormulario.ShowAsync();
     }
 
@@ -91,7 +91,7 @@ public sealed partial class TareasProgramadasPage : Page
 
             ViewModel.FormViewModel.Objeto = ViewModel.LstObjetosActivos.FirstOrDefault(x => x.MOVIM_ID_OBJETO == ViewModel.Current.TAREAS_PROGRAMADAS_OBJETO_ID_REG);
             ViewModel.FormViewModel.FechaProgramada = DateTime.Parse(ViewModel.Current.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA);
-            ViewModel.FormViewModel.HoraProgramada = new TimeSpan(ViewModel.FormViewModel.FechaProgramada.Hour, ViewModel.FormViewModel.FechaProgramada.Minute, 0);
+            ViewModel.FormViewModel.HoraProgramada = ViewModel.FormViewModel.FechaProgramada.Hour; //new TimeSpan(ViewModel.FormViewModel.FechaProgramada.Hour, ViewModel.FormViewModel.FechaProgramada.Minute, 0);
             ViewModel.FormViewModel.UbicacionOrigen = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.MOVIM_ALMACEN == ViewModel.Current.TAREAS_PROGRAMADAS_UBICACION_ORIGEN);
             ViewModel.FormViewModel.UbicacionDestino = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.MOVIM_ALMACEN == ViewModel.Current.TAREAS_PROGRAMADAS_UBICACION_DESTINO);
             ViewModel.FormViewModel.Dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == ViewModel.Current.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG);
@@ -105,6 +105,7 @@ public sealed partial class TareasProgramadasPage : Page
         try
         {
             await ViewModel.SincronizarInformacion();
+            ViewModel.AplicarFiltro(null, chkMostrarTodos.IsChecked ?? false);
             await Dialogs.Aviso(this.XamlRoot, "Sincronización realizada!");            
         }
         catch (RequestFailedException ex)
@@ -174,8 +175,8 @@ public sealed partial class TareasProgramadasPage : Page
 
     private void AsignarDTO(ref TareaProgramadaDTO tareaProgramada)
     {
-        TimeSpan? time = tpkHora.SelectedTime;
-        var fechaHora = ViewModel.FormViewModel.FechaProgramada!.Date.Add(time!.Value);
+        TimeSpan? time = new TimeSpan(1, 0, 0); //tpkHora.SelectedTime;
+        var fechaHora = ViewModel.FormViewModel.FechaProgramada.Date.Add(time!.Value);
 
         tareaProgramada.TAREAS_PROGRAMADAS_OBJETO_ID_REG = ViewModel.FormViewModel.Objeto.MOVIM_ID_OBJETO;
         tareaProgramada.TAREAS_PROGRAMADAS_OBJETO_MATRICULA = ViewModel.FormViewModel.Objeto.DESCRIPCION;
@@ -217,5 +218,58 @@ public sealed partial class TareasProgramadasPage : Page
     private void chkMostrarTodos_Unchecked(object sender, RoutedEventArgs e)
     {
         TareasProgramadasGrid.ItemsSource = ViewModel.AplicarFiltro(null, false);
+    }
+
+    //private void txtFecha_CalendarViewDayItemChanging(CalendarView sender, CalendarViewDayItemChangingEventArgs e)
+    //{
+        
+    //}
+
+    private async void cmbDispositivos_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {                
+        try
+        {
+            txtFecha.Date = null;
+            var dispositivo = cmbDispositivos.SelectedItem as DispositivosDTO;
+
+            await ViewModel.CargarFechasYHoras(dispositivo!.MOVIM_ID_DISPOSITIVO);            
+
+            txtFecha.Date = ViewModel.LstFechasDisponibles.Count > 0 ? ViewModel.LstFechasDisponibles.FirstOrDefault() : ViewModel.FormViewModel.FechaHoy;                        
+
+            cmbHora.ItemsSource = ViewModel.ObtenerHoras();
+            cmbHora.SelectedIndex = 0;
+
+            Debug.WriteLine(ViewModel.LstHoras);
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
+    }
+
+    private void txtFecha_CalendarViewDayItemChanging(CalendarView sender, CalendarViewDayItemChangingEventArgs e)
+    {
+        e.Item.IsBlackout = ViewModel.LstFechasDisponibles.Count > 0 
+            ? 
+                !ViewModel.LstFechasDisponibles.Contains(e.Item.Date.Date) 
+                || e.Item.Date.DayOfWeek == DayOfWeek.Saturday 
+                || e.Item.Date.DayOfWeek == DayOfWeek.Saturday 
+            : 
+                false;
+    }
+
+    private void cmbHora_Loaded(object sender, RoutedEventArgs e)
+    {        
+        //cmbHora.SelectedItem = ViewModel.LstHoras.FirstOrDefault();
+        cmbHora.SelectedIndex = 0;
+    }
+
+    private void txtFecha_Opened(object sender, object e)
+    {
+        Debug.WriteLine("txtFecha_Opened");
+        txtFecha.MinDate = ViewModel.LstFechasDisponibles.Count > 0 ? ViewModel.LstFechasDisponibles.FirstOrDefault() : ViewModel.FormViewModel.FechaHoy;
+        txtFecha.MaxDate = DateTime.Now.AddDays(90);
+        txtFecha.Date = ViewModel.LstFechasDisponibles.Count > 0 ? ViewModel.LstFechasDisponibles.FirstOrDefault() : ViewModel.FormViewModel.FechaHoy;
     }
 }

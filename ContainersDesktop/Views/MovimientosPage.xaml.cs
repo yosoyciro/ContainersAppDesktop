@@ -68,8 +68,8 @@ public sealed partial class MovimientosPage : Page
         Dialog.DataContext = ViewModel.Current;
 
         //Valores x defecto combos
-        TxtFecha.Date = DateTime.Parse(ViewModel.Current.MOVIM_FECHA);
-        tpkHora.SelectedTime = new TimeSpan(TxtFecha.Date.Value.Hour, TxtFecha.Date.Value.Minute, 0);
+        txtFecha.Date = DateTime.Parse(ViewModel.Current.MOVIM_FECHA);
+        tpkHora.SelectedTime = new TimeSpan(txtFecha.Date.Value.Hour, txtFecha.Date.Value.Minute, 0);
         ComboObjetos.SelectedItem = ViewModel.LstObjetosActivos.FirstOrDefault(x => x.MOVIM_ID_OBJETO == ViewModel.Current.MOVIM_ID_OBJETO);
         ComboTiposMovimiento.SelectedItem = ViewModel.LstTiposMovimientoActivos.FirstOrDefault(x => x.MOVIM_TIPO_MOVIM == ViewModel.Current.MOVIM_TIPO_MOVIM) ?? ViewModel.LstTiposMovimientoActivos.FirstOrDefault();
         ComboPesos.SelectedItem = ViewModel.LstPesosActivos.FirstOrDefault(x => x.MOVIM_PESO == ViewModel.Current.MOVIM_PESO) ?? ViewModel.LstPesosActivos.FirstOrDefault();
@@ -78,6 +78,9 @@ public sealed partial class MovimientosPage : Page
         ComboChoferes.SelectedItem = ViewModel.LstChoferesActivos.FirstOrDefault(x => x.MOVIM_CHOFER == ViewModel.Current.MOVIM_CHOFER) ?? ViewModel.LstChoferesActivos.FirstOrDefault();
         ComboEntradaSalida.SelectedItem = ViewModel.LstEntradaSalidaActivos.FirstOrDefault(x => x.MOVIM_ENTRADA_SALIDA == ViewModel.Current.MOVIM_ENTRADA_SALIDA) ?? ViewModel.LstEntradaSalidaActivos.FirstOrDefault();
         ComboAlmacenes.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.MOVIM_ALMACEN == ViewModel.Current.MOVIM_ALMACEN) ?? ViewModel.LstAlmacenesActivos.FirstOrDefault();
+        cmbUbicacionOrigen.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.MOVIM_ALMACEN == ViewModel.FormViewModel.UbicacionOrigen.MOVIM_ALMACEN) ?? ViewModel.LstAlmacenesActivos.FirstOrDefault();
+        cmbUbicacionDestino.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.MOVIM_ALMACEN == ViewModel.FormViewModel.UbicacionDestino.MOVIM_ALMACEN) ?? ViewModel.LstAlmacenesActivos.FirstOrDefault();
+        cmbDispositivos.SelectedItem = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == ViewModel.Current.MOVIM_ID_DISPOSITIVO) ?? ViewModel.LstDispositivosActivos.FirstOrDefault();
 
         await Dialog.ShowAsync();
     }
@@ -101,7 +104,7 @@ public sealed partial class MovimientosPage : Page
 
         //valores x defecto para los combo
         ViewModel.FormViewModel.Fecha = DateTime.Now.Date;
-        tpkHora.SelectedTime = new TimeSpan(TxtFecha.Date.Value.Hour, TxtFecha.Date.Value.Minute, 0);
+        tpkHora.SelectedTime = new TimeSpan(txtFecha.Date.Value.Hour, txtFecha.Date.Value.Minute, 0);
         ComboObjetos.SelectedItem = ViewModel.LstObjetosActivos.FirstOrDefault();
         ComboTiposMovimiento.SelectedItem = ViewModel.LstTiposMovimientoActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstTiposMovimientoActivos.FirstOrDefault();
         ComboPesos.SelectedItem = ViewModel.LstPesosActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstPesosActivos.FirstOrDefault();
@@ -110,6 +113,10 @@ public sealed partial class MovimientosPage : Page
         ComboChoferes.SelectedItem = ViewModel.LstChoferesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstChoferesActivos.FirstOrDefault();
         ComboEntradaSalida.SelectedItem = ViewModel.LstEntradaSalidaActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstEntradaSalidaActivos.FirstOrDefault();
         ComboAlmacenes.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstAlmacenesActivos.FirstOrDefault();
+        cmbUbicacionOrigen.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstAlmacenesActivos.FirstOrDefault();
+        cmbUbicacionDestino.SelectedItem = ViewModel.LstAlmacenesActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstAlmacenesActivos.FirstOrDefault();
+        cmbDispositivos.SelectedItem = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.LISTAS_ID_LISTA > 0) ?? ViewModel.LstDispositivosActivos.FirstOrDefault();
+
         await Dialog.ShowAsync();
     }
     private async Task SincronizarCommand_Execute()
@@ -160,7 +167,9 @@ public sealed partial class MovimientosPage : Page
         var chofer = ComboChoferes.SelectedItem as ChoferesDTO;
         var entradaSalida = ComboEntradaSalida.SelectedItem as EntradaSalidaDTO;
         var almacen = ComboAlmacenes.SelectedItem as AlmacenesDTO;
-        var dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == 0);
+        var dispositivo = cmbDispositivos.SelectedItem as DispositivosDTO;
+        var ubicacionOrigen = cmbUbicacionOrigen.SelectedItem as AlmacenesDTO;
+        var ubicacionDestino = cmbUbicacionDestino.SelectedItem as AlmacenesDTO;
 
         var nuevoMovimiento = Dialog.DataContext as MovimDTO;
         //asigno los valores al objeto que voy a grabar
@@ -195,6 +204,10 @@ public sealed partial class MovimientosPage : Page
         nuevoMovimiento.MOVIM_ALMACEN_LISTA = almacen.LISTAS_ID_LISTA;
         nuevoMovimiento.MOVIM_ALMACEN_DESCRIPCION = almacen.DESCRIPCION;
         nuevoMovimiento.MOVIM_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
+        nuevoMovimiento.MOVIM_UBICACION_ORIGEN = ubicacionOrigen.MOVIM_ALMACEN;
+        nuevoMovimiento.MOVIM_UBICACION_ORIGEN_DESCRIPCION = ubicacionOrigen.DESCRIPCION;
+        nuevoMovimiento.MOVIM_UBICACION_DESTINO = ubicacionDestino.MOVIM_ALMACEN;
+        nuevoMovimiento.MOVIM_UBICACION_DESTINO_DESCRIPCION = ubicacionDestino.DESCRIPCION;
 
         await ViewModel.AgregarMovimiento(nuevoMovimiento);
 
@@ -214,7 +227,9 @@ public sealed partial class MovimientosPage : Page
         var chofer = ComboChoferes.SelectedItem as ChoferesDTO;
         var entradaSalida = ComboEntradaSalida.SelectedItem as EntradaSalidaDTO;
         var almacen = ComboAlmacenes.SelectedItem as AlmacenesDTO;
-        var dispositivo = ViewModel.LstDispositivosActivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == movimiento.MOVIM_ID_DISPOSITIVO);
+        var dispositivo = cmbDispositivos.SelectedItem as DispositivosDTO;
+        var ubicacionOrigen = cmbUbicacionOrigen.SelectedItem as AlmacenesDTO;
+        var ubicacionDestino = cmbUbicacionDestino.SelectedItem as AlmacenesDTO;
 
         //asigno los valores al objeto que voy a grabar
         TimeSpan? time = tpkHora.SelectedTime;
@@ -226,7 +241,7 @@ public sealed partial class MovimientosPage : Page
         movimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(fechaHora);
         movimiento.MOVIM_ID_OBJETO = objeto.MOVIM_ID_OBJETO;
         movimiento.MOVIM_MATRICULA_OBJ = objeto.DESCRIPCION;
-        movimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(TxtFecha.Date.Value.Date);
+        movimiento.MOVIM_FECHA = FormatoFecha.FechaEstandar(txtFecha.Date!.Value.Date);
         movimiento.MOVIM_TIPO_MOVIM = tipoMovimiento.MOVIM_TIPO_MOVIM;
         movimiento.MOVIM_TIPO_MOVIM_LISTA = tipoMovimiento.LISTAS_ID_LISTA;
         movimiento.MOVIM_TIPO_MOVIM_DESCRIPCION = tipoMovimiento.DESCRIPCION;
@@ -249,7 +264,11 @@ public sealed partial class MovimientosPage : Page
         movimiento.MOVIM_ALMACEN_LISTA = almacen.LISTAS_ID_LISTA;
         movimiento.MOVIM_ALMACEN_DESCRIPCION = almacen.DESCRIPCION;
         movimiento.MOVIM_FECHA_ACTUALIZACION = FormatoFecha.FechaEstandar(DateTime.Now);
-        movimiento.MOVIM_PDF = string.Empty;
+        movimiento.MOVIM_PDF = string.Empty;        
+        movimiento.MOVIM_UBICACION_ORIGEN = ubicacionOrigen.MOVIM_ALMACEN;
+        movimiento.MOVIM_UBICACION_ORIGEN_DESCRIPCION = ubicacionOrigen.DESCRIPCION;
+        movimiento.MOVIM_UBICACION_DESTINO = ubicacionDestino.MOVIM_ALMACEN;
+        movimiento.MOVIM_UBICACION_DESTINO_DESCRIPCION = ubicacionDestino.DESCRIPCION;
 
         await ViewModel.ActualizarMovimiento(movimiento);
 

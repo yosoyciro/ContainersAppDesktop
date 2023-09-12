@@ -1,12 +1,10 @@
 ﻿using System.Reflection;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
-using ContainersDesktop.Dominio.Models.Storage;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using CoreDesktop.Dominio.Models;
 using CoreDesktop.Dominio.Models.Base;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace ContainersDesktop.Infraestructura.Persistencia;
 public partial class ContainersDbContext : DbContext
@@ -57,6 +55,12 @@ public partial class ContainersDbContext : DbContext
     public virtual DbSet<Dispositivo> Dispositivos
     {
         get; set;
+    }
+
+    public DbSet<DispCalendar> DispCalendar
+    {
+        get;
+        set;
     }
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)        

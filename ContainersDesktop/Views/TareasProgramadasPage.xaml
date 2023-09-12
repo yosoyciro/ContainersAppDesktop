@@ -106,24 +106,40 @@
                         Margin="4"
                     />
 
-                    <CalendarDatePicker x:Name="txtFecha"
-                        Date="{x:Bind ViewModel.FormViewModel.FechaProgramada, Mode=TwoWay}"
+                    <ComboBox x:Name="cmbDispositivos"
+                        Header="Dispositivo"
+                        ItemsSource="{x:Bind ViewModel.LstDispositivosActivos, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.FormViewModel.Dispositivo, Mode=TwoWay}"
+                        SelectionChanged="cmbDispositivos_SelectionChanged"
+                        DisplayMemberPath="DESCRIPCION"                                
+                        Width="240"
+                        Margin="4"
+                        RelativePanel.RightOf="cmbObjetos"                        
+                    />
+
+                    <CalendarDatePicker x:Name="txtFecha"                        
                         DateFormat="{}{day.integer}/{month.integer}/{year.full}"
                         Header="Fecha"      
                         PlaceholderText="Elija una fecha"                              
                         Width="240"
                         Margin="4"
                         RelativePanel.Below="cmbObjetos"
+                        CalendarViewDayItemChanging="txtFecha_CalendarViewDayItemChanging"                        
+                        MinDate="{x:Bind ViewModel.FormViewModel.FechaHoy}"
+                        MaxDate="{x:Bind ViewModel.FormViewModel.FechaProgramadaMax}"
+                        Opened="txtFecha_Opened"
                     />
-                    
-                    <TimePicker x:Name="tpkHora" 
-                        Time="{x:Bind ViewModel.FormViewModel.HoraProgramada, Mode=TwoWay}"
-                        MinuteIncrement="10"
-                        ClockIdentifier="24HourClock"                                 
-                        Header="Hora" 
+
+                    <ComboBox x:Name="cmbHora"
+                        Header="Hora"
+                        PlaceholderText="Seleccione una hora..."
+                        ItemsSource="{x:Bind ViewModel.LstHoras}"
+                        SelectionChanged="cmbHora_SelectionChanged"
+                        Loaded="cmbHora_Loaded"
+                        Width="240"
+                        Margin="4"
                         RelativePanel.Below="cmbObjetos"
                         RelativePanel.RightOf="txtFecha"
-                        Margin="4,9"
                     />
 
                     <ComboBox x:Name="cmbUbicacionOrigen"
@@ -147,17 +163,7 @@
                         RelativePanel.RightOf="cmbUbicacionOrigen"
                     />
 
-                    <ComboBox x:Name="cmbDispositivos"
-                        Header="Dispositivo"
-                        ItemsSource="{x:Bind ViewModel.LstDispositivosActivos, Mode=OneWay}"
-                        SelectedItem="{x:Bind ViewModel.FormViewModel.Dispositivo, Mode=TwoWay}"
-                        DisplayMemberPath="DESCRIPCION"                                
-                        Width="240"
-                        Margin="4"
-                        RelativePanel.Below="cmbUbicacionOrigen"                        
-                    />
-
-                    <Grid RelativePanel.Below="cmbDispositivos">
+                    <Grid RelativePanel.Below="cmbUbicacionOrigen">
                         <SymbolIcon Symbol="ReportHacked"
                             Foreground="Red"
                             Visibility="{x:Bind ViewModel.FormViewModel.IsNotValid, Mode=OneWay}">

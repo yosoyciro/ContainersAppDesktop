@@ -160,4 +160,14 @@ public class Movim : AuditableEntity
         get;
         set;
     }
+
+    public int MOVIM_UBICACION_ORIGEN
+    {
+        get; set;
+    }
+
+    public int MOVIM_UBICACION_DESTINO
+    {
+        get; set;
+    }
 }

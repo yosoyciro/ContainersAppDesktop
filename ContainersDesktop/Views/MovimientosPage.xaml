@@ -82,7 +82,7 @@
                         <controls:DataGridTextColumn Header="Container" Tag="Container" Binding="{Binding MOVIM_MATRICULA_OBJ}" Width="150"/>
                         <controls:DataGridTextColumn Header="Dispositivo" Tag="Dispositivo" Binding="{Binding MOVIM_DISPOSITIVO_DESCRIPCION}" Width="150"/>
                         <controls:DataGridTextColumn Header="Fecha" Tag="Fecha" Binding="{Binding MOVIM_FECHA}" Width="150"/>
-                        <controls:DataGridTextColumn Header="Tipo Movimiento" Tag="TipoMovimiento" Binding="{Binding MOVIM_TIPO_MOVIM_DESCRIPCION}" Width="150"/>
+                        <controls:DataGridTextColumn Header="Tipo Tarea" Tag="TipoMovimiento" Binding="{Binding MOVIM_TIPO_MOVIM_DESCRIPCION}" Width="150"/>
                         <controls:DataGridTextColumn Header="Peso" Tag="Peso" Binding="{Binding MOVIM_PESO_DESCRIPCION}" Width="150"/>
                         <controls:DataGridTextColumn Header="Transportista" Tag="Transportista" Binding="{Binding MOVIM_TRANSPORTISTA_DESCRIPCION}" Width="300"/>
                         <controls:DataGridTextColumn Header="Cliente" Tag="Cliente" Binding="{Binding MOVIM_CLIENTE_DESCRIPCION}" Width="300"/>
@@ -104,7 +104,6 @@
             <ContentDialog x:Name="Dialog"
                             PrimaryButtonText="Aceptar" 
                             CloseButtonText="Cerrar"
-                            Width="1200"
                             >
                 <RelativePanel HorizontalAlignment="Stretch">
                     <ComboBox x:Name="ComboObjetos"
@@ -115,7 +114,7 @@
                                 Width="240"
                                 Margin="4"
                     />
-                    <CalendarDatePicker x:Name="TxtFecha"
+                    <CalendarDatePicker x:Name="txtFecha"
                                 Date="{x:Bind ViewModel.FormViewModel.Fecha, Mode=TwoWay}"
                                 DateFormat="{}{day.integer}/{month.integer}/{year.full}"
                                 Header="Fecha"      
@@ -131,16 +130,48 @@
                                 ClockIdentifier="24HourClock"                                 
                                 Header="Hora" 
                                 RelativePanel.Below="ComboObjetos"
-                                RelativePanel.RightOf="TxtFecha"
+                                RelativePanel.RightOf="txtFecha"
                                 Margin="4,9"
                     />
 
+                    <ComboBox x:Name="cmbUbicacionOrigen"
+                        Header="Orígen"
+                        ItemsSource="{x:Bind ViewModel.LstAlmacenesActivos, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.FormViewModel.UbicacionOrigen, Mode=TwoWay}"
+                        DisplayMemberPath="DESCRIPCION"                                
+                        Width="115"
+                        Margin="4"
+                        RelativePanel.Below="txtFecha"
+                    />
+
+                    <ComboBox x:Name="cmbUbicacionDestino"
+                        Header="Destino"
+                        ItemsSource="{x:Bind ViewModel.LstAlmacenesActivos, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.FormViewModel.UbicacionDestino, Mode=TwoWay}"
+                        DisplayMemberPath="DESCRIPCION"                                
+                        Width="115"
+                        Margin="4"
+                        RelativePanel.Below="txtFecha"
+                        RelativePanel.RightOf="cmbUbicacionOrigen"
+                    />
+
+                    <ComboBox x:Name="cmbDispositivos"
+                        Header="Dispositivo"
+                        ItemsSource="{x:Bind ViewModel.LstDispositivosActivos, Mode=OneWay}"
+                        SelectedItem="{x:Bind ViewModel.FormViewModel.Dispositivo, Mode=TwoWay}"
+                        DisplayMemberPath="DESCRIPCION"                                
+                        Width="240"
+                        Margin="4,0,4,4"
+                        RelativePanel.RightOf="cmbUbicacionDestino"  
+                        RelativePanel.Below="tpkHora"
+                    />
+
                     <ComboBox x:Name="ComboTiposMovimiento"
-                                Header="Tipo Movimiento"
+                                Header="Tipo Tarea"
                                 ItemsSource="{x:Bind ViewModel.LstTiposMovimientoActivos, Mode=OneWay}"
                                 SelectedItem="{Binding MOVIM_TIPO_MOVIM}"
                                 DisplayMemberPath="DESCRIPCION"
-                                RelativePanel.Below="TxtFecha"
+                                RelativePanel.Below="cmbUbicacionOrigen"
                                 Width="240"
                                 Margin="4"
                     />
@@ -150,7 +181,7 @@
                                 ItemsSource="{x:Bind ViewModel.LstPesosActivos, Mode=OneWay}"
                                 SelectedItem="{Binding MOVIM_PESO}"
                                 DisplayMemberPath="DESCRIPCION"
-                                RelativePanel.Below="TxtFecha"
+                                RelativePanel.Below="cmbUbicacionOrigen"
                                 RelativePanel.RightOf="ComboTiposMovimiento"
                                 Width="240"
                                 Margin="4"
@@ -178,7 +209,7 @@
                     />
 
                     <ComboBox x:Name="ComboChoferes"
-                                Header="Transportista"
+                                Header="Chofer"
                                 ItemsSource="{x:Bind ViewModel.LstChoferesActivos, Mode=OneWay}"
                                 SelectedItem="{Binding MOVIM_CHOFER}"
                                 DisplayMemberPath="DESCRIPCION"

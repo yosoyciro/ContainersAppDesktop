@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Contracts;
@@ -17,6 +16,7 @@ public class MovimCreadoHandler : IMessageHandler<MovimCreado>
     }
     public async Task Handle(MovimCreado @message)
     {
+        message.MOVIM_ID_REG = 0;
         var entidad = _mapper.Map<Movim>(@message);        
         await _repository.AddAsync(entidad);
 

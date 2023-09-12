@@ -7,12 +7,15 @@ namespace ContainersDesktop.ViewModels;
 public class TareasProgramadasFormViewModel : ObservableValidator
 {
     private ObjetosDTO _objeto;
-    private DateTimeOffset _fechaProgramada;
-    private TimeSpan _horaProgramada;
+    private DateTimeOffset _fechaProgramada = DateTimeOffset.Now.Date;
+    private DateTimeOffset _fechaProgramaxaMax = DateTimeOffset.Now.Date.AddDays(15);
+    //private TimeSpan _horaProgramada;
+    private int _horaProgramada;
     private AlmacenesDTO _ubicacionOrigen;
     private AlmacenesDTO _ubicacionDestino;
     private DispositivosDTO _dispositivo;
     private List<ValidationResult> _errors = new();
+    private readonly DateTimeOffset _fechaHoy = DateTime.Now;
 
     public TareasProgramadasFormViewModel()
     {
@@ -40,12 +43,21 @@ public class TareasProgramadasFormViewModel : ObservableValidator
         set => SetProperty(ref _fechaProgramada, value, true);
     }
 
+    //[Required(ErrorMessage = "La Hora Programada es requerida")]
+    //public TimeSpan HoraProgramada
+    //{
+    //    get => _horaProgramada;
+    //    set => SetProperty(ref _horaProgramada, value, true);
+    //}
     [Required(ErrorMessage = "La Hora Programada es requerida")]
-    public TimeSpan HoraProgramada
+    [Range(0, 23, ErrorMessage = "La hora debe ser entre 0 y 23")]
+    public int HoraProgramada
     {
         get => _horaProgramada;
         set => SetProperty(ref _horaProgramada, value, true);
     }
+
+    public DateTimeOffset FechaProgramadaMax => _fechaProgramaxaMax;
 
     //[Required(ErrorMessage = "La Ubicación Orígen es requerida")]
     [CustomValidation(typeof(TareasProgramadasFormViewModel), nameof(ValidateUbicacionOrigen))]
@@ -99,6 +111,8 @@ public class TareasProgramadasFormViewModel : ObservableValidator
         get => _dispositivo;
         set => SetProperty(ref _dispositivo, value, true);
     }
+
+    public DateTimeOffset FechaHoy => _fechaHoy;
 
     public bool IsValid => Errors.Length == 0;
     public bool IsNotValid => !IsValid;

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using ContainersDesktop.Dominio.Models.Base;
+﻿using ContainersDesktop.Dominio.Models.Base;
+using ContainersDesktop.Infraestructura.Contracts;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using ContainersDesktop.Infraestructura.Specification;
 using Microsoft.EntityFrameworkCore;
-using Windows.Data.Xml.Dom;
 
 namespace ContainersDesktop.Infraestructura.Persistencia.Repositorios;
 public class AsyncRepository<T> : IAsyncRepository<T> where T : BaseEntity
@@ -93,6 +93,31 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : BaseEntity
         }
     }
 
+    public async Task<IReadOnlyList<T?>> GetAllWithSpecsAsync(ISpecification<T> spec, bool disableTracking = true)
+    {
+        if (disableTracking)
+            return await ApplySpecification(spec).AsNoTracking().ToListAsync();
+
+        return await ApplySpecification(spec).ToListAsync();
+    }
+
+    public async Task<T?> GetOneWithSpecsAsync(ISpecification<T> spec)
+    {
+        var entity = await ApplySpecification(spec).FirstOrDefaultAsync();        
+
+        return entity;
+    }
+
+    public async Task<int?> CountAsync(ISpecification<T> spec)
+    {
+        return await ApplySpecification(spec).CountAsync();
+    }
+
+    private IQueryable<T> ApplySpecification(ISpecification<T> spec)
+    {
+        return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), spec);
+    }
+
     private static object[] GetPrimaryKeys<T>(DbContext context, T value)
     {
         var keyNames = context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties
@@ -104,4 +129,6 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : BaseEntity
         }
         return result;
     }
+
+
 }

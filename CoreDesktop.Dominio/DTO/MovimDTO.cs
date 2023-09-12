@@ -228,4 +228,24 @@ public class MovimDTO
         get;
         set;
     }
+
+    public int MOVIM_UBICACION_ORIGEN
+    {
+        get; set;
+    }
+
+    public string? MOVIM_UBICACION_ORIGEN_DESCRIPCION
+    {
+        get; set;
+    }
+
+    public int MOVIM_UBICACION_DESTINO
+    {
+        get; set;
+    }
+
+    public string? MOVIM_UBICACION_DESTINO_DESCRIPCION
+    {
+        get; set;
+    }
 }
