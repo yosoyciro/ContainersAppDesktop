@@ -16,11 +16,11 @@ using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Services;
 using ContainersDesktop.ViewModels;
 using ContainersDesktop.Views;
-using CoreDesktop.Dominio.Models;
-using CoreDesktop.Logica.Mapping;
-using CoreDesktop.Logica.Services;
-using CoreDesktop.Logica.Workers;
-using CoreDesktop.Logica.Mensajeria.Services;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Logica.Mapping;
+using ContainersDesktop.Logica.Services;
+using ContainersDesktop.Logica.Workers;
+using ContainersDesktop.Logica.Mensajeria.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -106,6 +106,8 @@ public partial class App : Application
             services.AddScoped<TareaProgramadaModificadaHandler>();
             services.AddScoped<IMessageHandler<MovimCreado>, MovimCreadoHandler>();
             services.AddScoped<MovimCreadoHandler>();
+            services.AddScoped<IMessageHandler<TareaProgramadaArchivoCreado>, TareaProgramadaArchivoCreadoHandler>();
+            services.AddScoped<TareaProgramadaArchivoCreadoHandler>();
 
             //services.AddHostedService<ServiceBusWorker>();
 

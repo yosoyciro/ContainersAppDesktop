@@ -106,7 +106,7 @@ public sealed partial class TareasProgramadasPage : Page
         {
             await ViewModel.SincronizarInformacion();
             ViewModel.AplicarFiltro(null, chkMostrarTodos.IsChecked ?? false);
-            await Dialogs.Aviso(this.XamlRoot, "Sincronización realizada!");            
+            await Dialogs.Aviso(this.XamlRoot, "Sincronización realizada!");
         }
         catch (RequestFailedException ex)
         {
@@ -115,6 +115,12 @@ public sealed partial class TareasProgramadasPage : Page
         catch (SystemException ex)
         {
             await Dialogs.Error(this.XamlRoot, ex.Message);
+
+        }
+        catch (Exception ex)
+        {
+            await Dialogs.Error(this.XamlRoot, ex.Message);
+
         }
     }
 
@@ -219,11 +225,6 @@ public sealed partial class TareasProgramadasPage : Page
     {
         TareasProgramadasGrid.ItemsSource = ViewModel.AplicarFiltro(null, false);
     }
-
-    //private void txtFecha_CalendarViewDayItemChanging(CalendarView sender, CalendarViewDayItemChangingEventArgs e)
-    //{
-        
-    //}
 
     private async void cmbDispositivos_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {                

@@ -1,6 +1,6 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
-using CoreDesktop.Dominio.Models.Base;
+using ContainersDesktop.Dominio.Models.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContainersDesktop.Infraestructura.Persistencia.Repositorios;

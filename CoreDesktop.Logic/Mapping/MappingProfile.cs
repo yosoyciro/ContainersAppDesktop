@@ -3,7 +3,7 @@ using ContainersDesktop.Dominio.DTO;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Logica.Mensajeria.Messages;
 
-namespace CoreDesktop.Logica.Mapping;
+namespace ContainersDesktop.Logica.Mapping;
 public class MappingProfile : Profile
 {
     public MappingProfile()
@@ -76,6 +76,9 @@ public class MappingProfile : Profile
             .ForMember(d => d.DISPOSITIVOS_ID_ESTADO_REG, x => x.MapFrom(s => s.Estado))
             .ForMember(d => d.DISPOSITIVOS_FECHA_ACTUALIZACION, x => x.MapFrom(s => s.FechaActualizacion))
             .ReverseMap();
+
+        CreateMap<TareaProgramadaArchivo, TareaProgramadaArchivoCreado>()
+           .ReverseMap();
 
         //Resources to model
         CreateMap<TareaProgramadaModificada, TareaProgramada>()

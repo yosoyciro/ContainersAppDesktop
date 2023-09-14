@@ -1,4 +1,4 @@
-﻿using CoreDesktop.Dominio.Models;
+﻿using ContainersDesktop.Dominio.Models;
 
 namespace ContainersDesktop.Logica.Specification.Implementaciones;
 public class DispCalendarDispositivoSpec : BaseSpecification<DispCalendar>

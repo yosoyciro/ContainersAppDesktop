@@ -13,8 +13,8 @@ using ContainersDesktop.Logica.Contracts;
 using ContainersDesktop.Logica.Mensajeria.Messages;
 using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Logica.Specification.Implementaciones;
-using CoreDesktop.Dominio.Models;
-using CoreDesktop.Logica.Mensajeria.Services;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Logica.Mensajeria.Services;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
@@ -465,6 +465,10 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             throw;
         }
         catch (SystemException)
+        {
+            throw;
+        }
+        catch (Exception)
         {
             throw;
         }

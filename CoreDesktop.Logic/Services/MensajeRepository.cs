@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ContainersDesktop.Dominio.Models.Base;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
-using CoreDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContainersDesktop.Infraestructura.Persistencia.Repositorios;

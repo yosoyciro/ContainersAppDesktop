@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreDesktop.Dominio.Models.Mensajeria;
+namespace ContainersDesktop.Dominio.Models.Mensajeria;
 
 public abstract class Message
 {

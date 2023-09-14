@@ -1,7 +1,7 @@
 ﻿using ContainersDesktop.Dominio.Models.Base;
-using CoreDesktop.Dominio.Models.Base;
+using ContainersDesktop.Dominio.Models.Base;
 
-namespace CoreDesktop.Dominio.Models;
+namespace ContainersDesktop.Dominio.Models;
 public class DispCalendar : AuditableEntity
 {
     public int DISP_CALENDAR_ID_DISPOSITIVO

@@ -2,8 +2,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.Views;
-using CoreDesktop.Logica.Services;
-using CoreDesktop.Logica.Mensajeria.Services;
+using ContainersDesktop.Logica.Services;
+using ContainersDesktop.Logica.Mensajeria.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Navigation;
 
@@ -48,7 +48,7 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
 
         IniciarServiceBusProcesor().Wait();
 
-        ProcesarMensajesGuardados().Wait();        
+        //ProcesarMensajesGuardados().Wait();        
     }
 
     private void OnNavigated(object sender, NavigationEventArgs e)

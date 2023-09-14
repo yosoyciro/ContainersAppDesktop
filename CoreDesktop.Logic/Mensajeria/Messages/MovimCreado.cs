@@ -1,5 +1,5 @@
 ﻿using ContainersDesktop.Dominio.Models;
-using CoreDesktop.Dominio.Models.Mensajeria;
+using ContainersDesktop.Dominio.Models.Mensajeria;
 
 namespace ContainersDesktop.Logica.Mensajeria.Messages;
 public class MovimCreado : Message

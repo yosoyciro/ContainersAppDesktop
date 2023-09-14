@@ -1,11 +1,11 @@
 ﻿using System.Text;
-using CoreDesktop.Dominio.Models.Mensajeria;
+using ContainersDesktop.Dominio.Models.Mensajeria;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 
-namespace CoreDesktop.Logica.Mensajeria.Services;
+namespace ContainersDesktop.Logica.Mensajeria.Services;
 public class AzureServiceBus
 {
     private readonly ServiceBusClient _client;

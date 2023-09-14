@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using CoreDesktop.Dominio.Models.Base;
+using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models.UI_ConfigModels;
 

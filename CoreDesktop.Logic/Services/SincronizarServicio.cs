@@ -2,7 +2,7 @@
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.Storage;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
-using CoreDesktop.Logica.Services;
+using ContainersDesktop.Logica.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -44,7 +44,7 @@ public class SincronizarServicio
         try
         {
             //Preparo la base a subir            
-            File.Copy(_dbFullPath, dbSubidaFullPath);
+            //File.Copy(_dbFullPath, dbSubidaFullPath);
 
             var dispositivos = await _dispositivosRepo.GetAsync();
 
@@ -70,7 +70,7 @@ public class SincronizarServicio
                 await _mensajesServicio.ProcesarPendientes();
 
                 //Subo al contenedor
-                await _azureStorageManagement.UploadFile(item.DISPOSITIVOS_CONTAINER!, _dbNameSubida, dbSubidaFullPath);
+                //await _azureStorageManagement.UploadFile(item.DISPOSITIVOS_CONTAINER!, _dbNameSubida, dbSubidaFullPath);
                 
                 fechaHoraFin = DateTime.Now;
 
@@ -86,6 +86,23 @@ public class SincronizarServicio
             }
         }
         catch (SystemException ex)
+        {
+            //Grabo sincronizacion
+            var sincronizacion = new Sincronizacion()
+            {
+                SINCRONIZACIONES_FECHA_HORA_INICIO = FormatoFecha.FechaEstandar(fechaHoraInicio),
+                SINCRONIZACIONES_FECHA_HORA_FIN = FormatoFecha.FechaEstandar(fechaHoraFin),
+                SINCRONIZACIONES_DISPOSITIVO_ORIGEN = idDispositivo,
+                SINCRONIZACIONES_RESULTADO = "Error " + ex.Message,
+            };
+            await _sincronizacionRepo.AddAsync(sincronizacion);
+
+            // Log
+            _logger.LogError(ex.Message);
+
+            throw;
+        }
+        catch (Exception ex)
         {
             //Grabo sincronizacion
             var sincronizacion = new Sincronizacion()

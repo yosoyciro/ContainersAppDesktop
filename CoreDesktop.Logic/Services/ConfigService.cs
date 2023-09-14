@@ -1,7 +1,7 @@
 ﻿using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 
-namespace CoreDesktop.Logica.Services;
+namespace ContainersDesktop.Logica.Services;
 public class ConfigService
 {
     private readonly IConfigRepository<UI_Config> _configRepository;

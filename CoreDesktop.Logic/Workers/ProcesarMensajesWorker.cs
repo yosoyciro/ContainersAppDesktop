@@ -1,8 +1,8 @@
-﻿using CoreDesktop.Logica.Services;
+﻿using ContainersDesktop.Logica.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace CoreDesktop.Logica.Workers;
+namespace ContainersDesktop.Logica.Workers;
 public class ProcesarMensajesWorker : BackgroundService
 {
     private readonly ILogger<ProcesarMensajesWorker> _logger;

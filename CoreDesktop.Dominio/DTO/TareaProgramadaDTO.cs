@@ -65,4 +65,8 @@ public class TareaProgramadaDTO
     {
         get; set;
     }
+    public string? TAREAS_PROGRAMADAS_ESTADO_TAREA
+    {
+        get; set;
+    }
 }

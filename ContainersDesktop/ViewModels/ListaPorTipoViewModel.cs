@@ -6,7 +6,7 @@ using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Contracts;
 using ContainersDesktop.Logica.Mensajeria.Messages;
-using CoreDesktop.Logica.Mensajeria.Services;
+using ContainersDesktop.Logica.Mensajeria.Services;
 
 namespace ContainersDesktop.ViewModels;
 

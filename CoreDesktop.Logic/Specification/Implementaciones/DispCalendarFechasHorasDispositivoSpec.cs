@@ -1,5 +1,5 @@
 ﻿using ContainersDesktop.Comunes.Helpers;
-using CoreDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models;
 
 namespace ContainersDesktop.Logica.Specification.Implementaciones;
 public class DispCalendarFechasHorasDispositivoSpec : BaseSpecification<DispCalendar>

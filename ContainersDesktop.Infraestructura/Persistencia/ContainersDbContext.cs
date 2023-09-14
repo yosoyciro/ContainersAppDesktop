@@ -2,8 +2,8 @@
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
-using CoreDesktop.Dominio.Models;
-using CoreDesktop.Dominio.Models.Base;
+using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContainersDesktop.Infraestructura.Persistencia;
@@ -63,6 +63,12 @@ public partial class ContainersDbContext : DbContext
         set;
     }
 
+    public DbSet<TareaProgramadaArchivo> TareasProgramadasArchivos
+    {
+        get;
+        set;
+    }
+
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)        
     //    => optionsBuilder.UseSqlite();
 
@@ -80,19 +86,29 @@ public partial class ContainersDbContext : DbContext
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+        try
         {
-            switch (entry.State)
+            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {
-                case EntityState.Added:
-                    entry.Entity.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
-                    break;
-                case EntityState.Modified:
-                    entry.Entity.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
-                    break;
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
+                        entry.Entity.Estado = "A";
+                        break;
+                    case EntityState.Modified:
+                        entry.Entity.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
+                        break;
+                }
             }
-        }
 
-        return base.SaveChangesAsync(cancellationToken);
+            return base.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        
     }
 }

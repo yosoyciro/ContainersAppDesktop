@@ -1,4 +1,4 @@
-﻿using CoreDesktop.Dominio.Models;
+﻿using ContainersDesktop.Dominio.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

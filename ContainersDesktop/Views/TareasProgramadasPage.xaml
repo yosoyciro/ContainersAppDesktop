@@ -79,6 +79,7 @@
                                     IsReadOnly="True">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="ID" Tag="Id" Binding="{Binding TAREAS_PROGRAMADAS_ID_REG}" Width="60"/>
+                        <controls:DataGridTextColumn Header="Estado" Tag="Estado" Binding="{Binding TAREAS_PROGRAMADAS_ESTADO_TAREA}" Width="120"/>
                         <controls:DataGridTextColumn Header="Container" Tag="Container" Binding="{Binding TAREAS_PROGRAMADAS_OBJETO_MATRICULA}" Width="150"/>
                         <controls:DataGridTextColumn Header="Fecha Programada" Tag="FechaProgramada" Binding="{Binding TAREAS_PROGRAMADAS_FECHA_PROGRAMADA}" Width="150"/>
                         <controls:DataGridTextColumn Header="Fecha Completada" Tag="FechaCompletada" Binding="{Binding TAREAS_PROGRAMADAS_FECHA_COMPLETADA}" Width="150"/>
@@ -134,7 +135,6 @@
                         Header="Hora"
                         PlaceholderText="Seleccione una hora..."
                         ItemsSource="{x:Bind ViewModel.LstHoras}"
-                        SelectionChanged="cmbHora_SelectionChanged"
                         Loaded="cmbHora_Loaded"
                         Width="240"
                         Margin="4"

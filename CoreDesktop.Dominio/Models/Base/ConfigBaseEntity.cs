@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CoreDesktop.Dominio.Models.Base;
+namespace ContainersDesktop.Dominio.Models.Base;
 public abstract class ConfigBaseEntity
 {
     [Key]

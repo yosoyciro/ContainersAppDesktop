@@ -1,4 +1,4 @@
-﻿using CoreDesktop.Dominio.Models.Mensajeria;
+﻿using ContainersDesktop.Dominio.Models.Mensajeria;
 
 namespace ContainersDesktop.Logica.Contracts;
 public interface IMessageHandler<in TMessage> : IMessageHandler where TMessage : Message

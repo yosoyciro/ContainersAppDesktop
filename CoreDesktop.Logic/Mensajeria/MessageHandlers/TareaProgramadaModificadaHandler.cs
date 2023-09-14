@@ -17,13 +17,24 @@ public class TareaProgramadaModificadaHandler : IMessageHandler<TareaProgramadaM
     }
     public async Task Handle(TareaProgramadaModificada @message)
     {
-        //var entidad = await _repository.GetByIdAsync(@message.TAREAS_PROGRAMADAS_ID_REG);
+        try
+        {
+            var entidad = (TareaProgramada)_mapper.Map(@message, typeof(TareaProgramadaModificada), typeof(TareaProgramada));
 
-        var entidad = (TareaProgramada)_mapper.Map(@message, typeof(TareaProgramadaModificada), typeof(TareaProgramada));
-        entidad.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
+            //Workaround para mensajes viejos
+            if (entidad.TAREAS_PROGRAMADAS_ESTADO_TAREA == null)
+            {
+                entidad.TAREAS_PROGRAMADAS_ESTADO_TAREA = string.IsNullOrEmpty(@message.TAREAS_PROGRAMADAS_FECHA_COMPLETADA) ? "Pendiente" : "Completada";
+            }
+            entidad.FechaActualizacion = FormatoFecha.FechaEstandar(DateTime.Now);
 
-        await _repository.UpdateAsync(entidad);
+            await _repository.UpdateAsync(entidad);
 
-        return;
+            return;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using CoreDesktop.Dominio.Models.Base;
+﻿using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Infraestructura.Persistencia.Contracts;
 public interface IConfigRepository<T> where T : ConfigBaseEntity

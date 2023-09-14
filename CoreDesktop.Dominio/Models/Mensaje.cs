@@ -1,6 +1,6 @@
 ﻿using ContainersDesktop.Dominio.Models.Base;
 
-namespace CoreDesktop.Dominio.Models;
+namespace ContainersDesktop.Dominio.Models;
 public class Mensaje : BaseEntity
 {
     public Mensaje(string body, string tipoMensaje, string fechaHora, string estado)

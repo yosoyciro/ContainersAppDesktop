@@ -1,6 +1,6 @@
 ﻿using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
-using CoreDesktop.Dominio.Models.Mensajeria;
+using ContainersDesktop.Dominio.Models.Mensajeria;
 
 namespace ContainersDesktop.Logica.Mensajeria.Messages;
 public class TareaProgramadaCreada : Message
@@ -54,6 +54,10 @@ public class TareaProgramadaCreada : Message
     {
         get;
         set;
+    }
+    public string? TAREAS_PROGRAMADAS_TAREAS_PROGRAMADAS_ESTADO_TAREA
+    {
+        get; set;
     }
 
     //public TareaProgramadaCreada(TareaProgramada tarea)

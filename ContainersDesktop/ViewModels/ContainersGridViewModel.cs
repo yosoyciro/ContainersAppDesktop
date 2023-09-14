@@ -7,7 +7,7 @@ using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 using ContainersDesktop.Logica.Mensajeria.Messages;
-using CoreDesktop.Logica.Mensajeria.Services;
+using ContainersDesktop.Logica.Mensajeria.Services;
 using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;

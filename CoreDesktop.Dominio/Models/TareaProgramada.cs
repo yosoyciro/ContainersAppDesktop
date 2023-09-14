@@ -1,5 +1,5 @@
 ﻿using ContainersDesktop.Dominio.Models.Base;
-using CoreDesktop.Dominio.Models.Base;
+using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
 public class TareaProgramada : AuditableEntity
@@ -42,5 +42,9 @@ public class TareaProgramada : AuditableEntity
     {
         get;
         set;
+    }
+    public string? TAREAS_PROGRAMADAS_ESTADO_TAREA
+    {
+        get; set;
     }
 }

@@ -1,10 +1,10 @@
 ﻿using ContainersDesktop.Comunes.Helpers;
-using CoreDesktop.Dominio.Models;
+using ContainersDesktop.Dominio.Models;
 using Azure.Messaging.ServiceBus;
 using System.Text;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
 
-namespace CoreDesktop.Logica.Services;
+namespace ContainersDesktop.Logica.Services;
 public class MensajesServicio
 {
     private readonly IMensajeRepository<Mensaje> _repository;
