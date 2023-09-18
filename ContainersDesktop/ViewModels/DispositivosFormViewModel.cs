@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ContainersDesktop.Dominio.DTO;
-using ContainersDesktop.Dominio.Models;
+using ContainersDesktop.Validations;
+using static ContainersDesktop.Validations.DispositivosValidation;
 
 namespace ContainersDesktop.ViewModels;
 
@@ -10,7 +10,7 @@ public class DispositivosFormViewModel : ObservableValidator
 {
     private string _descripcion;
     private string _container;
-    private bool _containerValido;
+    private string _dataErrors;
 
     public DispositivosFormViewModel()
     {
@@ -33,21 +33,16 @@ public class DispositivosFormViewModel : ObservableValidator
     }
 
     [Required(ErrorMessage = "El Container es requerido")]
-    [MinLength(6, ErrorMessage = "El container debe contener 6 caracteres (3 letras y 3 números)")]
+    [RegularExpression(@"^[a-z][a-z][a-z][0-9][0-9][0-9]", ErrorMessage = "El container debe contener 6 caracteres (3 letras y 3 números)")]
+    [ContainerLocalValidation]
+    [ContainerAzureValidation]
     public string Container
     {
         get => _container;
         set => SetProperty(ref _container, value, true);
     }
 
-    [CustomValidation(typeof(DispositivosFormViewModel), nameof(ValidarContainer))]
-    public bool ContainerValido
-    {
-        get => _containerValido;
-        set => SetProperty(ref _containerValido, value, true);
-    }
-
-    public bool IsValid => Errors.Length == 0;
+    public bool IsValid => Errors.Length != 0 ? false : true;
 
     public string Errors => string.Join(Environment.NewLine, from ValidationResult e in GetErrors(null) select e.ErrorMessage);
 
@@ -66,25 +61,5 @@ public class DispositivosFormViewModel : ObservableValidator
         OnPropertyChanged(nameof(IsValid));
     }
 
-    #endregion
-
-    public static ValidationResult ValidarContainer(Dispositivo value, ValidationContext context)
-    {
-        var instance = (DispositivosFormViewModel)context.ObjectInstance;
-        if (instance?.ContainerValido == null)
-        {
-            return null;
-        }
-
-        var isValid = instance.ContainerValido;
-
-        if (isValid)
-        {
-            return ValidationResult.Success;
-        }
-        else
-        {
-            return new ValidationResult("El Container no está creado");
-        }
-    }
+    #endregion    
 }

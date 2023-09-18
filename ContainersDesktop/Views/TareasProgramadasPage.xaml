@@ -59,6 +59,11 @@
                             Command="{x:Bind ExportarCommand, Mode=OneWay}"
                             Icon="Document" 
                             Label="Exportar" />
+                        <AppBarButton 
+                            Command="{x:Bind VerImagenesCommand, Mode=OneWay}"
+                            IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}"
+                            Icon="Pictures" 
+                            Label="Imagenes" />
                     </CommandBar>
                     <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
                         Checked="chkMostrarTodos_Checked"

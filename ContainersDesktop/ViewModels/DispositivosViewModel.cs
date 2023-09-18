@@ -10,6 +10,7 @@ using ContainersDesktop.Logica.Mensajeria.Messages;
 using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Logica.Mensajeria.Services;
 using Windows.UI;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ContainersDesktop.ViewModels;
 public partial class DispositivosViewModel : ObservableRecipient
@@ -80,9 +81,7 @@ public partial class DispositivosViewModel : ObservableRecipient
     public async Task CrearDispositivo(Dispositivo dispositivo)
     {
         try
-        {
-            await ContainerEsValido(dispositivo.DISPOSITIVOS_CONTAINER!);
-
+        {            
             dispositivo.ID = await _dispositivosRepo.AddAsync(dispositivo);
             if (dispositivo.ID > 0)
             {
@@ -145,33 +144,7 @@ public partial class DispositivosViewModel : ObservableRecipient
         }
         
     }
-
-    private async Task ContainerEsValido(string container)
-    {
-        bool existeLocal = false;
-        var dispositivos = await _dispositivosRepo.GetAsync();
-
-        foreach (var item in dispositivos)
-        {
-            if (item.DISPOSITIVOS_CONTAINER == container)
-            {
-                existeLocal = true;
-                break;
-            }
-        }
-
-        if (existeLocal)
-        {
-            throw new Exception("El container ya se encuentra asignado a otro dispositivo");
-        }
-
-        var existeAzure = _azureStorageManagement.ExisteContainer(container);
-        if (!existeAzure)
-        {
-            throw new Exception("El container no existe en Azure");
-        }
-    }
-
+    
     #endregion
 
     #region Sincronizacion
@@ -286,5 +259,5 @@ public partial class DispositivosViewModel : ObservableRecipient
         _comboColor = Colores.HexToColor(comboColor.Valor!);
     }
 
-    #endregion
+    #endregion    
 }

@@ -49,6 +49,20 @@ public sealed partial class TareasProgramadasPage : Page
     public ICommand BorrarRecuperarCommand => new AsyncRelayCommand(BorrarRecuperarCommand_Execute);
     public ICommand ExportarCommand => new AsyncRelayCommand(ExportarCommand_Execute);
     public ICommand SincronizarCommand => new AsyncRelayCommand(SincronizarCommand_Execute);
+    public ICommand VerImagenesCommand => new RelayCommand(VerImagenesCommand_Execute);
+
+    private void VerImagenesCommand_Execute()
+    {
+        try
+        {
+            Frame.Navigate(typeof(TareasProgramadasArchivosPage), ViewModel.Current.TAREAS_PROGRAMADAS_ID_REG);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }        
+    }
 
     private async Task OpenAgregarDialog()
     {

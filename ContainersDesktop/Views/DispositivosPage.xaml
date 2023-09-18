@@ -132,8 +132,6 @@
                         Margin="0,10,0,0"
                     />
 
-                    
-
                     <Grid x:Name="grdMensajeValidacion" RelativePanel.Below="txtCloudContainer">
                         <SymbolIcon Symbol="ReportHacked"
                             Foreground="Red"

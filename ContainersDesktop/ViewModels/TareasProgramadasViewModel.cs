@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Data;
-using System.Runtime.CompilerServices;
 using AutoMapper;
 using Azure;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,7 +12,6 @@ using ContainersDesktop.Logica.Contracts;
 using ContainersDesktop.Logica.Mensajeria.Messages;
 using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Logica.Specification.Implementaciones;
-using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Logica.Mensajeria.Services;
 using Windows.UI;
 
@@ -133,10 +131,10 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         {
             foreach (var item in dispositivos)
             {
-                LstDispositivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
+                LstDispositivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP, CONTAINER = item.DISPOSITIVOS_CONTAINER });
                 if (item.Estado == "A")
                 {
-                    LstDispositivosActivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP });
+                    LstDispositivosActivos.Add(new DispositivosDTO() { MOVIM_ID_DISPOSITIVO = item.ID, DESCRIPCION = item.DISPOSITIVOS_DESCRIP, CONTAINER = item.DISPOSITIVOS_CONTAINER });
                 }
             }
         }
@@ -213,6 +211,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             _items.Add(dto);
 
             var mensaje = _mapper.Map<TareaProgramadaCreada>(tareaProgramada);
+            mensaje.TAREAS_PROGRAMADAS_DISPOSITIVOS_CONTAINER = LstDispositivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG).CONTAINER;
             await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)
@@ -241,6 +240,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             _items[i].TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = dto.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD;
 
             var mensaje = _mapper.Map<TareaProgramadaModificada>(tareaProgramada);
+            mensaje.TAREAS_PROGRAMADAS_DISPOSITIVOS_CONTAINER = LstDispositivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG).CONTAINER;
             await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)
@@ -266,6 +266,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
             Items[i].TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION = FormatoFecha.ConvertirAFechaHora(Current.TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION);
 
             var mensaje = _mapper.Map<TareaProgramadaModificada>(tareaProgramada);
+            mensaje.TAREAS_PROGRAMADAS_DISPOSITIVOS_CONTAINER = LstDispositivos.FirstOrDefault(x => x.MOVIM_ID_DISPOSITIVO == tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVOS_ID_REG).CONTAINER;
             await _azureBus.EnviarMensaje(mensaje);
         }
         catch (Exception)

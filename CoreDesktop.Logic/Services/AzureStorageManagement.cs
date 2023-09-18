@@ -1,6 +1,6 @@
 ﻿using Azure;
+using Azure.Data.Tables;
 using Azure.Storage.Blobs;
-using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models.Storage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -83,12 +83,28 @@ public class AzureStorageManagement
         }
     }
 
-    public bool ExisteContainer(string contenedor)
+    //public bool ExisteContainer(string contenedor)
+    //{
+    //    BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);
+
+    //    var container = blobServiceClient.GetBlobContainerClient(contenedor);
+
+    //    return container.Exists();        
+    //}
+
+    public bool ConsultarDispositivo(string container)
     {
-        BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);
+        try
+        {
+            var tableClient = new TableClient(_connectionString, "Dispositivos");
+            Pageable<TableEntity> queryResultsFilter = tableClient.Query<TableEntity>(filter: $"RowKey eq '{container}'");
 
-        var container = blobServiceClient.GetBlobContainerClient(contenedor);
+            return queryResultsFilter.Count() > 0 ? true : false;
+        }
+        catch (Exception)
+        {
 
-        return container.Exists();        
+            throw;
+        }
     }
 }

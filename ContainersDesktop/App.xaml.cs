@@ -141,7 +141,9 @@ public partial class App : Application
             services.AddTransient<TareasProgramadasViewModel>();
             services.AddTransient<TareasProgramadasPage>();
             services.AddTransient<Data2MovieViewModel>();
-            services.AddTransient<Data2MoviePage>();    
+            services.AddTransient<Data2MoviePage>();
+            services.AddTransient<TareasProgramadasArchivosViewModel>();
+            services.AddTransient<TareasProgramadasArchivosPage>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

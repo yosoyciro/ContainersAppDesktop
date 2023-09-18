@@ -40,6 +40,10 @@ public class TareaProgramadaModificada : Message
     {
         get; set;
     }
+    public string? TAREAS_PROGRAMADAS_DISPOSITIVOS_CONTAINER
+    {
+        get; set;
+    }
     public string? TAREAS_PROGRAMADAS_FECHA_ACTUALIZACION
     {
         get; set;

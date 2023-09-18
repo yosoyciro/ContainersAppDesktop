@@ -29,6 +29,7 @@
     <None Remove="Views\MovimientosContainerPage.xaml" />
     <None Remove="Views\MovimientosPage.xaml" />
     <None Remove="Views\SincronizacionesPage.xaml" />
+    <None Remove="Views\TareasProgramadasArchivosPage.xaml" />
     <None Remove="Views\TareasProgramadasPage.xaml" />
     <None Remove="Views\TiposListaDetailsPage.xaml" />
   </ItemGroup>
@@ -65,6 +66,9 @@
     <None Update="Assets\Images\RGB.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\TareasProgramadasArchivosPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\Data2MoviePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

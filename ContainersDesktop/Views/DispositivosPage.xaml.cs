@@ -185,40 +185,9 @@ public sealed partial class DispositivosPage : Page
         ViewModel.FormViewModel.Descripcion = sender.Text;
     }
 
-    private void txtCloudContainer_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+    private async void txtCloudContainer_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
     {
         ViewModel.FormViewModel.Container = sender.Text;
-
-        //if (ViewModel.FormViewModel.IsValid)
-        //{
-        //    //Verifico que el container ya no haya sido asignado a otro movil
-        //    if (await ViewModel.ExisteContainer(sender.Text, "local"))
-        //    {
-        //        ContentDialog avisoDialog = new ContentDialog
-        //        {
-        //            XamlRoot = this.Content.XamlRoot,
-        //            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-        //            Title = "Atención!",
-        //            CloseButtonText = "Cerrar",
-        //            DefaultButton = ContentDialogButton.Close,
-        //            Content = "Test",
-        //        };
-
-        //        await avisoDialog.ShowAsync();
-        //    }
-        //    else
-        //    {
-        //        ////Verifico si el Container existe en la plataforma
-        //        //if (!await ViewModel.ExisteContainer(sender.Text, "cloud"))
-        //        //{
-        //        //    await Dialogs.Aviso(this.XamlRoot, "El container no existe en la plataforma");
-        //        //}
-        //        //else
-        //        //{
-
-        //        //}
-        //    }
-        //}        
     }
     #endregion
 

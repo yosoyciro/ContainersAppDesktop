@@ -16,4 +16,9 @@ public class DispositivosDTO
         get;
         set;
     }
+    public string? CONTAINER
+    {
+        get;
+        set;
+    }
 }
