@@ -93,7 +93,7 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : BaseEntity
         }
     }
 
-    public async Task<IReadOnlyList<T?>> GetAllWithSpecsAsync(ISpecification<T> spec, bool disableTracking = true)
+    public async Task<IReadOnlyCollection<T?>> GetAllWithSpecsAsync(ISpecification<T> spec, bool disableTracking = true)
     {
         if (disableTracking)
             return await ApplySpecification(spec).AsNoTracking().ToListAsync();

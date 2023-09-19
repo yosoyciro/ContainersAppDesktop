@@ -176,6 +176,8 @@ public sealed partial class TareasProgramadasPage : Page
     {
         //var result = ViewModel.FormViewModel.ValidateUbicacion();
         var tareaProgramada = dlgFormulario.DataContext as TareaProgramadaDTO;
+        ViewModel.FormViewModel.FechaProgramada = txtFecha.Date!.Value.Date;
+        ViewModel.FormViewModel.HoraProgramada = (int)cmbHora.SelectedValue;
         AsignarDTO(ref tareaProgramada);
         await ViewModel.AgregarTareaProgramada(tareaProgramada);
 
@@ -186,6 +188,8 @@ public sealed partial class TareasProgramadasPage : Page
     private async Task ModificarRegistro()
     {
         var tareaProgramada = dlgFormulario.DataContext as TareaProgramadaDTO;
+        ViewModel.FormViewModel.FechaProgramada = txtFecha.Date!.Value.Date;
+        ViewModel.FormViewModel.HoraProgramada = (int)cmbHora.SelectedValue;
         AsignarDTO(ref tareaProgramada);
         await ViewModel.ActualizarTareaProgramada(tareaProgramada);
         
@@ -195,7 +199,7 @@ public sealed partial class TareasProgramadasPage : Page
 
     private void AsignarDTO(ref TareaProgramadaDTO tareaProgramada)
     {
-        TimeSpan? time = new TimeSpan(1, 0, 0); //tpkHora.SelectedTime;
+        TimeSpan? time = new TimeSpan(ViewModel.FormViewModel.HoraProgramada, 0, 0); //tpkHora.SelectedTime;
         var fechaHora = ViewModel.FormViewModel.FechaProgramada.Date.Add(time!.Value);
 
         tareaProgramada.TAREAS_PROGRAMADAS_OBJETO_ID_REG = ViewModel.FormViewModel.Objeto.MOVIM_ID_OBJETO;
@@ -209,6 +213,7 @@ public sealed partial class TareasProgramadasPage : Page
         tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVOS_DESCRIPCION = ViewModel.FormViewModel.Dispositivo.DESCRIPCION;
         tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVO_LATITUD = 0;
         tareaProgramada.TAREAS_PROGRAMADAS_DISPOSITIVO_LONGITUD = 0;
+        tareaProgramada.TAREAS_PROGRAMADAS_ESTADO_TAREA = "Pendiente";
     }
 
     private void TareasProgramadasGrid_Sorting(object sender, DataGridColumnEventArgs e)
@@ -269,9 +274,9 @@ public sealed partial class TareasProgramadasPage : Page
             ? 
                 !ViewModel.LstFechasDisponibles.Contains(e.Item.Date.Date) 
                 || e.Item.Date.DayOfWeek == DayOfWeek.Saturday 
-                || e.Item.Date.DayOfWeek == DayOfWeek.Saturday 
-            : 
-                false;
+                || e.Item.Date.DayOfWeek == DayOfWeek.Sunday 
+            :
+                e.Item.Date.DayOfWeek == DayOfWeek.Saturday || e.Item.Date.DayOfWeek == DayOfWeek.Sunday;
     }
 
     private void cmbHora_Loaded(object sender, RoutedEventArgs e)

@@ -59,7 +59,7 @@ public class TareaProgramadaCreada : Message
         get;
         set;
     }
-    public string? TAREAS_PROGRAMADAS_TAREAS_PROGRAMADAS_ESTADO_TAREA
+    public string? TAREAS_PROGRAMADAS_ESTADO_TAREA
     {
         get; set;
     }

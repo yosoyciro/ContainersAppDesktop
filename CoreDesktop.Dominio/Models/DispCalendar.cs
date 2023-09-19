@@ -1,4 +1,4 @@
-﻿using ContainersDesktop.Dominio.Models.Base;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
@@ -9,7 +9,7 @@ public class DispCalendar : AuditableEntity
         get;
         set;
     }
-    public string? DISP_CALENDAR_FECHA
+    public DateTime? DISP_CALENDAR_FECHA
     {
         get;
         set;
@@ -133,5 +133,5 @@ public class DispCalendar : AuditableEntity
     {
         get;
         set;
-    }
+    }    
 }

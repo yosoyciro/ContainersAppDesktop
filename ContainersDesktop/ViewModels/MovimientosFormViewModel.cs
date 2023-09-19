@@ -41,7 +41,7 @@ public class MovimientosFormViewModel : ObservableValidator
         set => SetProperty(ref _hora, value, true);
     }
 
-    [CustomValidation(typeof(TareasProgramadasFormViewModel), nameof(ValidateUbicacionOrigen))]
+    [CustomValidation(typeof(MovimientosFormViewModel), nameof(ValidateUbicacionOrigen))]
     public AlmacenesDTO UbicacionOrigen
     {
         get => _ubicacionOrigen;
@@ -64,7 +64,7 @@ public class MovimientosFormViewModel : ObservableValidator
     }
 
     //[Required(ErrorMessage = "La Ubicación Destino es requerida")]
-    [CustomValidation(typeof(TareasProgramadasFormViewModel), nameof(ValidateUbicacionDestino))]
+    [CustomValidation(typeof(MovimientosFormViewModel), nameof(ValidateUbicacionDestino))]
     public AlmacenesDTO UbicacionDestino
     {
         get => _ubicacionDestino;
@@ -119,7 +119,7 @@ public class MovimientosFormViewModel : ObservableValidator
 
     public static ValidationResult ValidateUbicacionOrigen(AlmacenesDTO value, ValidationContext context)
     {
-        var instance = (TareasProgramadasFormViewModel)context.ObjectInstance;
+        var instance = (MovimientosFormViewModel)context.ObjectInstance;
         if (instance?.UbicacionDestino == null)
         {
             return null;
@@ -139,7 +139,7 @@ public class MovimientosFormViewModel : ObservableValidator
 
     public static ValidationResult ValidateUbicacionDestino(AlmacenesDTO value, ValidationContext context)
     {
-        var instance = (TareasProgramadasFormViewModel)context.ObjectInstance;
+        var instance = (MovimientosFormViewModel)context.ObjectInstance;
         var isValid = value != instance?.UbicacionOrigen;
 
         if (isValid)

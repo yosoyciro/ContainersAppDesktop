@@ -499,7 +499,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         LstHoras.Clear();
         LstFechasDisponibles.Clear();
 
-        var spec = new DispCalendarFechasHorasDispositivoSpec(idDispositivo);
+        var spec = new DispCalendarFechasHorasDispositivoSpec(idDispositivo, DateTime.Now);
         var dispCalendar = await _dispCalendarRepo.GetAllWithSpecsAsync(spec);
         if (dispCalendar.Count == 0)
         {
@@ -513,9 +513,9 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
 
         foreach (var item in dispCalendar)
         {
-            var fecha = DateTime.Parse(item.DISP_CALENDAR_FECHA);
-            if (!string.IsNullOrEmpty(item.DISP_CALENDAR_FECHA) && fecha >= DateTime.Now.Date)
-            {
+            //var fecha = DateTime.Parse(item.DISP_CALENDAR_FECHA);
+            //if (!string.IsNullOrEmpty(item.DISP_CALENDAR_FECHA) && fecha >= DateTime.Now.Date)
+            //{
                 LstFechasDisponibles.Add(Convert.ToDateTime(item!.DISP_CALENDAR_FECHA));
 
                 if (item.DISP_CALENDAR_00 == 1) LstHoras.Add(0);
@@ -542,7 +542,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
                 if (item.DISP_CALENDAR_21 == 1) LstHoras.Add(21);
                 if (item.DISP_CALENDAR_22 == 1) LstHoras.Add(22);
                 if (item.DISP_CALENDAR_23 == 1) LstHoras.Add(23);
-            }
+            //}
         }           
     }
 

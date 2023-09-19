@@ -1,4 +1,5 @@
-﻿using ContainersDesktop.Dominio.Models.Base;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using ContainersDesktop.Dominio.Models.Base;
 using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
@@ -47,4 +48,8 @@ public class TareaProgramada : AuditableEntity
     {
         get; set;
     }
+
+    [NotMapped]
+    public DateTime? TAREAS_PROGRAMADAS_FECHA_COMPLETADA_DATETIME => DateTime.Parse(this.TAREAS_PROGRAMADAS_FECHA_COMPLETADA);
+    public DateTime? TAREAS_PROGRAMADAS_FECHA_PROGRAMADA_DATETIME => DateTime.Parse(this.TAREAS_PROGRAMADAS_FECHA_PROGRAMADA);
 }
