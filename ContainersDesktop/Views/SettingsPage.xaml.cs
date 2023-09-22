@@ -76,4 +76,9 @@ public sealed partial class SettingsPage : Page
     {
         await ViewModel.Guardar("Idioma", ViewModel.Lenguaje);
     }
+
+    private async void RadioButton_ActualThemeChanged(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    {
+        await ViewModel.Guardar("Tema", sender.ActualTheme.ToString());
+    }
 }

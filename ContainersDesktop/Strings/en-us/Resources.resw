@@ -175,7 +175,7 @@
     <value>Tasks history</value>
   </data>
   <data name="Shell_Sincronizaciones.Content" xml:space="preserve">
-    <value>Sincronizaciones</value>
+    <value>Syncs</value>
   </data>
   <data name="Shell_TareasProgramadas.Content" xml:space="preserve">
     <value>Program tasks</value>
@@ -194,5 +194,23 @@
   </data>
   <data name="Settings_Idioma.Text" xml:space="preserve">
     <value>Language</value>
+  </data>
+  <data name="Shell_Novedades.Content" xml:space="preserve">
+    <value>News</value>
+  </data>
+  <data name="Shell_Tablas.Content" xml:space="preserve">
+    <value>Tables</value>
+  </data>
+  <data name="Shell_Tablas_Listas.Content" xml:space="preserve">
+    <value>Lists</value>
+  </data>
+  <data name="Shell_Tablas_Dispositivos.Content" xml:space="preserve">
+    <value>Devices</value>
+  </data>
+  <data name="Shell_Tablas_Sincronizaciones.Content" xml:space="preserve">
+    <value>Syncs</value>
+  </data>
+  <data name="Shell_Tablas_Containers.Content" xml:space="preserve">
+    <value>Containers</value>
   </data>
 </root>

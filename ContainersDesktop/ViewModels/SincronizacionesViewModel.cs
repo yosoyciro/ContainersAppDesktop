@@ -4,7 +4,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.UI_ConfigModels;
+using ContainersDesktop.Helpers;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using ContainersDesktop.Logica.Mensajeria;
 using ContainersDesktop.Logica.Services;
 using Windows.UI;
 
@@ -14,6 +16,7 @@ public partial class SincronizacionesViewModel : ObservableRecipient
     private readonly IAsyncRepository<Sincronizacion> _sincronizacionRepo; 
     private readonly SincronizarServicio _sincronizarServicio;
     private readonly IConfigRepository<UI_Config> _configRepository;
+    private readonly MensajesNotificacionesViewModel _mensajesNotificacionesViewModel;
 
     //Estilos
     private Color _gridColor;
@@ -35,6 +38,7 @@ public partial class SincronizacionesViewModel : ObservableRecipient
 
     public ObservableCollection<Sincronizacion> Source { get; } = new();
     private string _cachedSortedColumn = string.Empty;
+
     [ObservableProperty]
     public bool isBusy = false;
 
@@ -47,6 +51,7 @@ public partial class SincronizacionesViewModel : ObservableRecipient
         _sincronizacionRepo = sincronizacionServicio;
         _sincronizarServicio = sincronizarServicio;
         _configRepository = configRepository;
+        _mensajesNotificacionesViewModel = ServiceHelper.GetService<MensajesNotificacionesViewModel>();
 
         CargarConfiguracion().Wait();
     }
@@ -67,7 +72,14 @@ public partial class SincronizacionesViewModel : ObservableRecipient
         try
         {
             IsBusy = true;
-            await _sincronizarServicio.Sincronizar();
+            var sinProcesar = await _sincronizarServicio.Sincronizar();
+            _mensajesNotificacionesViewModel.SetMensajesNoLeidos(sinProcesar);
+            //await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+            //() =>
+            //    { 
+            //        MensajesNotificaciones.NumeroMensajesNoProcesados;
+            //    }
+            //);
 
             return true;
         }

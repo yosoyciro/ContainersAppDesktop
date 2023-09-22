@@ -92,4 +92,10 @@ public sealed partial class ShellPage : Page
     {
         NavigationViewControl.IsPaneVisible = true;
     }
+
+    public void RefrescarItems()
+    {
+        //var item = NavigationViewControl.MenuItems.Where(x => x.)
+        Console.WriteLine(NavigationViewControl.MenuItems);
+    }
 }

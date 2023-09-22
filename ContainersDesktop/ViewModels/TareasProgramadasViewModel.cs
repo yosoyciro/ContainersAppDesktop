@@ -14,6 +14,9 @@ using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Logica.Specification.Implementaciones;
 using ContainersDesktop.Logica.Mensajeria.Services;
 using Windows.UI;
+using ContainersDesktop.Logica.Mensajeria;
+using ContainersDesktop.Views;
+using ContainersDesktop.Helpers;
 
 namespace ContainersDesktop.ViewModels;
 public partial class TareasProgramadasViewModel : ObservableRecipient, INavigationAware
@@ -30,6 +33,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     private readonly IConfigRepository<UI_Config> _configRepository;
     private readonly IMapper _mapper;
     private readonly AzureServiceBus _azureBus;
+    private readonly MensajesNotificacionesViewModel _mensajesNotificacionesViewModel;
 
     private string _cachedSortedColumn = string.Empty;
     //Estilos
@@ -60,7 +64,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
     [ObservableProperty]
     public ObjetosDTO objeto = null;
     [ObservableProperty]
-    public bool isBusy = false;
+    public bool isBusy = false;    
 
     #region Observable Collections
     private readonly ObservableCollection<TareaProgramadaDTO> _items = new();
@@ -98,6 +102,7 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         _mapper = mapper;
         _azureBus = azureBus;
         _dispCalendarRepo = dispCalendarRepo;
+        _mensajesNotificacionesViewModel = ServiceHelper.GetService<MensajesNotificacionesViewModel>();
 
         CargarConfiguracion().Wait();        
     }
@@ -457,7 +462,8 @@ public partial class TareasProgramadasViewModel : ObservableRecipient, INavigati
         try
         {
             IsBusy = true;
-            await _sincronizarRepo.Sincronizar();
+            var sinProcesar = await _sincronizarRepo.Sincronizar();
+            _mensajesNotificacionesViewModel.SetMensajesNoLeidos(sinProcesar);
 
             return true;
         }

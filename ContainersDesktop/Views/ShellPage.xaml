@@ -64,6 +64,49 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xee4a;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem x:Uid="Shell_Tablas">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;"/>
+                    </NavigationViewItem.Icon>
+                    <NavigationViewItem.MenuItems>
+                        <NavigationViewItem x:Uid="Shell_Tablas_Listas" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.TiposListaDetailsViewModel"
+                                            Tag="XamlBrewer.WinUI3.Navigation.Sample.Views.FestivalDetailsPage"
+                                            ToolTipService.ToolTip="Listas">
+                            <NavigationViewItem.Icon>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;"/>
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
+                        <NavigationViewItem x:Uid="Shell_Tablas_Containers" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.ContainersGridViewModel"
+                                            Tag="XamlBrewer.WinUI3.Navigation.Sample.Views.FestivalDetailsPage"
+                                            ToolTipService.ToolTip="Containers">
+                            <NavigationViewItem.Icon>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;"/>
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
+                        <NavigationViewItem x:Uid="Shell_Tablas_Dispositivos" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.DispositivosViewModel"
+                                            Tag="XamlBrewer.WinUI3.Navigation.Sample.Views.FestivalDetailsPage"
+                                            ToolTipService.ToolTip="Dispositivos">
+                            <NavigationViewItem.Icon>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;"/>
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
+                        <NavigationViewItem x:Uid="Shell_Tablas_Sincronizaciones" helpers:NavigationHelper.NavigateTo="ContainersDesktop.ViewModels.SincronizacionesViewModel"
+                                            Tag="XamlBrewer.WinUI3.Navigation.Sample.Views.FestivalDetailsPage"
+                                            ToolTipService.ToolTip="Sincronizaciones">
+                            <NavigationViewItem.Icon>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8a5;"/>
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
+                    </NavigationViewItem.MenuItems>
+                </NavigationViewItem>
+                <NavigationViewItem x:Uid="Shell_Novedades">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xEdac;"/>
+                    </NavigationViewItem.Icon>
+                    <NavigationViewItem.InfoBadge>
+                        <InfoBadge x:Name="infoBadge1" Value="{x:Bind ViewModel.MensajesNotificacionesViewModel.MensajesNoProcesados, Mode=OneWay}"/>
+                    </NavigationViewItem.InfoBadge>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.HeaderTemplate>
                 <DataTemplate>

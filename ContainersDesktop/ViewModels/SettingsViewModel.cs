@@ -34,6 +34,9 @@ public partial class SettingsViewModel : ObservableRecipient
     [ObservableProperty]
     public string lenguaje = string.Empty;
 
+    [ObservableProperty]
+    private string tema = string.Empty;
+
     public ICommand SwitchThemeCommand
     {
         get;
@@ -54,6 +57,7 @@ public partial class SettingsViewModel : ObservableRecipient
                     await _themeSelectorService.SetThemeAsync(param);
                 }
             });
+
         _uiConfigRepository = uiConfigRepository;
         _localSettingsService = localSettingsService;
 
@@ -88,6 +92,7 @@ public partial class SettingsViewModel : ObservableRecipient
         Configs = await _uiConfigRepository.LeerTodas();
 
         Lenguaje = Configs.Where(x => x.Clave == "Idioma" && x.UI_CONFIG_USUARIO == _login!.Usuario).FirstOrDefault()?.Valor ?? "Español";
+        Tema = Configs.Where(x => x.Clave == "Tema" && x.UI_CONFIG_USUARIO == _login!.Usuario).FirstOrDefault()?.Valor ?? "Default";
     }
 
     public async Task Guardar(string key, string value)

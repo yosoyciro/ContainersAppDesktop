@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using Azure.Messaging.ServiceBus;
-using ContainersDesktop.Helpers;
+﻿using ContainersDesktop.Helpers;
 using Windows.UI.ViewManagement;
 
 namespace ContainersDesktop;
@@ -9,6 +7,7 @@ public sealed partial class MainWindow : WindowEx
 {
     private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
     private Timer timer;
+
 
     private UISettings settings;
 

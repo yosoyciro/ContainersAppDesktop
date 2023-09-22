@@ -2,6 +2,7 @@
 using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.Dominio.Models.Storage;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using ContainersDesktop.Logica.Mensajeria;
 using ContainersDesktop.Logica.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,7 +19,6 @@ public class SincronizarServicio
     private readonly string _dbNameSubida = string.Empty;
     private readonly string _dbFolder = string.Empty;
     private readonly string _dbFullPath = string.Empty;
-    
 
     public SincronizarServicio(AzureStorageManagement azureStorageManagement, IAsyncRepository<Dispositivo> dispositivosRepo, IAsyncRepository<Sincronizacion> sincronizacionRepo, MensajesServicio mensajesServicio, ILogger<SincronizarServicio> logger, IOptions<Settings> settings)
     {
@@ -32,7 +32,7 @@ public class SincronizarServicio
         _dbFullPath = $"{ArchivosCarpetas.GetParentDirectory()}{_dbFolder}\\{_dbName}";
         _logger = logger;
     }
-    public async Task Sincronizar()
+    public async Task<int> Sincronizar()
     {
         var dbDescarga = string.Empty;
         var fechaHoraInicio = DateTime.Now;
@@ -46,44 +46,60 @@ public class SincronizarServicio
             //Preparo la base a subir            
             //File.Copy(_dbFullPath, dbSubidaFullPath);
 
-            var dispositivos = await _dispositivosRepo.GetAsync();
+            //var dispositivos = await _dispositivosRepo.GetAsync();
 
-            foreach (var item in dispositivos.Where(x => x.Estado == "A" && !string.IsNullOrEmpty(x.DISPOSITIVOS_CONTAINER)))
+            //foreach (var item in dispositivos.Where(x => x.Estado == "A" && !string.IsNullOrEmpty(x.DISPOSITIVOS_CONTAINER)))
+            //{
+            //    idDispositivo = item.ID;
+            //    fechaHoraInicio = DateTime.Now;
+
+            //    ////Bajo del container
+            //    //dbDescarga = await _azureStorageManagement.DownloadFile(item.DISPOSITIVOS_CONTAINER);
+
+            //    //if (dbDescarga != string.Empty)
+            //    //{
+            //    //    //TODO - Proceso e incorporo los movimientos
+            //    //    await _movimientosServicio.SincronizarMovimientos(dbDescarga, item.DISPOSITIVOS_ID_REG);
+            //    //    await _tareasProgramadasServicio.Sincronizar(dbDescarga, item.DISPOSITIVOS_ID_REG);
+
+            //    //    if (File.Exists(dbDescarga))
+            //    //    {
+            //    //        File.Delete(dbDescarga);
+            //    //    }
+            //    //}
+            //    await _mensajesServicio.ProcesarPendientes();
+
+            //    //Subo al contenedor
+            //    //await _azureStorageManagement.UploadFile(item.DISPOSITIVOS_CONTAINER!, _dbNameSubida, dbSubidaFullPath);
+
+            //    fechaHoraFin = DateTime.Now;
+
+            //    //Grabo sincronizacion
+            //    var sincronizacion = new Sincronizacion()
+            //    {
+            //        SINCRONIZACIONES_FECHA_HORA_INICIO = FormatoFecha.FechaEstandar(fechaHoraInicio),
+            //        SINCRONIZACIONES_FECHA_HORA_FIN = FormatoFecha.FechaEstandar(fechaHoraFin),
+            //        SINCRONIZACIONES_DISPOSITIVO_ORIGEN = item.ID,
+            //        SINCRONIZACIONES_RESULTADO = "Ok",
+            //    };
+            //    await _sincronizacionRepo.AddAsync(sincronizacion);
+            //}
+
+            await _mensajesServicio.ProcesarPendientes();
+
+            return await _mensajesServicio.ConsultarSinProcesar();
+
+            //MensajesNotificaciones.SetMensajesNoLeidos(await _mensajesServicio.ConsultarSinProcesar());
+
+            //Grabo sincronizacion
+            var sincronizacion = new Sincronizacion()
             {
-                idDispositivo = item.ID;
-                fechaHoraInicio = DateTime.Now;
-
-                ////Bajo del container
-                //dbDescarga = await _azureStorageManagement.DownloadFile(item.DISPOSITIVOS_CONTAINER);
-
-                //if (dbDescarga != string.Empty)
-                //{
-                //    //TODO - Proceso e incorporo los movimientos
-                //    await _movimientosServicio.SincronizarMovimientos(dbDescarga, item.DISPOSITIVOS_ID_REG);
-                //    await _tareasProgramadasServicio.Sincronizar(dbDescarga, item.DISPOSITIVOS_ID_REG);
-
-                //    if (File.Exists(dbDescarga))
-                //    {
-                //        File.Delete(dbDescarga);
-                //    }
-                //}
-                await _mensajesServicio.ProcesarPendientes();
-
-                //Subo al contenedor
-                //await _azureStorageManagement.UploadFile(item.DISPOSITIVOS_CONTAINER!, _dbNameSubida, dbSubidaFullPath);
-                
-                fechaHoraFin = DateTime.Now;
-
-                //Grabo sincronizacion
-                var sincronizacion = new Sincronizacion()
-                {
-                    SINCRONIZACIONES_FECHA_HORA_INICIO = FormatoFecha.FechaEstandar(fechaHoraInicio),
-                    SINCRONIZACIONES_FECHA_HORA_FIN = FormatoFecha.FechaEstandar(fechaHoraFin),
-                    SINCRONIZACIONES_DISPOSITIVO_ORIGEN = item.ID,
-                    SINCRONIZACIONES_RESULTADO = "Ok",
-                };
-                await _sincronizacionRepo.AddAsync(sincronizacion);
-            }
+                SINCRONIZACIONES_FECHA_HORA_INICIO = FormatoFecha.FechaEstandar(fechaHoraInicio),
+                SINCRONIZACIONES_FECHA_HORA_FIN = FormatoFecha.FechaEstandar(fechaHoraFin),
+                SINCRONIZACIONES_DISPOSITIVO_ORIGEN = 0,
+                SINCRONIZACIONES_RESULTADO = "Ok",
+            };
+            await _sincronizacionRepo.AddAsync(sincronizacion);
         }
         catch (SystemException ex)
         {
@@ -121,7 +137,7 @@ public class SincronizarServicio
         }
         finally
         {
-            File.Delete(dbSubidaFullPath);
+            //File.Delete(dbSubidaFullPath);
         }
     }
 }

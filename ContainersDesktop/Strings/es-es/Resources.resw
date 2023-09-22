@@ -72,4 +72,25 @@
   <data name="Settings_Idioma.Text" xml:space="preserve">
     <value>Idioma</value>
   </data>
+  <data name="Shell_Novedades.Content" xml:space="preserve">
+    <value>Novedades</value>
+  </data>
+  <data name="Shell_Tablas.Content" xml:space="preserve">
+    <value>Tablas</value>
+  </data>
+  <data name="Shell_Tablas_Listas.Content" xml:space="preserve">
+    <value>Listas</value>
+  </data>
+  <data name="Shell_Tablas_Dispositivos.Content" xml:space="preserve">
+    <value>Dispositivos</value>
+  </data>
+  <data name="Shell_Tablas_Sincronizaciones.Content" xml:space="preserve">
+    <value>Sincronizaciones</value>
+  </data>
+  <data name="Shell_Sincronizaciones.Content" xml:space="preserve">
+    <value>Sincronizaciones</value>
+  </data>
+  <data name="Shell_Tablas_Containers.Content" xml:space="preserve">
+    <value>Containers</value>
+  </data>
 </root>

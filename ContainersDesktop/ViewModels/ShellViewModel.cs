@@ -6,6 +6,10 @@ using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Logica.Mensajeria.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Navigation;
+using ContainersDesktop.Helpers;
+using Windows.UI.Core;
+using System.Windows.Forms;
+using Microsoft.UI.Xaml;
 
 namespace ContainersDesktop.ViewModels;
 
@@ -15,13 +19,15 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
     private readonly ILogger<ShellViewModel> _logger;
     private readonly MensajesServicio _mensajesServicio;
     private readonly AzureServiceBus _azureServiceBus;
+    private readonly MensajesNotificacionesViewModel _mensajesNotificacionesViewModel;
     private ServiceBusClient _serviceBusClient;
+    private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
 
     [ObservableProperty]
     private bool isBackEnabled;
 
     [ObservableProperty]
-    private object? selected;
+    private object? selected;   
 
     public INavigationService NavigationService
     {
@@ -33,8 +39,9 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
         get;
     }
     public LoginViewModel _loginViewModel;
+    public MensajesNotificacionesViewModel MensajesNotificacionesViewModel => _mensajesNotificacionesViewModel;
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, LoginViewModel loginViewModel, ILogger<ShellViewModel> logger, MensajesServicio mensajesServicio, AzureServiceBus azureServiceBus)
+    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, LoginViewModel loginViewModel, ILogger<ShellViewModel> logger, MensajesServicio mensajesServicio, AzureServiceBus azureServiceBus, MensajesNotificacionesViewModel mensajesNotificacionesViewModel)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
@@ -44,11 +51,16 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
         //_serviceBusClient = new ServiceBusClient("Endpoint=sb://labservicebusunicom.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=XmfSa2X6mF5uJ9BB5Wf+aFZ110sxQY1xM+ASbBsYScI=");
         _logger = logger;
         _mensajesServicio = mensajesServicio;
+        //_mensajesNotificacionesViewModel = ServiceHelper.GetService<MensajesNotificacionesViewModel>();
+        _mensajesNotificacionesViewModel = mensajesNotificacionesViewModel;
         _azureServiceBus = azureServiceBus;
 
         IniciarServiceBusProcesor().Wait();
 
-        //ProcesarMensajesGuardados().Wait();        
+
+        //ObtenerMensajesSinProcesar().Wait();
+        //ProcesarMensajesGuardados().Wait();
+        dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
     }
 
     private void OnNavigated(object sender, NavigationEventArgs e)
@@ -66,6 +78,8 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
         {
             Selected = selectedItem;
         }
+
+        ObtenerMensajesSinProcesar().Wait();
     }
 
     public async Task IniciarServiceBusProcesor()
@@ -75,18 +89,25 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
         //var processor = client.CreateProcessor(topicName, subscriptionName);
         processor.ProcessMessageAsync += Processor_ProcessMessageAsync;
         processor.ProcessErrorAsync += Processor_ProcessErrorAsync;
-        await processor.StartProcessingAsync();
+
+        await processor.StartProcessingAsync();        
     }
 
     private async Task Processor_ProcessMessageAsync(ProcessMessageEventArgs arg)
-    {
+    {        
         var message = arg.Message;
-        //Console.WriteLine("Received Processor Message: " + message.Body);        
-        var result = await _mensajesServicio.Guardar(message);
-        if (result)
+        //Console.WriteLine("Received Processor Message: " + message.Body);
+        await _mensajesServicio.Guardar(message);
+
+        var noProcesados = await _mensajesServicio.ConsultarSinProcesar();
+
+
+        dispatcherQueue.TryEnqueue(() =>
         {
-            await arg.CompleteMessageAsync(message);
-        }
+            MensajesNotificacionesViewModel.SetMensajesNoLeidos(noProcesados);
+        });
+
+        await arg.CompleteMessageAsync(message);
     }
 
     private Task Processor_ProcessErrorAsync(ProcessErrorEventArgs arg)
@@ -95,13 +116,27 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
         return Task.CompletedTask;
     }
 
-    private async Task ProcesarMensajesGuardados()
-    {
-        await _mensajesServicio.ProcesarPendientes();
-    }
+    //private async Task ProcesarMensajesGuardados()
+    //{
+    //    await _mensajesServicio.ProcesarPendientes();
+    //}
 
     public void Dispose()
     {
         _serviceBusClient.DisposeAsync();
+    }
+
+    private async Task ObtenerMensajesSinProcesar()
+    {
+        try
+        {
+            MensajesNotificacionesViewModel.SetMensajesNoLeidos(await _mensajesServicio.ConsultarSinProcesar());            
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        
     }
 }

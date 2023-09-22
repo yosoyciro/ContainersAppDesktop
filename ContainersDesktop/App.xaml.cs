@@ -29,6 +29,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using ContainersDesktop.Logica.Mensajeria.Messages;
 using ContainersDesktop.Logica.Mensajeria.MessageHandlers;
+using ContainersDesktop.Logica.Mensajeria;
+using ContainersDesktop.Helpers;
 
 namespace ContainersDesktop;
 
@@ -144,6 +146,7 @@ public partial class App : Application
             services.AddTransient<Data2MoviePage>();
             services.AddTransient<TareasProgramadasArchivosViewModel>();
             services.AddTransient<TareasProgramadasArchivosPage>();
+            services.AddSingleton<MensajesNotificacionesViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
@@ -179,8 +182,13 @@ public partial class App : Application
 
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
+
+            // Servicio notificaciones
+            //services.AddSingleton<MensajesNotificaciones>();
         }).
-        Build();
+        Build();        
+
+        ServiceHelper.Initialize(Host.Services);
 
         //Workers
         //Host.RunAsync();

@@ -3,6 +3,7 @@ using ContainersDesktop.Dominio.Models;
 using Azure.Messaging.ServiceBus;
 using System.Text;
 using ContainersDesktop.Infraestructura.Persistencia.Contracts;
+using ContainersDesktop.Logica.Mensajeria;
 
 namespace ContainersDesktop.Logica.Services;
 public class MensajesServicio
@@ -16,7 +17,7 @@ public class MensajesServicio
         _mensajesServicioProcesar = mensajesServicioProcesar;
     }
 
-    public async Task<bool> Guardar(ServiceBusReceivedMessage message)
+    public async Task Guardar(ServiceBusReceivedMessage message)
     {
         try
         {
@@ -24,8 +25,7 @@ public class MensajesServicio
             var text = Encoding.UTF8.GetString(body);            
 
             var mensaje = new Mensaje(text, string.Empty, FormatoFecha.FechaEstandar(DateTime.Now), "Pendiente");
-            await _repository.AddAsync(mensaje);
-            return true;
+            await _repository.AddAsync(mensaje);            
         }
         catch (Exception)
         {
@@ -46,6 +46,10 @@ public class MensajesServicio
                     await _repository.DeleteAsync(mensaje);
                 }
             }
+
+            var mensajesSinProcesar = await ConsultarSinProcesar();
+                           
+            //_mensajesNotificaciones.SetMensajesNoLeidos(mensajesSinProcesar);        
         }
         catch (Exception)
         {
@@ -53,5 +57,21 @@ public class MensajesServicio
             throw;
         }
         
+    }
+
+    public async Task<int> ConsultarSinProcesar()
+    {
+        try
+        {
+            var mensajes = await _repository.GetAll();
+
+            return mensajes.Count;
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+
     }
 }
