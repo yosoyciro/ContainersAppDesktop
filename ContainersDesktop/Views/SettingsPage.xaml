@@ -64,16 +64,6 @@
                 </StackPanel>
             </StackPanel>
 
-            <TextBlock x:Uid="Settings_Tables" Style="{ThemeResource SubtitleTextBlockStyle}" />
-            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                    <Button Width="200" Command="{x:Bind GoToDispositivosCommand}" Content="Dispositivos"/>
-                    <Button Width="200" Command="{x:Bind GoToListasCommand}" Content="Listas"/>
-                    <Button Width="200" Command="{x:Bind GoToContenedoresCommand}" Content="Contenedores"/>
-                    <Button Width="200" Command="{x:Bind GoToSincronizacionesCommand}" Content="Sincronizaciones"/>
-                </StackPanel>
-            </StackPanel>
-            
             <StackPanel Margin="{StaticResource XSmallTopMargin}">
                 <TextBlock x:Uid="Settings_Grids" Style="{ThemeResource SubtitleTextBlockStyle}" />
                 <ColorPicker x:Name="colorPicker"

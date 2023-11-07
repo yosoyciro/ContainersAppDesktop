@@ -16,7 +16,7 @@ public static class Dialogs
             Content = $"Error {message}",
             CloseButtonText = "Cerrar",
             DefaultButton = ContentDialogButton.Close,
-    };
+        };
 
         await errorDialog.ShowAsync();
     }

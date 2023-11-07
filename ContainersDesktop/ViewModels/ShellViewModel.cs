@@ -6,10 +6,8 @@ using ContainersDesktop.Logica.Services;
 using ContainersDesktop.Logica.Mensajeria.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Navigation;
-using ContainersDesktop.Helpers;
-using Windows.UI.Core;
-using System.Windows.Forms;
-using Microsoft.UI.Xaml;
+using ContainersDesktop.Logica.Services.ModelosStorage;
+using ContainersDesktop.Logica.Contracts;
 
 namespace ContainersDesktop.ViewModels;
 
@@ -19,15 +17,17 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
     private readonly ILogger<ShellViewModel> _logger;
     private readonly MensajesServicio _mensajesServicio;
     private readonly AzureServiceBus _azureServiceBus;
+    public IAzureTableStorage _azureTableStorage;
     private readonly MensajesNotificacionesViewModel _mensajesNotificacionesViewModel;
     private ServiceBusClient _serviceBusClient;
     private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
+    public List<SubModulos> SubModulos = new();
 
     [ObservableProperty]
     private bool isBackEnabled;
 
     [ObservableProperty]
-    private object? selected;   
+    private object? selected;
 
     public INavigationService NavigationService
     {
@@ -41,7 +41,7 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
     public LoginViewModel _loginViewModel;
     public MensajesNotificacionesViewModel MensajesNotificacionesViewModel => _mensajesNotificacionesViewModel;
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, LoginViewModel loginViewModel, ILogger<ShellViewModel> logger, MensajesServicio mensajesServicio, AzureServiceBus azureServiceBus, MensajesNotificacionesViewModel mensajesNotificacionesViewModel)
+    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, LoginViewModel loginViewModel, ILogger<ShellViewModel> logger, MensajesServicio mensajesServicio, AzureServiceBus azureServiceBus, MensajesNotificacionesViewModel mensajesNotificacionesViewModel, IAzureTableStorage azureTableStorage)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
@@ -54,9 +54,9 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
         //_mensajesNotificacionesViewModel = ServiceHelper.GetService<MensajesNotificacionesViewModel>();
         _mensajesNotificacionesViewModel = mensajesNotificacionesViewModel;
         _azureServiceBus = azureServiceBus;
+        _azureTableStorage = azureTableStorage;
 
         IniciarServiceBusProcesor().Wait();
-
 
         //ObtenerMensajesSinProcesar().Wait();
         //ProcesarMensajesGuardados().Wait();
@@ -77,8 +77,8 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
         if (selectedItem != null)
         {
             Selected = selectedItem;
-        }
-
+        }        
+        
         ObtenerMensajesSinProcesar().Wait();
     }
 
@@ -90,11 +90,11 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
         processor.ProcessMessageAsync += Processor_ProcessMessageAsync;
         processor.ProcessErrorAsync += Processor_ProcessErrorAsync;
 
-        await processor.StartProcessingAsync();        
+        await processor.StartProcessingAsync();
     }
 
     private async Task Processor_ProcessMessageAsync(ProcessMessageEventArgs arg)
-    {        
+    {
         var message = arg.Message;
         //Console.WriteLine("Received Processor Message: " + message.Body);
         await _mensajesServicio.Guardar(message);
@@ -130,13 +130,13 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
     {
         try
         {
-            MensajesNotificacionesViewModel.SetMensajesNoLeidos(await _mensajesServicio.ConsultarSinProcesar());            
+            MensajesNotificacionesViewModel.SetMensajesNoLeidos(await _mensajesServicio.ConsultarSinProcesar());
         }
         catch (Exception)
         {
 
             throw;
         }
-        
+
     }
 }

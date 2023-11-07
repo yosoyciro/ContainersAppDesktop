@@ -1,6 +1,7 @@
-﻿using Microsoft.Windows.ApplicationModel.Resources;
+﻿//using Microsoft.Windows.ApplicationModel.Resources;
+using Windows.ApplicationModel.Resources;
 
-namespace ContainersDesktop.Helpers;
+namespace ContainersDesktop.Comunes.Helpers;
 
 public static class ResourceExtensions
 {

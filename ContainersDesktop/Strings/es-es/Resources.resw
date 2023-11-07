@@ -93,4 +93,31 @@
   <data name="Shell_Tablas_Containers.Content" xml:space="preserve">
     <value>Containers</value>
   </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>ContainersDesktop</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>ContainersDesktop</value>
+  </data>
+  <data name="Settings_About.Text" xml:space="preserve">
+    <value>Acerca de la aplicación</value>
+  </data>
+  <data name="Settings_AboutDescription.Text" xml:space="preserve">
+    <value>Descripcion de la app</value>
+  </data>
+  <data name="Settings_Theme.Text" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="Settings_Theme_Dark.Content" xml:space="preserve">
+    <value>Oscuro</value>
+  </data>
+  <data name="Shell_Main.Content" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+  <data name="Menu_Inicio" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+  <data name="UI_AzureConnectionNoDefinida" xml:space="preserve">
+    <value>Cadena de conexión no definida</value>
+  </data>
 </root>

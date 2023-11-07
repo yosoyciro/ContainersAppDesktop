@@ -1,133 +1,132 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
-	<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <RootNamespace>ContainersDesktop</RootNamespace>
-    <ApplicationIcon>Assets/WindowIcon.ico</ApplicationIcon>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Platforms>x86;x64;arm64</Platforms>
-	<RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-    <PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
-	<ImplicitUsings>enable</ImplicitUsings>
-	<Nullable>enable</Nullable>
-	<UseWinUI>true</UseWinUI>	
-	<EnableMsixTooling>true</EnableMsixTooling>
-	  <WindowsPackageType>None</WindowsPackageType>
-	  <AssemblyName>$(MSBuildProjectName)</AssemblyName>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Remove="Assets\Icons\logo-transporte.ico" />
-    <Content Remove="Assets\Images\1.png" />
-    <Content Remove="Assets\Images\recursos_data2movie3.png" />
-    <Content Remove="Assets\Images\RGB.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Views\Data2MoviePage.xaml" />
-    <None Remove="Views\DispositivosPage.xaml" />
-    <None Remove="Views\ListaPorTipoPage.xaml" />
-    <None Remove="Views\LoginPage.xaml" />
-    <None Remove="Views\MovimientosContainerPage.xaml" />
-    <None Remove="Views\MovimientosPage.xaml" />
-    <None Remove="Views\SincronizacionesPage.xaml" />
-    <None Remove="Views\TareasProgramadasArchivosPage.xaml" />
-    <None Remove="Views\TareasProgramadasPage.xaml" />
-    <None Remove="Views\TiposListaDetailsPage.xaml" />
-  </ItemGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net7.0-windows10.0.19041.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<RootNamespace>ContainersDesktop</RootNamespace>
+		<ApplicationIcon>Assets\Icons\Módulo-Mobile.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Platforms>x86;x64;arm64</Platforms>
+		<RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+		<PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<UseWinUI>true</UseWinUI>
+		<EnableMsixTooling>true</EnableMsixTooling>
+		<WindowsPackageType>None</WindowsPackageType>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
+	</PropertyGroup>
+	<ItemGroup>
+		<Content Remove="Assets\Images\1.png" />
+		<Content Remove="Assets\Images\recursos_data2movie3.png" />
+		<Content Remove="Assets\Images\RGB.jpg" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="Views\Data2MoviePage.xaml" />
+		<None Remove="Views\DispositivosPage.xaml" />
+		<None Remove="Views\ListaPorTipoPage.xaml" />
+		<None Remove="Views\LoginPage.xaml" />
+		<None Remove="Views\MovimientosContainerPage.xaml" />
+		<None Remove="Views\MovimientosPage.xaml" />
+		<None Remove="Views\SincronizacionesPage.xaml" />
+		<None Remove="Views\TareasProgramadasArchivosPage.xaml" />
+		<None Remove="Views\TareasProgramadasPage.xaml" />
+		<None Remove="Views\TiposListaDetailsPage.xaml" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Manifest Include="$(ApplicationManifest)" />
-  </ItemGroup>
+	<ItemGroup>
+		<Manifest Include="$(ApplicationManifest)" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230724000" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
-    <PackageReference Include="WinUIEx" Version="2.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Icons\logo-transporte.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Images\recursos_data2movie3.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Images\RGB.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Page Update="Views\TareasProgramadasArchivosPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\Data2MoviePage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\TareasProgramadasPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\SincronizacionesPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\MovimientosContainerPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\LoginPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\ListaPorTipoPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\TiposListaDetailsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\DispositivosPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
+		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230724000" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
+		<PackageReference Include="WinUIEx" Version="2.2" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\Icons\logo-transporte.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\Images\recursos_data2movie3.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\Images\RGB.jpg">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<Page Update="Views\TareasProgramadasArchivosPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\Data2MoviePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\TareasProgramadasPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\SincronizacionesPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\MovimientosContainerPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\LoginPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\ListaPorTipoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\TiposListaDetailsPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Views\DispositivosPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
 
-  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-    <ProjectCapability Include="Msix" />
-  </ItemGroup>
-  
-  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <CustomAdditionalCompileInputs Remove="Views\MovimientosPage.xaml" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Resource Remove="Views\MovimientosPage.xaml" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Include="Properties\PublishProfiles\win10-arm64.pubxml.user" />
-    <None Include="Properties\PublishProfiles\win10-x64.pubxml.user" />
-    <None Include="Properties\PublishProfiles\win10-x86.pubxml.user" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\CoreDesktop.Dominio\ContainersDesktop.Dominio.csproj" />
-    <ProjectReference Include="..\CoreDesktop.Logic\ContainersDesktop.Logica.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Content Update="Assets\Icons\RGB_Minimizado.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Update="Assets\Images\1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>	
+	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+		<ProjectCapability Include="Msix" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<CustomAdditionalCompileInputs Remove="Views\MovimientosPage.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Remove="Views\MovimientosPage.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="Properties\PublishProfiles\win10-arm64.pubxml.user" />
+		<None Include="Properties\PublishProfiles\win10-x64.pubxml.user" />
+		<None Include="Properties\PublishProfiles\win10-x86.pubxml.user" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CoreDesktop.Dominio\ContainersDesktop.Dominio.csproj" />
+		<ProjectReference Include="..\CoreDesktop.Logic\ContainersDesktop.Logica.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="Assets\Icons\RGB_Minimizado.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Assets\Images\1.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

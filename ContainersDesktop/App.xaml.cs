@@ -88,6 +88,7 @@ public partial class App : Application
             services.AddScoped(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<AzureStorageManagement>();
+            services.AddScoped<IAzureTableStorage, AzureTableStorage>();
             services.AddSingleton<PlayFabServicio>();
             services.AddTransient<SincronizarServicio>();
             services.AddSingleton<AzureServiceBus>();
@@ -152,6 +153,7 @@ public partial class App : Application
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
             services.Configure<Settings>(options => context.Configuration.GetSection("Settings").Bind(options));
             services.Configure<AzureStorageConfig>(options => context.Configuration.GetSection("AzureStorageConfig").Bind(options));
+            services.Configure<AzureStorageMeribia>(options => context.Configuration.GetSection("AzureStorageMeribia").Bind(options));
 
             // DB Context
             services.AddDbContext<ContainersDbContext>(opt =>
