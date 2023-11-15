@@ -12,7 +12,7 @@ using Windows.UI;
 
 namespace ContainersDesktop.ViewModels;
 
-public partial class ContainersGridViewModel : ObservableValidator
+public partial class ContainersViewModel : ObservableValidator
 {
     private ObjetosViewModel _objetosViewModel = new();
     public ObjetosViewModel ObjetosViewModel => _objetosViewModel;
@@ -88,7 +88,11 @@ public partial class ContainersGridViewModel : ObservableValidator
     public ObservableCollection<LineasVidaDTO> LstLineasVidaActivos { get; } = new ObservableCollection<LineasVidaDTO>();
 
     #endregion
-    public ContainersGridViewModel(
+
+    #region Commanding
+
+    #endregion
+    public ContainersViewModel(
         IConfigRepository<UI_Config> configRepository,
         AzureServiceBus azureBus,
         IAsyncRepository<Objeto> objetosServicio,
@@ -101,9 +105,9 @@ public partial class ContainersGridViewModel : ObservableValidator
         _objetosServicio = objetosServicio;
         _listasServicio = listasServicio;
         _movimientosServicio = movimientosServicio;
-
-        CargarConfiguracion().Wait();
         _mapper = mapper;
+
+        CargarConfiguracion().Wait();        
     }
 
     #region Listas y source

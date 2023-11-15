@@ -1,6 +1,8 @@
 ﻿using ContainersDesktop.Helpers;
 using ContainersDesktop.Comunes.Helpers;
 using Windows.UI.ViewManagement;
+using ContainersDesktop.ViewModels;
+using System.Diagnostics;
 
 namespace ContainersDesktop;
 
@@ -26,6 +28,31 @@ public sealed partial class MainWindow : WindowEx
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
         //timer = new Timer(timerCallback, null, (int)TimeSpan.FromSeconds(15).TotalMilliseconds, Timeout.Infinite);
+
+        //Nombre a mostrar
+        var sharedViewModel = App.GetService<SharedViewModel>();
+        if (Debugger.IsAttached)
+        {
+            sharedViewModel.UsuarioCorreo = "demo@unicom.es";
+            sharedViewModel.UsuarioNombre = "Demo";
+            sharedViewModel.UsuarioPassword = "Password";
+        }
+        else
+        {
+            var argumentos = Environment.GetCommandLineArgs();
+
+            if (argumentos.Length > 1)
+            {
+                sharedViewModel.UsuarioCorreo = argumentos[1];
+                sharedViewModel.UsuarioNombre = argumentos[2];
+                sharedViewModel.UsuarioPassword = argumentos[3];
+            }
+            else
+            {
+                //TODO - mensaje de no se puede identificar el usuario
+                //await Dialogs.Error("No se puede identificar el usuario logueado");
+            }
+        }
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed

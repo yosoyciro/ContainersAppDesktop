@@ -8,7 +8,7 @@ public class ClaListConfig : IEntityTypeConfiguration<ClaList>
     public void Configure(EntityTypeBuilder<ClaList> builder)
     {
         builder
-            .Property(x => x.ID)
+            .Property(x => x.Id)
             .HasColumnName("CLALIST_ID_REG")
             .ValueGeneratedOnAdd();
 
@@ -20,7 +20,7 @@ public class ClaListConfig : IEntityTypeConfiguration<ClaList>
             .Property(x => x.FechaActualizacion)
             .HasColumnName("CLALIST_FECHA_ACTUALIZACION");
 
-        builder.HasKey(x => x.ID);
+        builder.HasKey(x => x.Id);
 
         builder.ToTable("CLALIST");
     }

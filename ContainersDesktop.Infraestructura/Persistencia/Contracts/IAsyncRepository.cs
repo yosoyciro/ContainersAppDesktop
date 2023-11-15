@@ -1,4 +1,5 @@
-﻿using ContainersDesktop.Dominio.Models.Base;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using ContainersDesktop.Dominio.Models.Base;
 using ContainersDesktop.Infraestructura.Contracts;
 
 namespace ContainersDesktop.Infraestructura.Persistencia.Contracts;

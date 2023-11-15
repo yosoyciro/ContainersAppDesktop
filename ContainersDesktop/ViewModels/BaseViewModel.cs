@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
-public abstract partial class MasterDetailViewModel<T> : ObservableObject
+public abstract partial class BaseViewModel<T> : ObservableObject
 {
     private string filter;
     private T current;

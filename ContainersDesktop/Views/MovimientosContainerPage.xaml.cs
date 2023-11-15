@@ -245,7 +245,7 @@ public sealed partial class MovimientosContainerPage : Page
 
     private async Task BorrarRecuperarCommand_Execute()
     {
-        var pregunta = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?";        
+        var pregunta = ViewModel.EstadoActivo ? Constantes.W_DarBajaRegistro.GetLocalized() : Constantes.W_RecuperarRegistro.GetLocalized();        
         ContentDialogResult result = await Dialogs.Pregunta(this.XamlRoot, pregunta);
 
         if (result == ContentDialogResult.Primary)

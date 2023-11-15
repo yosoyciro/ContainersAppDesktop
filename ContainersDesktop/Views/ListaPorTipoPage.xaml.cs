@@ -78,7 +78,7 @@ public sealed partial class ListaPorTipoPage : Page
 
     private async Task ExportarCommand_Execute()
     {
-        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), $"{ViewModel.claLista.CLALIST_DESCRIP}.csv");
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), $"{ViewModel.claLista.ClaList_Descrip}.csv");
 
         try
         {
@@ -114,7 +114,7 @@ public sealed partial class ListaPorTipoPage : Page
 
                     Lista lista = new()
                     {
-                        LISTAS_ID_LISTA = ViewModel.claLista.ID,
+                        LISTAS_ID_LISTA = ViewModel.claLista.Id,
                         LISTAS_ID_LISTA_ORDEN = int.Parse(values[0]),
                         LISTAS_ID_LISTA_DESCRIP = values[1],
                         Estado = "A",
@@ -134,7 +134,7 @@ public sealed partial class ListaPorTipoPage : Page
 
     private async Task BorrarRecuperarCommand_Execute()
     {
-        var pregunta = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?";        
+        var pregunta = ViewModel.EstadoActivo ? Constantes.W_DarBajaRegistro.GetLocalized() : Constantes.W_RecuperarRegistro.GetLocalized();        
         ContentDialogResult result = await Dialogs.Pregunta(this.XamlRoot, pregunta);
 
         if (result == ContentDialogResult.Primary)

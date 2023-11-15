@@ -67,18 +67,18 @@ public partial class ShellViewModel : ObservableRecipient, IDisposable
     {
         IsBackEnabled = NavigationService.CanGoBack;
 
-        if (e.SourcePageType == typeof(SettingsPage))
-        {
-            Selected = NavigationViewService.SettingsItem;
-            return;
-        }
+        //if (e.SourcePageType == typeof(SettingsPage))
+        //{
+        //    Selected = NavigationViewService.SettingsItem;
+        //    return;
+        //}
 
-        var selectedItem = NavigationViewService.GetSelectedItem(e.SourcePageType);
-        if (selectedItem != null)
-        {
-            Selected = selectedItem;
-        }        
-        
+        //var selectedItem = NavigationViewService.GetSelectedItem(e.SourcePageType);
+        //if (selectedItem != null)
+        //{
+        //    Selected = selectedItem;
+        //}        
+
         ObtenerMensajesSinProcesar().Wait();
     }
 

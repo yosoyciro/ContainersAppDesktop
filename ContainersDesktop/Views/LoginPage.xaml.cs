@@ -18,8 +18,8 @@ public sealed partial class LoginPage : Page
     {
         ViewModel = App.GetService<LoginViewModel>();
         this.InitializeComponent();
-        txtUsuario.Text = "cdaniele@unicom.es";
-        txtPassword.Password = "123abcZz12+";
+        //txtUsuario.Text = "cdaniele@unicom.es";
+        //txtPassword.Password = "123abcZz12+";
     }
 
     private async void PassportSignInButton_Click(object sender, RoutedEventArgs e)
@@ -30,15 +30,13 @@ public sealed partial class LoginPage : Page
         //var result = await ViewModel.Login("cdaniele@unicom.es", "123abcZz12+");
         if (result)
         {
-            ShellPage.Current.ShowPane();
+            //ShellPage.Current.ShowPane();
             Frame.Navigate(typeof(MainPage));
         }
         else
         {
             ErrorMessage.Text = "Usuario/password incorrecto";
-        }
-        //ShellPage.Current.ShowPane();
-        //Frame.Navigate(typeof(MainPage));
+        }        
     }
 
     private void RegisterButtonTextBlock_OnPointerPressed(object sender, PointerRoutedEventArgs e)

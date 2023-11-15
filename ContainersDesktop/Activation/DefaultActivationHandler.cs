@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using ContainersDesktop.Contracts.Services;
+﻿using ContainersDesktop.Contracts.Services;
 using ContainersDesktop.ViewModels;
-using ContainersDesktop.Views;
 using Microsoft.UI.Xaml;
 
 namespace ContainersDesktop.Activation;
@@ -23,8 +21,8 @@ public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventAr
 
     protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
     {
-        _navigationService.NavigateTo(typeof(LoginViewModel).FullName!, args.Arguments);
-        //_navigationService.NavigateTo(typeof(MainViewModel).FullName!, args.Arguments);
+        //_navigationService.NavigateTo(typeof(MainPage).FullName!, args.Arguments);
+        _navigationService.NavigateTo(typeof(MainViewModel).FullName!, args.Arguments);
 
         await Task.CompletedTask;
     }

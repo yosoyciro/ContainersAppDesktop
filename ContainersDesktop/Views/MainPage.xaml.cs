@@ -15,20 +15,12 @@ public sealed partial class MainPage : Page
     {
         ViewModel = App.GetService<MainViewModel>();
         InitializeComponent();
-        Loaded += MainPage_Loaded;
-        
+        Loaded += MainPage_Loaded;        
     }
 
     private async void MainPage_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        var login = ViewModel.Login;
-        txtBienvenido.Text = "Bienvenido " + login.Usuario;
-
-        //var result = await ViewModel.RecibirMensajes();
-        //if (!string.IsNullOrEmpty(result))
-        //{
-        //    await Dialogs.Aviso(this.XamlRoot, result);
-        //};
+    {        
+        ViewModel.MensajeBienvenida = $"Bienvenido {ViewModel.SharedViewModel.UsuarioNombre}";
 
         await ViewModel.VerificarConfiguracion();
     }

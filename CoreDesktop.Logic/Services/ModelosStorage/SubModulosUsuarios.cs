@@ -2,32 +2,24 @@
 using Azure;
 
 namespace ContainersDesktop.Logica.Services.ModelosStorage;
-public class SubModulos : ITableEntity
+public class SubModulosUsuarios : ITableEntity
 {
-    public string? Descripcion
+    public string? SubModuloId
     {
         get; set;
     }
-    public string? Orden
+    public string? VersionInstalada
     {
         get; set;
     }
-    public string? RutaSubModulos
+    public bool ActualizacionAutorizada
     {
         get; set;
     }
-    public string? VersionActual
+    public string? VersionAutorizada
     {
         get; set;
-    }
-    public string? NombreArchivo
-    {
-        get; set;
-    }
-    public string? Icono
-    {
-        get; set;
-    }
+    }    
     public string? PartitionKey
     {
         get; set;

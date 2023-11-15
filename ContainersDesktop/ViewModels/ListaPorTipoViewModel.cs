@@ -65,7 +65,7 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
         var data = await _listasRepo.GetAsync();
 
         foreach (var item in data
-            .Where(x => x.LISTAS_ID_LISTA == claLista!.ID)
+            .Where(x => x.LISTAS_ID_LISTA == claLista!.Id)
             .OrderBy(x => x.LISTAS_ID_LISTA_ORDEN))
         {
             item.FechaActualizacion = FormatoFecha.ConvertirAFechaHora(item.FechaActualizacion!);
@@ -103,7 +103,7 @@ public partial class ListaPorTipoViewModel : ObservableRecipient, INavigationAwa
     {
         try
         {
-            lista.LISTAS_ID_LISTA = claLista.ID;
+            lista.LISTAS_ID_LISTA = claLista.Id;
             lista.ID = await _listasRepo.AddAsync(lista);
             if (lista.ID > 0)
             {

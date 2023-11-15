@@ -56,30 +56,31 @@
                     <CommandBar Background="Transparent"
                         DefaultLabelPosition="Right"
                         Grid.Column="1">
-                        <AppBarButton Command="{x:Bind AgregarCommand, Mode=OneWay}"
-                            Icon="Add"
-                            Label="Agregar" />
-                        <AppBarButton Command="{x:Bind ModificarCommand, Mode=OneWay}"
+                        <AppBarButton x:Uid="W_Agregar"                            
+                            Command="{x:Bind AgregarCommand, Mode=OneWay}"
+                            Icon="Add" />
+                        <AppBarButton x:Uid="W_Modificar"
+                            Command="{x:Bind ModificarCommand, Mode=OneWay}"
                             IsEnabled="{x:Bind ViewModel.HasCurrent, Mode=OneWay}" 
-                            Icon="Edit"
-                            Label="Modificar" />
-                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                            Icon="Edit" />
+                        <AppBarButton x:Uid="W_Borrar"
+                            Command="{x:Bind BorrarRecuperarCommand}"
                             IsEnabled="{x:Bind ViewModel.EstadoActivo, Mode=OneWay}" 
-                            Icon="Delete"
-                            Label="Borrar"/>
-                        <AppBarButton Command="{x:Bind BorrarRecuperarCommand}"
+                            Icon="Delete" />
+                        <AppBarButton x:Uid="W_Recuperar"
+                            Command="{x:Bind BorrarRecuperarCommand}"
                             IsEnabled="{x:Bind ViewModel.EstadoBaja, Mode=OneWay}" 
-                            Icon="Up"
-                            Label="Recuperar"/>
-                        <AppBarButton Command="{x:Bind SincronizarCommand}"
-                            Icon="Sync"
-                            Label="Sincronizar"/>
-                        <AppBarButton 
+                            Icon="Up" />
+                        <AppBarButton x:Uid="W_Sincronizar"                            
+                            Command="{x:Bind SincronizarCommand}"
+                            Icon="Sync" />
+                        <AppBarButton x:Uid="W_Export"
                             Command="{x:Bind ExportarCommand, Mode=OneWay}"
-                            Icon="Document" 
-                            Label="Exportar" />
+                            Icon="Document" />
                     </CommandBar>
-                    <CheckBox x:Name="chkMostrarTodos" Content="Ver todos" HorizontalAlignment="Right" 
+                    <CheckBox x:Uid="W_TodosLosRegistros"
+                        x:Name="chkMostrarTodos" 
+                        HorizontalAlignment="Right" 
                         Checked="chkMostrarTodos_Checked"
                         Unchecked="chkMostrarTodos_Unchecked"
                     />
@@ -103,27 +104,27 @@
                 </controls:DataGrid.Resources>
                 <controls:DataGrid.Columns>
                     <controls:DataGridTextColumn Header="ID" Tag="Id" Binding="{Binding ID}"  />
-                    <controls:DataGridTextColumn Header="Descripción" Tag="Descripcion" Binding="{Binding DISPOSITIVOS_DESCRIP}"  />
-                    <controls:DataGridTextColumn Header="Cloud Container" Tag="Container" Binding="{Binding DISPOSITIVOS_CONTAINER}"  />
-                    <controls:DataGridTextColumn Header="Estado Reg" Tag="EstadoReg" Binding="{Binding Estado}" />
+                    <controls:DataGridTextColumn x:Uid="Col_Descripcion" Tag="Descripcion" Binding="{Binding DISPOSITIVOS_DESCRIP}"  />
+                    <controls:DataGridTextColumn x:Uid="Col_CloudContainer" Tag="Container" Binding="{Binding DISPOSITIVOS_CONTAINER}"  />
+                    <controls:DataGridTextColumn x:Uid="Col_EstadoReg" Tag="EstadoReg" Binding="{Binding Estado}" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
 
-            <ContentDialog x:Name="AgregarDialog"
-                            PrimaryButtonText="Aceptar"
-                            IsPrimaryButtonEnabled="{x:Bind ViewModel.FormViewModel.IsValid, Mode=OneWay}"
-                            CloseButtonText="Cancelar"
-                            >
+            <ContentDialog x:Uid="ContainersDialog"
+                x:Name="AgregarDialog"
+                IsPrimaryButtonEnabled="{x:Bind ViewModel.FormViewModel.IsValid, Mode=OneWay}" >
+                
                 <RelativePanel HorizontalAlignment="Stretch">
-                    <TextBox x:Name="txtDispositivo"
-                        Header="Dispositivo"
+                    
+                    <TextBox x:Uid="Col_Descripcion"
+                        x:Name="txtDispositivo"
                         Text="{x:Bind ViewModel.FormViewModel.Descripcion, Mode=TwoWay}"
                         TextChanging="txtDispositivo_TextChanging"
                         Width="300"
                     />
                     
-                    <TextBox x:Name="txtCloudContainer"
-                        Header="Cloud Container"
+                    <TextBox x:Uid="Col_CloudContainer"
+                        x:Name="txtCloudContainer"
                         Text="{x:Bind ViewModel.FormViewModel.Container, Mode=TwoWay}"
                         RelativePanel.Below="txtDispositivo"
                         RelativePanel.AlignRightWithPanel="True"
@@ -144,8 +145,7 @@
                     </Grid>
 
                     <ContentDialog x:Name="dialogValidacion"
-                        RelativePanel.Below="grdMensajeValidacion"               
-                    >
+                        RelativePanel.Below="grdMensajeValidacion">
                         <TextBlock Text="Error"/>
                     </ContentDialog>
                 </RelativePanel>

@@ -31,7 +31,7 @@
 		<None Remove="Views\SincronizacionesPage.xaml" />
 		<None Remove="Views\TareasProgramadasArchivosPage.xaml" />
 		<None Remove="Views\TareasProgramadasPage.xaml" />
-		<None Remove="Views\TiposListaDetailsPage.xaml" />
+		<None Remove="Views\TiposListaPage.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -40,7 +40,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
 		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
@@ -83,7 +83,7 @@
 		<Page Update="Views\ListaPorTipoPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
-		<Page Update="Views\TiposListaDetailsPage.xaml">
+		<Page Update="Views\TiposListaPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
 		<Page Update="Views\DispositivosPage.xaml">

@@ -17,10 +17,10 @@ public class PageService : IPageService
     public PageService()
     {
         Configure<MainViewModel, MainPage>();
-        Configure<ContainersGridViewModel, ContainersGridPage>();        
+        Configure<ContainersViewModel, ContainersPage>();        
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DispositivosViewModel, DispositivosPage>();
-        Configure<TiposListaDetailsViewModel, TiposListaDetailsPage>();
+        Configure<TiposListaViewModel, TiposListaPage>();
         Configure<MovimientosViewModel, MovimientosPage>();        
         Configure<LoginViewModel, LoginPage>();
         Configure<SincronizacionesViewModel, SincronizacionesPage>();

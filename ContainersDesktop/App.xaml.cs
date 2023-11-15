@@ -31,6 +31,7 @@ using ContainersDesktop.Logica.Mensajeria.Messages;
 using ContainersDesktop.Logica.Mensajeria.MessageHandlers;
 using ContainersDesktop.Logica.Mensajeria;
 using ContainersDesktop.Helpers;
+using System.Diagnostics;
 
 namespace ContainersDesktop;
 
@@ -73,7 +74,7 @@ public partial class App : Application
         ConfigureServices((context, services) =>
         {
             // Default Activation Handler
-            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();            
+            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
@@ -86,6 +87,7 @@ public partial class App : Application
 
             // Core Services
             services.AddScoped(typeof(IAsyncRepository<>), typeof(AsyncRepository<>));
+            services.AddScoped(typeof(IAsyncRepositoryObservable<>), typeof(AsyncRepositoryObservable<>));
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<AzureStorageManagement>();
             services.AddScoped<IAzureTableStorage, AzureTableStorage>();
@@ -98,7 +100,7 @@ public partial class App : Application
                 return new MensajesServicioProcesar(scoopeFactory);
             });
             services.AddSingleton<MensajesServicio>();
-            
+            services.AddSingleton<IFileShareService, FileShareService>();
 
             services.AddTransient<IMensajeRepository<Mensaje>, MensajeRepository<Mensaje>>();
 
@@ -120,18 +122,19 @@ public partial class App : Application
             //services.AddTransient(typeof(IConfigRepository<>), typeof(IConfigRepository<>));
 
             // Views and ViewModels
+            services.AddSingleton<SharedViewModel>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
-            services.AddTransient<ContainersGridViewModel>();
-            services.AddTransient<ContainersGridPage>();
+            services.AddTransient<ContainersViewModel>();
+            services.AddTransient<ContainersPage>();
             services.AddTransient<MainViewModel>();
             services.AddTransient<MainPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ShellViewModel>();
             services.AddTransient<DispositivosViewModel>();
             services.AddTransient<DispositivosPage>();
-            services.AddTransient<TiposListaDetailsViewModel>();
-            services.AddTransient<TiposListaDetailsPage>();
+            services.AddTransient<TiposListaViewModel>();
+            services.AddTransient<TiposListaPage>();
             services.AddTransient<ListaPorTipoViewModel>();
             services.AddTransient<ListaPorTipoPage>();
             services.AddTransient<MovimientosViewModel>();
@@ -154,10 +157,13 @@ public partial class App : Application
             services.Configure<Settings>(options => context.Configuration.GetSection("Settings").Bind(options));
             services.Configure<AzureStorageConfig>(options => context.Configuration.GetSection("AzureStorageConfig").Bind(options));
             services.Configure<AzureStorageMeribia>(options => context.Configuration.GetSection("AzureStorageMeribia").Bind(options));
+            services.Configure<InfoModulo>(options => context.Configuration.GetSection("InfoModulo").Bind(options));
 
             // DB Context
+            var nombreBD = context.Configuration.GetConnectionString("DefaultConnection");
+            var directorioBD = Directory.GetParent(Path.GetDirectoryName(typeof(Data2MovieViewModel).Assembly.Location)).ToString();
             services.AddDbContext<ContainersDbContext>(opt =>
-                opt.UseSqlite($"Data Source={context.Configuration.GetConnectionString("DefaultConnection")}")
+                opt.UseSqlite($"Data Source={Path.Combine(directorioBD, nombreBD!)}")
             );
             
             //HTTP client
@@ -209,6 +215,6 @@ public partial class App : Application
 
         await App.GetService<IActivationService>().ActivateAsync(args);
 
-        MainWindow.Maximize();
+        MainWindow.Maximize();        
     }
 }

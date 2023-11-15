@@ -1,11 +1,10 @@
-﻿using System.Windows.Forms.Design.Behavior;
-using ContainersDesktop.Comunes.Helpers;
+﻿using ContainersDesktop.Comunes.Helpers;
 using ContainersDesktop.Contracts.Services;
-using ContainersDesktop.Dominio.Models.Menu;
+using ContainersDesktop.Dominio.Models.Storage;
 using ContainersDesktop.Helpers;
 using ContainersDesktop.Logica.Services.ModelosStorage;
 using ContainersDesktop.ViewModels;
-
+using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -18,14 +17,15 @@ namespace ContainersDesktop.Views;
 // TODO: Update NavigationViewItem titles and icons in ShellPage.xaml.
 public sealed partial class ShellPage : Page
 {
-    private List<Menu> Menues = new();
+    //private List<Menu> Menues = new();
+    private readonly IOptions<InfoModulo> options;
     public ShellViewModel ViewModel
     {
         get;
     }
     public static ShellPage Current;
 
-    public ShellPage(ShellViewModel viewModel)
+    public ShellPage(ShellViewModel viewModel, IOptions<InfoModulo> options)
     {
         ViewModel = viewModel;
         InitializeComponent();
@@ -41,6 +41,7 @@ public sealed partial class ShellPage : Page
         App.MainWindow.Activated += MainWindow_Activated;
         AppTitleBarText.Text = "AppDisplayName".GetLocalized();
         Current = this;
+        this.options = options;
     }
 
     private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -93,17 +94,6 @@ public sealed partial class ShellPage : Page
         args.Handled = result;
     }
 
-    public void ShowPane()
-    {
-        NavigationViewControl.IsPaneVisible = true;
-    }
-
-    public void RefrescarItems()
-    {
-        //var item = NavigationViewControl.MenuItems.Where(x => x.)
-        Console.WriteLine(NavigationViewControl.MenuItems);
-    }
-
     private async void NavigationViewControl_Loaded(object sender, RoutedEventArgs e)
     {
         // Armo el menu
@@ -117,7 +107,7 @@ public sealed partial class ShellPage : Page
         if (!ViewModel.SubModulos.Any())
         {
             var modulos = await ViewModel._azureTableStorage.LeerTableStorage<Modulos>(nameof(Modulos));
-            var moduloContenedores = modulos.FirstOrDefault(x => x.Nombre == "Contenedores Marítimos");
+            var moduloContenedores = modulos.FirstOrDefault(x => x.RowKey == options.Value.RowKey);
             ViewModel.SubModulos = await ViewModel._azureTableStorage.LeerTableStorage<SubModulos>(nameof(SubModulos), "PartitionKey", moduloContenedores!.RowKey);
         }
 
@@ -162,33 +152,34 @@ public sealed partial class ShellPage : Page
                     }
                 }
 
-                if (i == 2)
-                {
-                    var item2 = GetNavigationViewItems().FirstOrDefault(x => x.Content.ToString() == rutas[1]);
-                    if (item2 != null)
-                    {
-                        item2.MenuItems.Add(new NavigationViewItem()
-                        {
-                            Content = rutas[2],
-                            //Icon = new SymbolIcon(Symbol.Previous),
-                            Tag = rutas[2]
-                        });
-                    }
-                }
+                // TODO - Si los niveles aumentan, trabajar en el codigo comentado
+                //if (i == 2)
+                //{
+                //    var item2 = GetNavigationViewItems().FirstOrDefault(x => x.Content.ToString() == rutas[1]);
+                //    if (item2 != null)
+                //    {
+                //        item2.MenuItems.Add(new NavigationViewItem()
+                //        {
+                //            Content = rutas[2],
+                //            //Icon = new SymbolIcon(Symbol.Previous),
+                //            Tag = rutas[2]
+                //        });
+                //    }
+                //}
 
-                if (i == 3)
-                {
-                    var item3 = GetNavigationViewItems().FirstOrDefault(x => x.Content.ToString() == rutas[2]);
-                    if (item3 != null)
-                    {
-                        item3.MenuItems.Add(new NavigationViewItem()
-                        {
-                            Content = rutas[3],
-                            //Icon = new SymbolIcon(Symbol.Previous),
-                            Tag = rutas[3]
-                        });
-                    }
-                }
+                //if (i == 3)
+                //{
+                //    var item3 = GetNavigationViewItems().FirstOrDefault(x => x.Content.ToString() == rutas[2]);
+                //    if (item3 != null)
+                //    {
+                //        item3.MenuItems.Add(new NavigationViewItem()
+                //        {
+                //            Content = rutas[3],
+                //            //Icon = new SymbolIcon(Symbol.Previous),
+                //            Tag = rutas[3]
+                //        });
+                //    }
+                //}
             }
         }
         
@@ -250,7 +241,7 @@ public sealed partial class ShellPage : Page
                 break;
 
             case "Listas":
-                NavigationFrame.Navigate(typeof(TiposListaDetailsPage));
+                NavigationFrame.Navigate(typeof(TiposListaPage));
                 break;
 
             case "Dispositivos":
@@ -258,7 +249,7 @@ public sealed partial class ShellPage : Page
                 break;
 
             case "Containers":
-                NavigationFrame.Navigate(typeof(ContainersGridPage));
+                NavigationFrame.Navigate(typeof(ContainersPage));
                 break;
 
             case "Sincronizaciones":

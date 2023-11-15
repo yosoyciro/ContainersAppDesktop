@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using ContainersDesktop.Comunes.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -14,7 +13,7 @@ public static class Dialogs
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
             Title = "Error!",
             Content = $"Error {message}",
-            CloseButtonText = "Cerrar",
+            CloseButtonText = Constantes.errorDialog_CloseButtonText.GetLocalized(),
             DefaultButton = ContentDialogButton.Close,
         };
 
@@ -26,10 +25,10 @@ public static class Dialogs
         {
             XamlRoot = root,
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = "Pregunta!",
+            Title = Constantes.preguntaDialog_Title.GetLocalized(),
             Content = message,
-            PrimaryButtonText = "Sí",
-            CloseButtonText = "No",
+            PrimaryButtonText = Constantes.preguntaDialog_PrimaryButtonText.GetLocalized(),
+            CloseButtonText = Constantes.preguntaDialog_CloseButtonText.GetLocalized(),
             DefaultButton = ContentDialogButton.Primary,
         };
 
@@ -42,8 +41,8 @@ public static class Dialogs
         {
             XamlRoot = root,
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = "Atención!",
-            CloseButtonText = "Cerrar",
+            Title = Constantes.avisoDialog_Title.GetLocalized(),
+            CloseButtonText = Constantes.avisoDialog_CloseButtonText.GetLocalized(),
             DefaultButton = ContentDialogButton.Close,
             Content = message,
         };

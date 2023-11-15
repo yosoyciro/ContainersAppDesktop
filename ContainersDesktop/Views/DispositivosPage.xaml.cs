@@ -4,10 +4,10 @@ using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using ContainersDesktop.Comunes.Helpers;
 using Azure;
 using ContainersDesktop.Helpers;
 using Microsoft.UI.Xaml.Media;
+using ContainersDesktop.Comunes.Helpers;
 
 namespace ContainersDesktop.Views;
 public sealed partial class DispositivosPage : Page
@@ -47,7 +47,7 @@ public sealed partial class DispositivosPage : Page
 
     private async Task OpenAgregarDialog()
     {
-        AgregarDialog.Title = "Agregar dispositivo";
+        //AgregarDialog.Title = "Agregar dispositivo";
         AgregarDialog.PrimaryButtonCommand = AgregarRegistroCommand;
         AgregarDialog.DataContext = new Dispositivo()
         {
@@ -62,7 +62,7 @@ public sealed partial class DispositivosPage : Page
 
     private async Task OpenModificarDialog()
     {
-        AgregarDialog.Title = "Modificar dispositivo";
+        //AgregarDialog.Title = "Modificar dispositivo";
         AgregarDialog.PrimaryButtonCommand = ModificarRegistroCommand;
         AgregarDialog.DataContext = ViewModel.SelectedDispositivo;
 
@@ -79,7 +79,7 @@ public sealed partial class DispositivosPage : Page
             await ViewModel.SincronizarInformacion();
             grdDispositivos.ItemsSource = ViewModel.ApplyFilter(null, chkMostrarTodos.IsChecked ?? false);
 
-            await Dialogs.Aviso(this.XamlRoot, "Sincronización realizada!");
+            await Dialogs.Aviso(this.XamlRoot, Constantes.W_SincronizacionRealizada.GetLocalized());
         }
         catch (RequestFailedException ex)
         {
@@ -94,7 +94,7 @@ public sealed partial class DispositivosPage : Page
     #region CRUD
     private async Task BorrarRecuperarRegistro()
     {        
-        var pregunta = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?";
+        var pregunta = ViewModel.EstadoActivo ? Constantes.W_DarBajaRegistro.GetLocalized() : Constantes.W_RecuperarRegistro.GetLocalized();
         ContentDialogResult result = await Dialogs.Pregunta(this.XamlRoot, pregunta);
 
         if (result == ContentDialogResult.Primary)

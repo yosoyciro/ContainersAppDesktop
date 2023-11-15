@@ -130,10 +130,10 @@
     <value>Containers</value>
   </data>
   <data name="Shell_ListasGrid.Content" xml:space="preserve">
-    <value>Listas</value>
+    <value>Lists</value>
   </data>
   <data name="Shell_TiposListasGrid.Content" xml:space="preserve">
-    <value>Tipos Lista</value>
+    <value>List types</value>
   </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
     <value>Personalization</value>
@@ -142,13 +142,13 @@
     <value>Theme</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
-    <value>Claro</value>
+    <value>Light</value>
   </data>
   <data name="Settings_Theme_Dark.Content" xml:space="preserve">
     <value>Dark</value>
   </data>
   <data name="Settings_Theme_Default.Content" xml:space="preserve">
-    <value>Por Defecto</value>
+    <value>Default</value>
   </data>
   <data name="Settings_About.Text" xml:space="preserve">
     <value>About the application</value>
@@ -157,7 +157,7 @@
     <value>TODO: Replace with your app description.</value>
   </data>
   <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
-    <value>Declaración de privacidad</value>
+    <value>Privacy statment</value>
   </data>
   <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
     <value>https://YourPrivacyUrlGoesHere/</value>
@@ -169,7 +169,7 @@
     <value>Devices</value>
   </data>
   <data name="Shell_TiposListaDetails.Content" xml:space="preserve">
-    <value>Listas</value>
+    <value>Lists</value>
   </data>
   <data name="Shell_Movimientos.Content" xml:space="preserve">
     <value>Tasks history</value>
@@ -218,5 +218,146 @@
   </data>
   <data name="UI_AzureConnectionNoDefinida" xml:space="preserve">
     <value>Connection string not defined</value>
+  </data>
+  <data name="W_Agregar.Label" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="W_Modificar.Label" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="W_Borrar.Label" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="W_Recuperar.Label" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="W__Historial.Label" xml:space="preserve">
+    <value>Movements</value>
+  </data>
+  <data name="W_Filtrar.Label" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="W_Export.Label" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="W_Import.Label" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="W_TodosLosRegistros.Content" xml:space="preserve">
+    <value>All records</value>
+  </data>
+  <data name="Col_Matricula.Header" xml:space="preserve">
+    <value>Registration</value>
+  </data>
+  <data name="Col_Siglas.Header" xml:space="preserve">
+    <value>Initials</value>
+  </data>
+  <data name="Col_Modelo.Header" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Col_Variante.Header" xml:space="preserve">
+    <value>Variant</value>
+  </data>
+  <data name="Col_Tipo.Header" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Col_Inspecc.Header" xml:space="preserve">
+    <value>Inspec CSC</value>
+  </data>
+  <data name="Col_Propietario.Header" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="Col_CargaUtil.Header" xml:space="preserve">
+    <value>Useful load</value>
+  </data>
+  <data name="Col_AlturaExterior.Header" xml:space="preserve">
+    <value>Out. height</value>
+  </data>
+  <data name="Col_CuelloCisne.Header" xml:space="preserve">
+    <value>Swan neck</value>
+  </data>
+  <data name="Col_Barras.Header" xml:space="preserve">
+    <value>Bars</value>
+  </data>
+  <data name="Col_Cables.Header" xml:space="preserve">
+    <value>Cables</value>
+  </data>
+  <data name="Col_LineasVida.Header" xml:space="preserve">
+    <value>Life lines</value>
+  </data>
+  <data name="Col_EstadoReg.Header" xml:space="preserve">
+    <value>Record status</value>
+  </data>
+  <data name="Col_Observaciones.Header" xml:space="preserve">
+    <value>Observations</value>
+  </data>
+  <data name="ContainersDialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ContainersDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="ContainersDialog.Title" xml:space="preserve">
+    <value>New record</value>
+  </data>
+  <data name="W_Historial.Label" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="W_DarBajaRegistro" xml:space="preserve">
+    <value>Are you sure you wan to delete the record?</value>
+  </data>
+  <data name="W_RecuperarRegistro" xml:space="preserve">
+    <value>Are you sure you want to restore the record?</value>
+  </data>
+  <data name="errorDialog_CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="preguntaDialog_Title" xml:space="preserve">
+    <value>Question!</value>
+  </data>
+  <data name="preguntaDialog_CloseButtonText" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="preguntaDialog_PrimaryButtonText" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="avisoDialog.Title" xml:space="preserve">
+    <value>Attention!</value>
+  </data>
+  <data name="avisoDialog.CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="avisoDialog_Title" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="avisoDialog_CloseButtonText" xml:space="preserve">
+    <value>Attention!</value>
+  </data>
+  <data name="W_Sincronizar.Label" xml:space="preserve">
+    <value>Sync</value>
+  </data>
+  <data name="Col_Descripcion.Header" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Col_CloudContainer.Header" xml:space="preserve">
+    <value>Cloud container</value>
+  </data>
+  <data name="W_SincronizacionRealizada" xml:space="preserve">
+    <value>Sync done!</value>
+  </data>
+  <data name="W_Detalles.Label" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="exportarDialog_Title" xml:space="preserve">
+    <value>Attention!</value>
+  </data>
+  <data name="exportarDialog_Content" xml:space="preserve">
+    <value>File generated {0}</value>
+  </data>
+  <data name="exportarDialog_PrimaryButtonText" xml:space="preserve">
+    <value>Open location</value>
+  </data>
+  <data name="exportarDialog_CloseButtonText" xml:space="preserve">
+    <value>Close</value>
   </data>
 </root>

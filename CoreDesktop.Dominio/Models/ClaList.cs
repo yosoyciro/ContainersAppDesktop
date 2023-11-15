@@ -1,12 +1,14 @@
-﻿using ContainersDesktop.Dominio.Models.Base;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using ContainersDesktop.Dominio.Models.Base;
 
 namespace ContainersDesktop.Dominio.Models;
-public class ClaList : AuditableEntity
-{        
-    public string? CLALIST_DESCRIP
+public partial class ClaList : AuditableEntityObservable
+{
+    [ObservableProperty]
+    public string? claList_Descrip;
+
+    public bool ApplyFilter(string filter)
     {
-        get;
-        set;
+        return claList_Descrip.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -1,22 +1,20 @@
-using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using ContainersDesktop.Helpers;
-using ContainersDesktop.Dominio.Models;
 using ContainersDesktop.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace ContainersDesktop.Views;
-public sealed partial class TiposListaDetailsPage : Page
+public sealed partial class TiposListaPage : Page
 {
-    public TiposListaDetailsViewModel ViewModel
+    public TiposListaViewModel ViewModel
     {
         get;
     }
-    public TiposListaDetailsPage()
+    public TiposListaPage()
     {
-        ViewModel = App.GetService<TiposListaDetailsViewModel>();
+        ViewModel = App.GetService<TiposListaViewModel>();
         this.InitializeComponent();
         Loaded += TiposListaDetailsPage_Loaded;
     }
@@ -52,20 +50,21 @@ public sealed partial class TiposListaDetailsPage : Page
 
     private void DetalleCommand_Executed()
     {
-        Frame.Navigate(typeof(ListaPorTipoPage), ViewModel.SelectedClaList);
+        Frame.Navigate(typeof(ListaPorTipoPage), ViewModel.Current);
     }
 
     #region Filtros
     private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
-        if (args.QueryText != "")
-        {
-            ClaListListView.ItemsSource = ViewModel.AplicarFiltro(args.QueryText);
-        }
-        else
-        {
-            ClaListListView.ItemsSource = ViewModel.Items;
-        }
+        //if (args.QueryText != "")
+        //{
+        //    ClaListListView.ItemsSource = ViewModel.ApplyFilterViewModel(ViewModel.Current, args.QueryText);
+        //}
+        //else
+        //{
+        //    ClaListListView.ItemsSource = ViewModel.Items;
+        //}
+        ViewModel.Filter = args.QueryText;
     }
 
     private void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -74,14 +73,15 @@ public sealed partial class TiposListaDetailsPage : Page
         {
             if (sender.Text == "")
             {
-                ClaListListView.ItemsSource = ViewModel.Items;
+                //ClaListListView.ItemsSource = ViewModel.ApplyFilter(ViewModel.Current, SearchBox.Text); // ViewModel.Items;
+                ViewModel.Filter = null;
             }
         }
     }
 
     private void chkMostrarTodos_Checked(object sender, RoutedEventArgs e)
     {
-        ClaListListView.ItemsSource = ViewModel.AplicarFiltro(SearchBox.Text);
+        ClaListListView.ItemsSource = ViewModel.ApplyFilter(ViewModel.Current, SearchBox.Text);
     }
     #endregion
 

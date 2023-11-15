@@ -12,17 +12,17 @@ using ContainersDesktop.Helpers;
 
 namespace ContainersDesktop.Views;
 
-public sealed partial class ContainersGridPage : Page
+public sealed partial class ContainersPage : Page
 {
     private CalendarDatePicker FechaInspecDatePicker = new();
-    public ContainersGridViewModel ViewModel
+    public ContainersViewModel ViewModel
     {
         get;
     }
 
-    public ContainersGridPage()
+    public ContainersPage()
     {
-        ViewModel = App.GetService<ContainersGridViewModel>();
+        ViewModel = App.GetService<ContainersViewModel>();
         InitializeComponent();
         this.Loaded += ContainersGridPage_Loaded;
     }
@@ -72,8 +72,6 @@ public sealed partial class ContainersGridPage : Page
 
     private async Task OpenNewDialog()
     {
-        AgregarDialog.Title = "Nuevo container";
-        AgregarDialog.PrimaryButtonText = "Agregar";
         AgregarDialog.PrimaryButtonCommand = AgregarCommand;
         AgregarDialog.IsPrimaryButtonEnabled = false;
         
@@ -106,11 +104,8 @@ public sealed partial class ContainersGridPage : Page
 
     private async Task OpenModificarDialog()
     {
-        AgregarDialog.Title = "Editar container";
-        AgregarDialog.PrimaryButtonText = "Confirmar";
         AgregarDialog.PrimaryButtonCommand = ModificarRegistroCommand;
         AgregarDialog.IsPrimaryButtonEnabled = true;
-
         AgregarDialog.DataContext = ViewModel.SelectedObjeto;
 
         //Valores x defecto
@@ -154,7 +149,7 @@ public sealed partial class ContainersGridPage : Page
 
     private async Task BorrarRecuperarCommand_Executed()
     {
-        var pregunta = ViewModel.EstadoActivo ? "Está seguro que desea dar de baja el registro?" : "Está seguro que desea recuperar el registro?";
+        var pregunta = ViewModel.EstadoActivo ? Constantes.W_DarBajaRegistro.GetLocalized() : Constantes.W_RecuperarRegistro.GetLocalized();
         ContentDialogResult result = await Dialogs.Pregunta(this.XamlRoot, pregunta);
         if (result == ContentDialogResult.Primary)
         {

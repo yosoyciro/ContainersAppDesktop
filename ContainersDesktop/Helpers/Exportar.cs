@@ -48,18 +48,18 @@ public static class Exportar
         }
         sw.Close();
 
-        ContentDialog bajaRegistroDialog = new ContentDialog
+        ContentDialog exportarDialog = new ContentDialog
         {
             XamlRoot = root,
             Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-            Title = "Atención!",
-            Content = $"Se generó el archivo {filePath}",
-            PrimaryButtonText = "Abrir ubicación",
+            Title = Constantes.exportarDialog_Title.GetLocalized(),
+            Content = string.Format(Constantes.exportarDialog_Content.GetLocalized(), filePath),
+            PrimaryButtonText = Constantes.exportarDialog_PrimaryButtonText.GetLocalized(),
             PrimaryButtonCommand = AbrirUbicacionCommand,
-            CloseButtonText = "Cerrar"
+            CloseButtonText = Constantes.exportarDialog_CloseButtonText.GetLocalized(),
         };
 
-        await bajaRegistroDialog.ShowAsync();
+        await exportarDialog.ShowAsync();
     }
 
     //public static void GenerarDatos<T>(ObservableCollection<T> lista, string filePath)
